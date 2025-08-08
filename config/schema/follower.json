@@ -1,0 +1,23 @@
+[
+  {
+    "serial_no": null,
+    "no": null,
+    "registration_time": null,
+    "registration_id": null,
+    "name_chinese": null,
+    "gender": null,
+    "organization_chinese": null,
+    "title_chinese": null,
+    "daytime_phone": null,
+    "mobile_phone": null,
+    "email": null,
+    "identity_category": null,
+    "continuing_education_category": null,
+    "id_number_for_credit": null,
+    "event_info_source": null,
+    "willing_receive_updates": null,
+    "order_note": null,
+    "system_note": null,
+    "certificate": null
+  }
+]

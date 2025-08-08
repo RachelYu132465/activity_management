@@ -1,0 +1,7 @@
+{
+  "BaseFolder": "D:/Events",
+  "Templates": "templates",
+  "OutputLetters": "output/letters",
+  "OutputReports": "output/reports",
+  "ActivitiesData": "data/activities"
+}

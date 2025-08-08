@@ -1,0 +1,85 @@
+[
+  {
+    "session_id": "session_20250922_01",
+    "start_time": "09:10",
+    "end_time": "09:55",
+    "session_title": "報到與前測",
+    "session_type": "checkin"
+  },
+  {
+    "session_id": "session_20250922_02",
+    "start_time": "09:55",
+    "end_time": "10:45",
+    "session_title": "人體試驗委員會的角色與審查會議的過程",
+    "speaker_name": "陳書毓",
+    "session_type": "lecture"
+  },
+  {
+    "session_id": "session_20250922_03",
+    "start_time": "10:45",
+    "end_time": "10:55",
+    "session_title": "課間休息",
+    "session_type": "break"
+  },
+  {
+    "session_id": "session_20250922_04",
+    "start_time": "10:55",
+    "end_time": "11:45",
+    "session_title": "性別意識對臨床試驗的影響",
+    "speaker_name": "陳書毓",
+    "session_type": "lecture"
+  },
+  {
+    "session_id": "session_20250922_05",
+    "start_time": "11:45",
+    "end_time": "12:35",
+    "session_title": "人體研究之利益衝突及其管理",
+    "speaker_name": "蘇矢立",
+    "session_type": "lecture"
+  },
+  {
+    "session_id": "session_20250922_06",
+    "start_time": "12:35",
+    "end_time": "13:35",
+    "session_title": "午間休息",
+    "session_type": "lunch"
+  },
+  {
+    "session_id": "session_20250922_07",
+    "start_time": "13:35",
+    "end_time": "14:25",
+    "session_title": "藥品臨床試驗之收案、執行與管理(含受試者同意書撰寫)",
+    "speaker_name": "張杏焄",
+    "session_type": "lecture"
+  },
+  {
+    "session_id": "session_20250922_08",
+    "start_time": "14:25",
+    "end_time": "14:35",
+    "session_title": "課間休息",
+    "session_type": "break"
+  },
+  {
+    "session_id": "session_20250922_09",
+    "start_time": "14:35",
+    "end_time": "15:25",
+    "session_title": "臨床試驗研究計畫書撰寫注意事項與審查重點",
+    "speaker_name": "張正雄",
+    "session_type": "lecture"
+  },
+  {
+    "session_id": "session_20250922_10",
+    "start_time": "15:25",
+    "end_time": "16:15",
+    "session_title": "藥品臨床試驗相關統計學",
+    "speaker_name": "蕭金福",
+    "session_type": "lecture"
+  },
+  {
+    "session_id": "session_20250922_11",
+    "start_time": "16:15",
+    "end_time": "17:00",
+    "session_title": "問卷與後測",
+    "session_type": "survey"
+  }
+]

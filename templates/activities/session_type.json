@@ -1,0 +1,17 @@
+ {
+  "A": {
+    "報到與前測": "checkin",
+    "課間休息": "break",
+    "午間休息": "lunch",
+    "問卷與後測": "survey",
+    "演講": "lecture"
+  },
+  "B": {
+    "致詞與大合照": "speech",
+    "綜合討論": "discussion",
+    "演講": "lecture"
+  },
+  "C": {
+    "演講": "lecture"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "TYPE_A": [
+    "common_prepare",
+    "action_a1",
+    "action_a2"
+  ],
+  "TYPE_B": [
+    "common_prepare",
+    "action_b1",
+    "action_b2"
+  ]
+}

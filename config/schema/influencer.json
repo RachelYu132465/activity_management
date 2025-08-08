@@ -1,0 +1,25 @@
+[
+  {
+    "id_number": "",
+    "name": "",
+    "phone": "",
+    "specialties": [],
+    "achievements": [],
+    "academic_title": "",
+    "certificate_number": "",
+    "highest_education": {
+      "school": "",
+      "department": "",
+      "graduation_year": "",
+      "degree": ""
+    },
+    "current_position": {
+      "organization": "",
+      "title": "",
+      "start_year": null,
+      "teaching_years": null,
+      "practice_years": null,
+      "research_years": null
+    }
+  }
+]
