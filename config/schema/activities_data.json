@@ -1,0 +1,33 @@
+{
+  "agenda_settings": {
+    "start_time": "",
+    "end_time": "",
+    "speaker_minutes": null,
+    "special_sessions": []
+  },
+  "speakers": [{
+
+"no":"",
+"topic":"",
+"name":""
+
+}],
+  "activities_contacts": [
+
+ {
+      "ID": "",
+      "name": "",
+      "gender": "",
+      "title": "",
+      "unity": [],
+      "email": "",
+      "contact_person": {
+        "name": "",
+        "email": ""
+      },
+      "group_by_program": [],
+      "name_mail_use": ""
+    }
+
+]
+}

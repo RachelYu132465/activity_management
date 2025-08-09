@@ -1,0 +1,64 @@
+[
+
+{
+  "agenda_settings": {
+    "start_time": "09:10",
+    "end_time": "17:00",
+    "speaker_minutes": 50,
+    "special_sessions": [
+      {
+        "after_speaker": 0,
+        "title": "報到與前測",
+        "duration": null
+      },
+      {
+        "after_speaker": 1,
+        "title": "課間休息",
+        "duration": 10
+      },
+      {
+        "after_speaker": 3,
+        "title": "午間休息",
+        "duration": 60
+      },
+      {
+        "after_speaker": 4,
+        "title": "課間休息",
+        "duration": 10
+      },
+      {
+        "after_speaker": 999,
+        "title": "問卷與後測",
+        "duration": null
+      }
+    ]
+  },
+  "speakers": [
+    { "no": 1, "topic": "人體試驗委員會的角色與審查會議的過程", "name": "陳書毓" },
+    { "no": 2, "topic": "性別意識對臨床試驗的影響", "name": "陳書毓" },
+    { "no": 3, "topic": "人體研究之利益衝突及其管理", "name": "蘇矢立" },
+    { "no": 4, "topic": "藥品臨床試驗之收案、執行與管理(含受試者同意書撰寫)", "name": "張杏焄" },
+    { "no": 5, "topic": "臨床試驗研究計畫書撰寫注意事項與審查重點", "name": "張正雄" },
+    { "no": 6, "topic": "藥品臨床試驗相關統計學", "name": "蕭金福" }
+  ],
+  "activities_contacts": [
+    {
+      "ID": "",
+      "id_number": "",
+      "name": "",
+      "gender": "",
+      "title": "",
+      "unity": [],
+      "email": "",
+      "contact_person": {
+        "name": "",
+        "email": ""
+      },
+      "group_by_program": [],
+      "name_mail_use": ""
+    }
+  ]
+}
+
+
+]
