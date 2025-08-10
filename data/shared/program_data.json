@@ -82,7 +82,7 @@
     "organizers": ["財團法人台灣醫界聯盟基金會"],
     "coOrganizers": ["臺中榮民總醫院"],
     "jointOrganizers": [],
-    "registration_urls": [],
+    "registration_urls": ["https://mpat.org.tw/EventDetail?id=228"],
     "instructors": ["衛生福利部食品藥物管理署"],
     "max_capacity": 90
   },

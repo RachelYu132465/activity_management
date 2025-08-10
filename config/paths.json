@@ -3,5 +3,6 @@
   "Templates": "templates",
   "OutputLetters": "output/letters",
   "OutputReports": "output/reports",
-  "ActivitiesData": "data/activities"
+  "ActivitiesData": "data/activities",
+  "Data": "data"
 }
