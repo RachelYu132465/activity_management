@@ -1,0 +1,172 @@
+[
+  {
+    "id_number": "N120300638",
+    "name": "張正雄",
+    "phone": "0937738728",
+    "specialties": [
+      "內科學",
+      "血液腫瘤病學"
+    ],
+    "achievements": [
+      "ACRP認證CPI"
+    ],
+    "academic_title": "助理教授",
+    "certificate_number": "助理字第022602號",
+    "highest_education": {
+      "school": "中國醫藥學院",
+      "department": "中醫學系",
+      "graduation_year": "1983",
+      "degree": "學士"
+    },
+    "current_position": {
+      "organization": "彰濱秀傳紀念醫院院長室",
+      "title": "醫療副院長",
+      "start_year": 2019,
+      "teaching_years": 5,
+      "practice_years": 5,
+      "research_years": 5
+    }
+  },
+  {
+    "id_number": "R120895779",
+    "name": "蕭金福",
+    "phone": "037-206166#36106",
+    "specialties": [
+      "臨床試驗統計"
+    ],
+    "achievements": [],
+    "academic_title": "教授",
+    "certificate_number": "020669",
+    "highest_education": {
+      "school": "University of Wisconsin-Madison, USA",
+      "department": "統計",
+      "graduation_year": "1997",
+      "degree": "學士"
+    },
+    "current_position": {
+      "organization": "國家衛生研究院群體健康科學研究所",
+      "title": "研究員",
+      "start_year": 2011,
+      "teaching_years": 13,
+      "practice_years": null,
+      "research_years": 13
+    }
+  },
+  {
+    "id_number": "N222958518",
+    "name": "陳書毓",
+    "phone": "0983542085",
+    "specialties": [
+      "研究倫理",
+      "腫瘤護理",
+      "護理行政",
+      "實證護理",
+      "高齡健康照護"
+    ],
+    "achievements": [],
+    "academic_title": "助理教授",
+    "certificate_number": "",
+    "highest_education": {
+      "school": "國立臺灣大學",
+      "department": "護理學研究所博士班",
+      "graduation_year": "107年",
+      "degree": "博士"
+    },
+    "current_position": {
+      "organization": "國立臺北護理健康大學",
+      "title": "助理教授",
+      "start_year": 2024,
+      "teaching_years": 1,
+      "practice_years": 1,
+      "research_years": 1
+    }
+  },
+  {
+    "id_number": "L221887330",
+    "name": "張杏焄",
+    "phone": "03-3281200*8152",
+    "specialties": [
+      "腫瘤護理",
+      "兒科疫苗試驗護理",
+      "臨床試驗護理"
+    ],
+    "achievements": [],
+    "academic_title": "講師",
+    "certificate_number": "",
+    "highest_education": {
+      "school": "國立台灣大學護理研究所",
+      "department": "臨床試驗研究護理師組",
+      "graduation_year": null,
+      "degree": "碩士肄業"
+    },
+    "current_position": {
+      "organization": "長庚醫療財團法人林口總院",
+      "title": "研究護理師",
+      "start_year": 2009,
+      "teaching_years": 16,
+      "practice_years": 16,
+      "research_years": 16
+    }
+  },
+  {
+    "id_number": "S120927615",
+    "name": "蘇矢立",
+    "phone": "0930863001",
+    "specialties": [
+      "糖尿病",
+      "高血脂",
+      "動脈硬化",
+      "研究倫理",
+      "受試者保護",
+      "醫學教育"
+    ],
+    "achievements": [
+      "臺灣臨床研究倫理審查學會理事"
+    ],
+    "academic_title": "講師",
+    "certificate_number": "",
+    "highest_education": {
+      "school": "中山醫學大學",
+      "department": "臨床醫學研究所",
+      "graduation_year": "112",
+      "degree": "博士"
+    },
+    "current_position": {
+      "organization": "彰化基督教醫院",
+      "title": "主治醫師",
+      "start_year": 1999,
+      "teaching_years": 26,
+      "practice_years": 26,
+      "research_years": 26
+    }
+  },
+  {
+    "id_number": "N222958518",
+    "name": "陳書毓",
+    "phone": "0983542085",
+    "specialties": [
+      "研究倫理",
+      "腫瘤護理",
+      "護理行政",
+      "實證護理",
+      "高齡健康照護"
+    ],
+    "achievements": [],
+    "academic_title": "助理教授",
+    "certificate_number": "",
+    "highest_education": {
+      "school": "國立臺灣大學",
+      "department": "護理學研究所博士班",
+      "graduation_year": "107年",
+      "degree": "博士"
+    },
+    "current_position": {
+      "organization": "國立臺北護理健康大學",
+      "title": "助理教授",
+      "start_year": 2024,
+      "teaching_years": 1,
+      "practice_years": 1,
+      "research_years": 1
+    }
+  }
+]
