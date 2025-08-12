@@ -342,12 +342,12 @@
   },
   {
     "id_number": "",
-    "name": "TBD",
+    "name": "楊家琳",
     "phone": "",
-    "email": [],
+    "email": ["jenny.yang@mail.centurydev.com.tw"],
     "specialties": [],
     "achievements": [],
-    "academic_title": "",
+    "academic_title": "博士",
     "certificate_number": "",
     "highest_education": {
       "school": "",
@@ -356,8 +356,8 @@
       "degree": ""
     },
     "current_position": {
-      "organization": "台北生技園區",
-      "title": "",
+      "organization": "世康開發股份有限公司",
+      "title": "副總經理",
       "start_year": null,
       "teaching_years": null,
       "practice_years": null,

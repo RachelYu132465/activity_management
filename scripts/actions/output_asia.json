@@ -9,13 +9,13 @@
       "speaker_minutes": 25,
       "special_sessions": [
         {
-          "after_speaker": 1,
-          "title": "主持人：黃千岳 副執行長 財團法人生物技術開發中心",
-          "duration": null
+          "after_speaker": 0,
+          "title": "大合照",
+          "duration": 10
         },
         {
-          "after_speaker": 3,
-          "title": "休息",
+          "after_speaker": 2,
+          "title": "課間休息",
           "duration": 10
         }
       ]
@@ -23,26 +23,21 @@
     "speakers": [
       {
         "no": 1,
-        "topic": "致詞與大合照",
-        "name": "林世嘉 執行長\n財團法人台灣醫界聯盟基金會"
+        "topic": "從新藥開發到臨床應用：打造亞洲生醫產業合作新格局",
+        "name": "王玲美 總經理\n仲恩生醫股份有限公司"
       },
       {
         "no": 2,
-        "topic": "從新藥開發到臨床應用：打造亞洲生醫產業合作新格局",
-        "name": "仲恩生醫\n王玲美 總經理"
+        "topic": "臺灣生醫產業海外市場鏈結現況與展望",
+        "name": "楊家琳 副總經理\n世康開發股份有限公司"
       },
       {
         "no": 3,
-        "topic": "臺灣生醫產業海外市場鏈結現況與展望",
-        "name": "TBD\n台北生技園區"
-      },
-      {
-        "no": 4,
         "topic": "中之島Qross的生醫產業布局與國際合作商機",
         "name": "澤芳樹 理事長\n中之島Qross"
       },
       {
-        "no": 5,
+        "no": 4,
         "topic": "綜合討論",
         "name": "所有講者"
       }

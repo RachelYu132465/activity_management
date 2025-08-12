@@ -36,43 +36,69 @@
       }
     ]
   },
-  {
-    "eventNames": [
-      "鏈結亞洲：拓展臺灣生醫產業國際合作與市場新藍圖"
-    ],
-    "agenda_settings": {
-      "start_time": "10:00",
-      "end_time": "12:00",
-      "speaker_minutes": 25,
-      "special_sessions": [
+
+    {
+      "eventNames": [
+        "鏈結亞洲：拓展臺灣生醫產業國際合作與市場新藍圖"
+      ],
+      "agenda_settings": {
+        "start_time": "10:00",
+        "end_time": "12:00",
+        "speaker_minutes": 25,
+        "special_sessions": [
+          {
+            "after_speaker": 0,
+            "title": "大合照",
+            "duration": 10
+          },
+          {
+            "after_speaker": 2,
+            "title": "課間休息",
+            "duration": 10
+          }
+        ]
+      },
+      "speakers": [
         {
-          "after_speaker": 1,
-          "title": "主持人：黃千岳 副執行長 財團法人生物技術開發中心",
-          "duration": null
+          "no": 1,
+          "topic": "從新藥開發到臨床應用：打造亞洲生醫產業合作新格局",
+          "name": "王玲美"
         },
         {
-          "after_speaker": 3,
-          "title": "休息",
-          "duration": 10
+          "no": 2,
+          "topic": "臺灣生醫產業海外市場鏈結現況與展望",
+          "name": "楊家琳"
+        },
+        {
+          "no": 3,
+          "topic": "中之島Qross的生醫產業布局與國際合作商機",
+          "name": "澤芳樹"
+        },
+        {
+          "no": 4,
+          "topic": "綜合討論",
+          "name": "所有講者"
+        }
+      ],
+      "activities_contacts": [
+        {
+          "ID": "",
+          "id_number": "",
+          "name": "",
+          "gender": "",
+          "title": "",
+          "unity": [],
+          "email": "",
+          "contact_person": {
+            "name": "",
+            "email": ""
+          },
+          "group_by_program": [],
+          "name_mail_use": ""
         }
       ]
-    },
-    "speakers": [
-      { "no": 1, "topic": "致詞與大合照", "name": "林世嘉" },
-      { "no": 2, "topic": "從新藥開發到臨床應用：打造亞洲生醫產業合作新格局", "name": "仲恩生醫" },
-      { "no": 3, "topic": "臺灣生醫產業海外市場鏈結現況與展望", "name": "TBD" },
-      { "no": 4, "topic": "中之島Qross的生醫產業布局與國際合作商機", "name": "澤芳樹" },
-      { "no": 5, "topic": "綜合討論", "name": "所有講者" }
-    ],
-    "activities_contacts": [
-      {
-        "ID": "", "id_number": "", "name": "", "gender": "",
-        "title": "", "unity": [], "email": "",
-        "contact_person": { "name": "", "email": "" },
-        "group_by_program": [], "name_mail_use": ""
-      }
-    ]
-  },
+    }
+  ,
   {
     "eventNames": [
       "藥品臨床試驗基礎教育訓練課程─中部場"
