@@ -283,7 +283,7 @@
         "name": "",
         "email": ""
       }
-    },[
+    },
   {
     "id_number": "",
     "name": "林世嘉",
@@ -395,8 +395,93 @@
       "name": "",
       "email": ""
     }
+  },
+  {
+    "id_number": "",
+    "name": "中華民國醫師公會全國聯合會學分申請業務承辦人",
+    "phone": "0227527286 #114",
+    "email": [],
+    "specialties": [],
+    "achievements": [],
+    "academic_title": "",
+    "certificate_number": "",
+    "highest_education": {
+      "school": "",
+      "department": "",
+      "graduation_year": "",
+      "degree": ""
+    },
+    "current_position": {
+      "organization": "中華民國醫師公會全國聯合會",
+      "title": null,
+      "start_year": null,
+      "teaching_years": null,
+      "practice_years": null,
+      "research_years": null
+    },
+    "contact_person": {
+      "name": "",
+      "email": ""
+    }
+  },
+  {
+    "id_number": "",
+    "name": "躍獅連鎖藥局南門藥局",
+    "phone": "0223141111",
+    "email": ["110002@yeschain.com.tw"],
+    "specialties": [],
+    "achievements": [],
+    "academic_title": "",
+    "certificate_number": "",
+    "highest_education": {
+      "school": "",
+      "department": "",
+      "graduation_year": "",
+      "degree": ""
+    },
+    "current_position": {
+      "organization": "躍獅連鎖藥局",
+      "title": null,
+      "start_year": null,
+      "teaching_years": null,
+      "practice_years": null,
+      "research_years": null
+    },
+    "contact_person": {
+      "name": "",
+      "email": ""
+    }
+  },
+  {
+    "id_number": "",
+    "name": "躍獅連鎖藥局南門藥局",
+    "phone": "0223920339",
+    "email": ["110004@yeschain.com.tw"],
+    "specialties": [],
+    "achievements": [],
+    "academic_title": "",
+    "certificate_number": "",
+    "highest_education": {
+      "school": "",
+      "department": "",
+      "graduation_year": "",
+      "degree": ""
+    },
+    "current_position": {
+      "organization": "躍獅連鎖藥局",
+      "title": null,
+      "start_year": null,
+      "teaching_years": null,
+      "practice_years": null,
+      "research_years": null
+    },
+    "contact_person": {
+      "name": "黃泓錡",
+      "email": ""
+    }
   }
-]
+
+
 
 
 ]
