@@ -342,6 +342,34 @@
   },
   {
     "id_number": "",
+    "name": "李財坤",
+    "phone": "",
+    "email": [],
+    "specialties": [],
+    "achievements": [],
+    "academic_title": "",
+    "certificate_number": "",
+    "highest_education": {
+      "school": "",
+      "department": "",
+      "graduation_year": "",
+      "degree": ""
+    },
+    "current_position": {
+      "organization": "生物技術開發中心",
+      "title": "執行長",
+      "start_year": null,
+      "teaching_years": null,
+      "practice_years": null,
+      "research_years": null
+    },
+    "contact_person": {
+      "name": "",
+      "email": ""
+    }
+  },
+  {
+    "id_number": "",
     "name": "楊家琳",
     "phone": "",
     "email": ["jenny.yang@mail.centurydev.com.tw"],
