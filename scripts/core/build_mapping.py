@@ -1,9 +1,18 @@
-# 放在檔案最前面
+# --- minimal, safe bootstrap ---
 from pathlib import Path
 import sys
-ROOT = Path(__file__).resolve().parents[2]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
+
+_THIS = Path(__file__).resolve()
+PARENTS = _THIS.parents
+ROOT = PARENTS[2] if len(PARENTS) > 2 else PARENTS[-1]  # 層級不夠就退到最上層
+root_str = str(ROOT)
+if root_str not in sys.path:  # 避免重複插入
+    sys.path.insert(0, root_str)
+
+BASE_DIR = ROOT
+DATA_DIR = BASE_DIR / "data"
+# --- end ---
+
 import json
 import re
 from datetime import datetime, timedelta
