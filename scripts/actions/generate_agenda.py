@@ -23,10 +23,16 @@ def load_activities() -> List[Dict[str, Any]]:
     p = DATA_DIR / "activities" / "activities_data.json"
     return json.loads(p.read_text(encoding="utf-8"))
 
-def pick_event(activities: List[Dict[str, Any]], event_name: str) -> Dict[str, Any]:
+def load_programs() -> List[Dict[str, Any]]:
+    p = DATA_DIR / "shared" / "program_data.json"
+    return json.loads(p.read_text(encoding="utf-8"))
+
+def pick_event(activities: List[Dict[str, Any]], programs: List[Dict[str, Any]], event_name: str) -> Dict[str, Any]:
     for ev in activities:
         names = ev.get("eventNames") or []
         if any(event_name == n for n in names):
+            prog = next((p for p in programs if event_name in (p.get("eventNames") or [])), {})
+            ev["agenda_settings"] = prog.get("agenda_settings", {})
             return ev
     raise SystemExit(f"找不到 event：{event_name}")
 
@@ -134,8 +140,12 @@ def set_cell_shading(cell, fill_rgb_tuple: Tuple[int, int, int]):
     """設定表格儲存格底色（用 6 碼 hex）"""
     r, g, b = fill_rgb_tuple
     hexcolor = f"{r:02X}{g:02X}{b:02X}"
-
-   table.style = "Table Grid"
+    tc_pr = cell._tc.get_or_add_tcPr()
+    shd = OxmlElement('w:shd')
+    shd.set(qn('w:val'), 'clear')
+    shd.set(qn('w:color'), 'auto')
+    shd.set(qn('w:fill'), hexcolor)
+    tc_pr.append(shd)
 def set_cell_text(cell, text: str, bold: bool = False,
                   color: Tuple[int, int, int] | None = None,
                   align=WD_ALIGN_PARAGRAPH.LEFT, size_pt: float = 10.5):
@@ -224,5 +234,6 @@ if __name__ == "__main__":
     args = ap.parse_args()
 
     activities = load_activities()
-    event = pick_event(activities, args.event)
+    programs = load_programs()
+    event = pick_event(activities, programs, args.event)
     export_agenda_docx(event, Path(args.out))

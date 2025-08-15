@@ -170,14 +170,14 @@ def parse_agenda(docx_path: Path, event_name: str) -> Dict[str, Any]:
     if last_time_end is None:
         last_time_end = "17:00"
 
-    data = {
+    agenda_settings = {
+        "start_time": first_time_start,
+        "end_time": last_time_end,
+        "speaker_minutes": speaker_minutes,
+        "special_sessions": specials,
+    }
+    activity = {
         "eventNames": [event_name],
-        "agenda_settings": {
-            "start_time": first_time_start,
-            "end_time": last_time_end,
-            "speaker_minutes": speaker_minutes,
-            "special_sessions": specials
-        },
         "speakers": talks,
         "activities_contacts": [{
             "ID": "",
@@ -189,21 +189,30 @@ def parse_agenda(docx_path: Path, event_name: str) -> Dict[str, Any]:
             "email": "",
             "contact_person": {"name": "", "email": ""},
             "group_by_program": [],
-            "name_mail_use": ""
-        }]
+            "name_mail_use": "",
+        }],
     }
-    return data
+    program_agenda = {
+        "eventNames": [event_name],
+        "agenda_settings": agenda_settings,
+    }
+    return activity, program_agenda
 
 if __name__ == "__main__":
     import argparse
-    ap = argparse.ArgumentParser(description="Parse a 3-column agenda DOCX (時間/主題/講者) into activities_data JSON.")
+    ap = argparse.ArgumentParser(description="Parse a 3-column agenda DOCX (時間/主題/講者) into activities and program JSON.")
     ap.add_argument("--docx", required=True, help="Path to the agenda .docx")
     ap.add_argument("--event-name", required=True, help="Event name to put into eventNames")
-    ap.add_argument("--out", required=True, help="Output JSON file path")
+    ap.add_argument("--out", required=True, help="Output activities JSON file path")
+    ap.add_argument("--program-out", help="Output program JSON file path")
     args = ap.parse_args()
 
-    payload = [parse_agenda(Path(args.docx), args.event_name)]
+    activity, program = parse_agenda(Path(args.docx), args.event_name)
     out_path = Path(args.out)
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    out_path.write_text(json.dumps([activity], ensure_ascii=False, indent=2), encoding="utf-8")
+    if args.program_out:
+        prog_path = Path(args.program_out)
+        prog_path.parent.mkdir(parents=True, exist_ok=True)
+        prog_path.write_text(json.dumps(program, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"[OK] Wrote {out_path}")

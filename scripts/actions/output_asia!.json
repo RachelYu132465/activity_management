@@ -3,23 +3,6 @@
     "eventNames": [
       "再生醫療產業新契機：法制利基 × 創新技術 × 國際合作"
     ],
-    "agenda_settings": {
-      "start_time": "10:00",
-      "end_time": "12:00",
-      "speaker_minutes": 25,
-      "special_sessions": [
-        {
-          "after_speaker": 1,
-          "title": "主持人：林世嘉 執行長 財團法人台灣醫界聯盟基金會",
-          "duration": null
-        },
-        {
-          "after_speaker": 3,
-          "title": "休息",
-          "duration": 10
-        }
-      ]
-    },
     "speakers": [
       {
         "no": 1,
