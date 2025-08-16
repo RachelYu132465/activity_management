@@ -88,12 +88,17 @@ def gen_agenda_rows(event: Dict[str, Any]) -> List[Dict[str, str]]:
     # 每一位講者 + 之後可能的 special
     for sp in event["speakers"]:
         end = add_minutes(current, cfg["speaker_minutes"])
+        start_str = current.strftime('%H:%M')
+        end_str = end.strftime('%H:%M')
         rows.append({
             "kind": "talk",
-            "time": f"{current.strftime('%H:%M')}-{end.strftime('%H:%M')}",
+            "time": f"{start_str}-{end_str}",
             "title": sp["topic"],
             "speaker": sp.get("name", "")
         })
+        # 回填到 speaker
+        sp["start_time"] = start_str
+        sp["end_time"] = end_str
         current = end
 
         for s in cfg["special_sessions"]:
