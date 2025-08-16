@@ -124,7 +124,34 @@ def get_event_speaker_mappings(event_name: str) -> List[Dict[str, Any]]:
 
     speakers = list(activity.get("speakers") or [])
     settings = dict(program.get("agenda_settings") or {})
-    time_map = compute_times(settings, speakers) if settings and speakers else {}
+
+    # 先從活動資料中讀取講者的起迄時間
+    time_map: Dict[Any, Tuple[str, str]] = {}
+    for sp in speakers:
+        st = sp.get("start_time")
+        et = sp.get("end_time")
+        no = sp.get("no")
+        nm = sp.get("name")
+        if st and et:
+            time_map[no] = (st, et)
+            if nm:
+                time_map[nm] = (st, et)
+
+    # 若尚有缺漏，則根據設定檔計算並回填
+    if settings and any(sp.get("no") not in time_map for sp in speakers):
+        computed = compute_times(settings, speakers)
+        for sp in speakers:
+            no = sp.get("no")
+            nm = sp.get("name")
+            if no not in time_map:
+                st, et = computed.get(no, ("", ""))
+                if not st and nm in computed:
+                    st, et = computed[nm]
+                time_map[no] = (st, et)
+                if nm:
+                    time_map[nm] = (st, et)
+                sp.setdefault("start_time", st)
+                sp.setdefault("end_time", et)
 
     results: List[Dict[str, Any]] = []
     for sp in speakers:
@@ -139,6 +166,7 @@ def get_event_speaker_mappings(event_name: str) -> List[Dict[str, Any]]:
         location_addr = locations[1] if len(locations) > 1 else ""
 
         mapping: Dict[str, Any] = {
+            **inf,  # 展開 influencer 欄位（含 current_position 等）
             "no": sp.get("no"),
             "name": name,
             "topic": sp.get("topic", ""),
@@ -147,7 +175,6 @@ def get_event_speaker_mappings(event_name: str) -> List[Dict[str, Any]]:
             "date": program.get("date", ""),
             "location_main": location_main,
             "location_addr": location_addr,
-            **inf,  # 展開 influencer 欄位（含 current_position 等）
         }
         mapping["safe_filename"] = sanitize_filename(name or inf.get("name") or "TBD")
         results.append(mapping)

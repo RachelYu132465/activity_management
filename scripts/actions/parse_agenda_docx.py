@@ -148,6 +148,8 @@ def parse_agenda(docx_path: Path, event_name: str) -> Dict[str, Any]:
             "no": talk_idx,
             "topic": topic_text if topic_text else "(未命名主題)",
             "name": speaker_text,
+            "start_time": time_rng[0],
+            "end_time": time_rng[1],
         })
         timeline.append(("talk", talk_idx))
 
