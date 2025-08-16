@@ -48,7 +48,7 @@
     "jointOrganizers": [],
     "attachments": [],
     "registration_urls": [],
-    "max_capacity": null
+    "max_capacity": 70
   },
   {
     "id": 3,
@@ -73,7 +73,7 @@
     ],
     "attachments": [],
     "registration_urls": [],
-    "max_capacity": null
+    "max_capacity":40
   },
   {
     "id": 4,
