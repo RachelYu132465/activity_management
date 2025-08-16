@@ -178,6 +178,7 @@ def parse_agenda(docx_path: Path, event_name: str) -> Dict[str, Any]:
     }
     activity = {
         "eventNames": [event_name],
+        # keep speaker details with activities; do not move to program data
         "speakers": talks,
         "activities_contacts": [{
             "ID": "",
