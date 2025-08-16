@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 
 
 from scripts.core.bootstrap import (
-    initialize, load_schema, merge_schema, load_json_file,load_csv_file,
+    initialize, load_schema, merge_schema, load_json_file, load_csv_file,
     BASE_DIR, DATA_DIR, OUTPUT_DIR, TEMPLATE_DIR
 )
 # 初始化環境（建立資料夾等）
@@ -21,7 +21,9 @@ with open((TEMPLATE_DIR / "activities" / "session_type.json"), encoding="utf-8")
 
 
 # ====== 載入設定檔與 schema 合併 ======
-config_data = load_json_file("agenda_settings.json")
+programs = load_json_file("program_data.json")
+prog = next((p for p in programs if p.get("agenda_settings")), {})
+config_data = prog.get("agenda_settings", {})
 schema = load_schema("agenda_settings.json")
 config = merge_schema(schema, [config_data])[0]
 
@@ -119,7 +121,7 @@ def generate_agenda(event_date: str, config: dict, speakers: list):
 
 # ====== 主執行區 ======
 if __name__ == "__main__":
-    event_date = "20250922"
+    event_date = (prog.get("date", "20250101").replace("-", ""))
     agenda_list = generate_agenda(event_date, config, speakers)
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)

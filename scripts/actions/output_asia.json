@@ -3,23 +3,6 @@
     "eventNames": [
       "鏈結亞洲：拓展臺灣生醫產業國際合作與市場新藍圖"
     ],
-    "agenda_settings": {
-      "start_time": "10:00",
-      "end_time": "12:00",
-      "speaker_minutes": 25,
-      "special_sessions": [
-        {
-          "after_speaker": 0,
-          "title": "大合照",
-          "duration": 10
-        },
-        {
-          "after_speaker": 2,
-          "title": "課間休息",
-          "duration": 10
-        }
-      ]
-    },
     "speakers": [
       {
         "no": 1,

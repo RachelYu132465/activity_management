@@ -123,7 +123,7 @@ def get_event_speaker_mappings(event_name: str) -> List[Dict[str, Any]]:
             infl_map[org] = i
 
     speakers = list(activity.get("speakers") or [])
-    settings = dict(activity.get("agenda_settings") or {})
+    settings = dict(program.get("agenda_settings") or {})
     time_map = compute_times(settings, speakers) if settings and speakers else {}
 
     results: List[Dict[str, Any]] = []

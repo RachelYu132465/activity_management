@@ -1,22 +1,16 @@
 {
   "eventNames": [],
-  "agenda_settings": {
-    "start_time": "",
-    "end_time": "",
-    "speaker_minutes": null,
-    "special_sessions": []
-  },
-  "speakers": [{
-
-"no":"",
-"topic":"",
-"name":""
-
-}],
+  "speakers": [
+    {
+      "no": "",
+      "topic": "",
+      "name": ""
+    }
+  ],
   "activities_contacts": [
-
- {
+    {
       "ID": "",
+      "id_number": "",
       "name": "",
       "gender": "",
       "title": "",
@@ -29,6 +23,5 @@
       "group_by_program": [],
       "name_mail_use": ""
     }
-
-]
+  ]
 }
