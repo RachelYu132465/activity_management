@@ -2,12 +2,24 @@
   {
     "eventNames": ["藥品臨床試驗基礎教育訓練課程─東部場"],
     "speakers": [
+
       {"no": "1", "topic": "研究計畫撰寫與研究設計與新趨勢", "name": "陳中奎 醫師", "start_time": "10:00", "end_time": "10:50"},
       {"no": "2", "topic": "臨床試驗中的性別考量與倫理議題", "name": "張中興 主任", "start_time": "11:00", "end_time": "11:50"},
       {"no": "3", "topic": "藥品臨床試驗統計分析 常用方法與常見缺失", "name": "丁迺迪 博士", "start_time": "11:50", "end_time": "12:40"},
       {"no": "4", "topic": "臨床試驗中各角色的分工與職責", "name": "王健興 醫師", "start_time": "13:40", "end_time": "14:30"},
       {"no": "5", "topic": "臨床試驗之藥品不良反應通報", "name": "張維舜 主任", "start_time": "14:40", "end_time": "15:30"},
       {"no": "6", "topic": "醫院端如何準備監測?", "name": "封威蓮 研究護理師", "start_time": "15:30", "end_time": "16:20"}
+      ],
+    "activities_contacts": []
+  },
+  {
+    "eventNames": ["鏈結亞洲：拓展臺灣生醫產業國際合作與市場新藍圖"],
+    "speakers": [
+      {"no": "1", "topic": "致詞與大合照", "name": "林世嘉 執行長", "start_time": "10:00", "end_time": "10:10"},
+      {"no": "2", "topic": "從新藥開發到臨床應用：打造亞洲生醫產業合作新格局", "name": "王玲美 總經理", "start_time": "10:10", "end_time": "10:35"},
+      {"no": "3", "topic": "台北生技園區助攻生醫新創國際佈局", "name": "楊家琳 副總經理", "start_time": "10:35", "end_time": "11:00"},
+      {"no": "4", "topic": "中之島Qross的生醫產業布局與國際合作商機", "name": "澤芳樹 理事長", "start_time": "11:10", "end_time": "11:35"},
+      {"no": "5", "topic": "綜合討論", "name": "所有講者", "start_time": "11:35", "end_time": "12:00"}
     ],
     "activities_contacts": []
   },
