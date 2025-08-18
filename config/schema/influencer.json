@@ -24,7 +24,8 @@
     },
     "contact_person": {
       "name": "",
-      "email": ""
+      "email": [],
+      "CC": []
     }
   }
 ]
