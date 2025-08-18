@@ -1,0 +1,252 @@
+[
+
+  {
+    "id": 2,
+    "planName": "再生醫療產品技術鏈結與市場拓展計畫",
+    "eventNames": [
+      "生醫產業商機交流論壇（一）",
+      "再生醫療產業新契機：法制利基 × 創新技術 × 國際合作",
+      "以再生醫療勾勒台灣未來",
+      "2025再生醫療新脈動產業商機交流會議"
+    ],
+    "date": "2025-09-03",
+    "locations": [
+      "張榮發基金會國際會議中心602會議室",
+      "臺北市中正區中山南路11號6樓"
+    ],
+    "instructors": [
+      "經濟部產業發展署"
+    ],
+    "organizers": [
+      "財團法人台灣醫界聯盟基金會",
+      "財團法人生物技術開發中心"
+    ],
+    "coOrganizers": [],
+    "jointOrganizers": [],
+    "attachments": [],
+    "registration_urls": [],
+
+    "agenda_settings": {
+      "start_time": "10:00",
+      "end_time": "12:00",
+      "speaker_minutes": 25,
+      "special_sessions": [
+        {
+          "after_speaker": 1,
+          "title": "主持人：林世嘉 執行長 財團法人台灣醫界聯盟基金會",
+          "duration": null
+        },
+        {
+          "after_speaker": 3,
+          "title": "休息",
+          "duration": 10
+        }
+      ]
+    },
+
+    "max_capacity": 70
+
+  },
+  {
+    "id": 3,
+    "planName": "114年度「精進藥品臨床試驗品質及受試者權益促進計畫」",
+    "eventNames": [
+      "受試者保護觀念活動─北部場"
+    ],
+    "date": "2025-09-12",
+    "locations": [
+      "中山區正守里辦公處",
+      "林森北路67巷7號2樓"
+    ],
+    "instructors": [
+      "衛生福利部食品藥物管理署"
+    ],
+    "organizers": [
+      "財團法人台灣醫界聯盟基金會"
+    ],
+    "coOrganizers": [],
+    "jointOrganizers": [
+      "中山區正守里辦公處"
+    ],
+    "attachments": [],
+    "registration_urls": [],
+    "max_capacity":40
+  },
+  {
+    "id": 4,
+    "planName": "114年度「精進藥品臨床試驗品質及受試者權益促進計畫」",
+    "eventNames": [
+      "藥品臨床試驗校園講座─北部場"
+    ],
+    "date": "2025-09-19",
+    "locations": [
+      "大同高中 4F視聽教室",
+      "臺北市中山區長春路167號"
+    ],
+    "instructors": [
+      "衛生福利部食品藥物管理署"
+    ],
+    "organizers": [
+      "財團法人台灣醫界聯盟基金會"
+    ],
+    "coOrganizers": [
+      "大同高中",
+      "台灣藥物臨床研究協會"
+    ],
+    "jointOrganizers": [],
+    "attachments": [],
+    "registration_urls": [],
+    "max_capacity": 50
+  },
+  {
+    "id": 5,
+    "planName": "114年度「精進藥品臨床試驗品質及受試者權益促進計畫」",
+    "eventNames": [
+      "藥品臨床試驗基礎教育訓練課程─中部場"
+    ],
+    "date": "2025-09-22",
+    "locations": [
+      "臺中榮民總醫院教學大樓1樓第五會場",
+      "臺中市西屯區臺灣大道四段 1650 號"
+    ],
+    "instructors": [
+      "衛生福利部食品藥物管理署"
+    ],
+    "organizers": [
+      "財團法人台灣醫界聯盟基金會"
+    ],
+    "coOrganizers": [
+      "臺中榮民總醫院"
+    ],
+    "jointOrganizers": [],
+    "attachments": [],
+    "registration_urls": [
+      "https://mpat.org.tw/EventDetail?id=228"
+    ],
+    "max_capacity": 90,
+    "agenda_settings": {
+      "start_time": "09:10",
+      "end_time": "17:00",
+      "speaker_minutes": 50,
+      "special_sessions": [
+        {
+          "after_speaker": 0,
+          "title": "報到與前測",
+          "duration": null
+        },
+        {
+          "after_speaker": 1,
+          "title": "課間休息",
+          "duration": 10
+        },
+        {
+          "after_speaker": 3,
+          "title": "午間休息",
+          "duration": 60
+        },
+        {
+          "after_speaker": 4,
+          "title": "課間休息",
+          "duration": 10
+        },
+        {
+          "after_speaker": 999,
+          "title": "問卷與後測",
+          "duration": null
+        }
+      ]
+    }
+  },
+  {
+    "id": 6,
+    "planName": "再生醫療產品技術鏈結與市場拓展計畫",
+    "eventNames": [
+      "生醫產業商機交流論壇",
+      "鏈結亞洲：拓展臺灣生醫產業國際合作與市場新藍圖"
+    ],
+    "date": "2025-09-24",
+    "locations": [
+      "張榮發基金會國際會議中心803會議室",
+      "臺北市中正區中山南路11號8樓"
+    ],
+    "instructors": [
+      "經濟部產業發展署"
+    ],
+    "organizers": [
+      "財團法人台灣醫界聯盟基金會",
+      "財團法人生物技術開發中心"
+    ],
+    "coOrganizers": [],
+    "jointOrganizers": [],
+    "attachments": [],
+    "registration_urls": [],
+
+    "agenda_settings": {
+      "start_time": "10:00",
+      "end_time": "12:00",
+      "speaker_minutes": 25,
+      "special_sessions": [
+        {
+          "after_speaker": 0,
+          "title": "大合照",
+          "duration": 10
+        },
+        {
+          "after_speaker": 2,
+          "title": "課間休息",
+          "duration": 10
+        }
+      ]
+    },
+    "max_capacity": 70
+
+  },
+  {
+    "id": 7,
+    "planName": "再生醫療產品技術鏈結與市場拓展計畫",
+    "eventNames": [
+      "鏈結全球、啟動合作：台灣再生醫療邁向國際市場的策略與契機",
+      "以再生醫療勾勒台灣未來"
+    ],
+    "date": "2025-10-16",
+    "locations": [
+      "臺北市"
+    ],
+    "instructors": [
+      "經濟部產業發展署"
+    ],
+    "organizers": [
+      "財團法人台灣醫界聯盟基金會"
+    ],
+    "coOrganizers": [],
+    "jointOrganizers": [],
+    "attachments": [],
+    "registration_urls": [],
+    "max_capacity": 150
+  },
+  {
+    "id": 8,
+    "planName": "114年度「精進藥品臨床試驗品質及受試者權益促進計畫」",
+    "eventNames": [
+      "藥品臨床試驗基礎教育訓練課程─東部場"
+    ],
+    "date": "2025-10-18",
+    "locations": [
+      "佛教慈濟醫療財團法人花蓮慈濟醫院協力樓二樓和氣會議室",
+      "花蓮縣花蓮市中央路三段707號"
+    ],
+    "instructors": [
+      "衛生福利部食品藥物管理署"
+    ],
+    "organizers": [
+      "財團法人台灣醫界聯盟基金會"
+    ],
+    "coOrganizers": [
+      "佛教慈濟醫療財團法人花蓮慈濟醫院"
+    ],
+    "jointOrganizers": [],
+    "attachments": [],
+    "registration_urls": [],
+    "max_capacity": 90
+  }
+]
