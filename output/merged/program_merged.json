@@ -1,36 +1,12 @@
 [
   {
-    "id": 1,
-    "planName": "再生醫療產品技術鏈結與市場拓展計畫",
-    "eventNames": [
-      "以再生醫療勾勒台灣未來",
-      "2025再生醫療新脈動產業商機交流會議"
-    ],
-    "date": "2025-09-03",
-    "locations": [
-      "張榮發基金會國際會議中心602會議室",
-      "台北市中山南路11號"
-    ],
-    "instructors": [
-      "經濟部產業發展署"
-    ],
-    "organizers": [
-      "經濟部產業發展署",
-      "財團法人台灣醫界聯盟基金會",
-      "財團法人生物技術開發中心"
-    ],
-    "coOrganizers": [],
-    "jointOrganizers": [],
-    "attachments": [],
-    "registration_urls": [],
-    "max_capacity": 70
-  },
-  {
     "id": 2,
     "planName": "再生醫療產品技術鏈結與市場拓展計畫",
     "eventNames": [
       "生醫產業商機交流論壇（一）",
-      "再生醫療產業新契機：法制利基 × 創新技術 × 國際合作"
+      "再生醫療產業新契機：法制利基 × 創新技術 × 國際合作",
+      "以再生醫療勾勒台灣未來",
+      "2025再生醫療新脈動產業商機交流會議"
     ],
     "date": "2025-09-03",
     "locations": [
@@ -48,7 +24,24 @@
     "jointOrganizers": [],
     "attachments": [],
     "registration_urls": [],
-    "max_capacity": null
+    "max_capacity": 70,
+    "agenda_settings": {
+      "start_time": "10:00",
+      "end_time": "12:00",
+      "speaker_minutes": 25,
+      "special_sessions": [
+        {
+          "after_speaker": 1,
+          "title": "主持人：林世嘉 執行長 財團法人台灣醫界聯盟基金會",
+          "duration": null
+        },
+        {
+          "after_speaker": 3,
+          "title": "休息",
+          "duration": 10
+        }
+      ]
+    }
   },
   {
     "id": 3,
@@ -73,7 +66,13 @@
     ],
     "attachments": [],
     "registration_urls": [],
-    "max_capacity": null
+    "max_capacity": 40,
+    "agenda_settings": {
+      "start_time": "",
+      "end_time": "",
+      "speaker_minutes": null,
+      "special_sessions": []
+    }
   },
   {
     "id": 4,
@@ -99,7 +98,13 @@
     "jointOrganizers": [],
     "attachments": [],
     "registration_urls": [],
-    "max_capacity": null
+    "max_capacity": 50,
+    "agenda_settings": {
+      "start_time": "",
+      "end_time": "",
+      "speaker_minutes": null,
+      "special_sessions": []
+    }
   },
   {
     "id": 5,
@@ -126,7 +131,39 @@
     "registration_urls": [
       "https://mpat.org.tw/EventDetail?id=228"
     ],
-    "max_capacity": 90
+    "max_capacity": 90,
+    "agenda_settings": {
+      "start_time": "09:10",
+      "end_time": "17:00",
+      "speaker_minutes": 50,
+      "special_sessions": [
+        {
+          "after_speaker": 0,
+          "title": "報到與前測",
+          "duration": null
+        },
+        {
+          "after_speaker": 1,
+          "title": "課間休息",
+          "duration": 10
+        },
+        {
+          "after_speaker": 3,
+          "title": "午間休息",
+          "duration": 60
+        },
+        {
+          "after_speaker": 4,
+          "title": "課間休息",
+          "duration": 10
+        },
+        {
+          "after_speaker": 999,
+          "title": "問卷與後測",
+          "duration": null
+        }
+      ]
+    }
   },
   {
     "id": 6,
@@ -151,7 +188,24 @@
     "jointOrganizers": [],
     "attachments": [],
     "registration_urls": [],
-    "max_capacity": null
+    "max_capacity": 70,
+    "agenda_settings": {
+      "start_time": "10:00",
+      "end_time": "12:00",
+      "speaker_minutes": 25,
+      "special_sessions": [
+        {
+          "after_speaker": 0,
+          "title": "大合照",
+          "duration": 10
+        },
+        {
+          "after_speaker": 2,
+          "title": "課間休息",
+          "duration": 10
+        }
+      ]
+    }
   },
   {
     "id": 7,
@@ -160,9 +214,8 @@
       "鏈結全球、啟動合作：台灣再生醫療邁向國際市場的策略與契機",
       "以再生醫療勾勒台灣未來"
     ],
-    "date": "2025-10-15",
+    "date": "2025-10-16",
     "locations": [
-      "集思北科大會議中心感恩廳",
       "臺北市"
     ],
     "instructors": [
@@ -175,7 +228,13 @@
     "jointOrganizers": [],
     "attachments": [],
     "registration_urls": [],
-    "max_capacity": null
+    "max_capacity": 150,
+    "agenda_settings": {
+      "start_time": "",
+      "end_time": "",
+      "speaker_minutes": null,
+      "special_sessions": []
+    }
   },
   {
     "id": 8,
@@ -200,6 +259,12 @@
     "jointOrganizers": [],
     "attachments": [],
     "registration_urls": [],
-    "max_capacity": null
+    "max_capacity": 90,
+    "agenda_settings": {
+      "start_time": "",
+      "end_time": "",
+      "speaker_minutes": null,
+      "special_sessions": []
+    }
   }
 ]

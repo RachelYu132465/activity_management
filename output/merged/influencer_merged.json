@@ -29,7 +29,8 @@
     },
     "contact_person": {
       "name": "",
-      "email": ""
+      "email": [],
+      "CC": []
     }
   },
   {
@@ -59,7 +60,8 @@
     },
     "contact_person": {
       "name": "",
-      "email": ""
+      "email": [],
+      "CC": []
     }
   },
   {
@@ -93,7 +95,8 @@
     },
     "contact_person": {
       "name": "",
-      "email": ""
+      "email": [],
+      "CC": []
     }
   },
   {
@@ -112,7 +115,7 @@
     "highest_education": {
       "school": "國立台灣大學護理研究所",
       "department": "臨床試驗研究護理師組",
-      "graduation_year": null,
+      "graduation_year": "",
       "degree": "碩士肄業"
     },
     "current_position": {
@@ -125,7 +128,8 @@
     },
     "contact_person": {
       "name": "",
-      "email": ""
+      "email": [],
+      "CC": []
     }
   },
   {
@@ -162,7 +166,8 @@
     },
     "contact_person": {
       "name": "",
-      "email": ""
+      "email": [],
+      "CC": []
     }
   },
   {
@@ -196,7 +201,333 @@
     },
     "contact_person": {
       "name": "",
-      "email": ""
+      "email": [],
+      "CC": []
+    }
+  },
+  {
+    "id_number": "",
+    "name": "林奕汝",
+    "phone": "",
+    "email": [],
+    "specialties": [],
+    "achievements": [],
+    "academic_title": "",
+    "certificate_number": "",
+    "highest_education": {
+      "school": "",
+      "department": "",
+      "graduation_year": "",
+      "degree": ""
+    },
+    "current_position": {
+      "organization": "衛生福利部食品藥物管理署",
+      "title": "科長",
+      "start_year": null,
+      "teaching_years": null,
+      "practice_years": null,
+      "research_years": null
+    },
+    "contact_person": {
+      "name": "",
+      "email": [],
+      "CC": []
+    }
+  },
+  {
+    "id_number": "",
+    "name": "官建村",
+    "phone": "",
+    "email": [],
+    "specialties": [],
+    "achievements": [],
+    "academic_title": "",
+    "certificate_number": "",
+    "highest_education": {
+      "school": "",
+      "department": "",
+      "graduation_year": "",
+      "degree": ""
+    },
+    "current_position": {
+      "organization": "承寶生技股份有限公司",
+      "title": "執行長",
+      "start_year": null,
+      "teaching_years": null,
+      "practice_years": null,
+      "research_years": null
+    },
+    "contact_person": {
+      "name": "",
+      "email": [],
+      "CC": []
+    }
+  },
+  {
+    "id_number": "",
+    "name": "中山功一",
+    "phone": "",
+    "email": [],
+    "specialties": [],
+    "achievements": [],
+    "academic_title": "",
+    "certificate_number": "",
+    "highest_education": {
+      "school": "",
+      "department": "",
+      "graduation_year": "",
+      "degree": ""
+    },
+    "current_position": {
+      "organization": "Arktus Therapeutics",
+      "title": "董事",
+      "start_year": null,
+      "teaching_years": null,
+      "practice_years": null,
+      "research_years": null
+    },
+    "contact_person": {
+      "name": "",
+      "email": [],
+      "CC": []
+    }
+  },
+  {
+    "id_number": "",
+    "name": "林世嘉",
+    "phone": "",
+    "email": [],
+    "specialties": [],
+    "achievements": [],
+    "academic_title": "",
+    "certificate_number": "",
+    "highest_education": {
+      "school": "",
+      "department": "",
+      "graduation_year": "",
+      "degree": ""
+    },
+    "current_position": {
+      "organization": "財團法人台灣醫界聯盟基金會",
+      "title": "執行長",
+      "start_year": null,
+      "teaching_years": null,
+      "practice_years": null,
+      "research_years": null
+    },
+    "contact_person": {
+      "name": "",
+      "email": [],
+      "CC": []
+    }
+  },
+  {
+    "id_number": "",
+    "name": "王玲美",
+    "phone": "",
+    "email": [],
+    "specialties": [],
+    "achievements": [],
+    "academic_title": "",
+    "certificate_number": "",
+    "highest_education": {
+      "school": "",
+      "department": "",
+      "graduation_year": "",
+      "degree": ""
+    },
+    "current_position": {
+      "organization": "仲恩生醫",
+      "title": "總經理",
+      "start_year": null,
+      "teaching_years": null,
+      "practice_years": null,
+      "research_years": null
+    },
+    "contact_person": {
+      "name": "",
+      "email": [],
+      "CC": []
+    }
+  },
+  {
+    "id_number": "",
+    "name": "李財坤",
+    "phone": "",
+    "email": [],
+    "specialties": [],
+    "achievements": [],
+    "academic_title": "",
+    "certificate_number": "",
+    "highest_education": {
+      "school": "",
+      "department": "",
+      "graduation_year": "",
+      "degree": ""
+    },
+    "current_position": {
+      "organization": "生物技術開發中心",
+      "title": "執行長",
+      "start_year": null,
+      "teaching_years": null,
+      "practice_years": null,
+      "research_years": null
+    },
+    "contact_person": {
+      "name": "",
+      "email": [],
+      "CC": []
+    }
+  },
+  {
+    "id_number": "",
+    "name": "楊家琳",
+    "phone": "",
+    "email": [
+      "jenny.yang@mail.centurydev.com.tw"
+    ],
+    "specialties": [],
+    "achievements": [],
+    "academic_title": "博士",
+    "certificate_number": "",
+    "highest_education": {
+      "school": "",
+      "department": "",
+      "graduation_year": "",
+      "degree": ""
+    },
+    "current_position": {
+      "organization": "世康開發股份有限公司",
+      "title": "副總經理",
+      "start_year": null,
+      "teaching_years": null,
+      "practice_years": null,
+      "research_years": null
+    },
+    "contact_person": {
+      "name": "",
+      "email": [],
+      "CC": []
+    }
+  },
+  {
+    "id_number": "",
+    "name": "澤芳樹",
+    "phone": "",
+    "email": [],
+    "specialties": [],
+    "achievements": [],
+    "academic_title": "",
+    "certificate_number": "",
+    "highest_education": {
+      "school": "",
+      "department": "",
+      "graduation_year": "",
+      "degree": ""
+    },
+    "current_position": {
+      "organization": "中之島Qross",
+      "title": "理事長",
+      "start_year": null,
+      "teaching_years": null,
+      "practice_years": null,
+      "research_years": null
+    },
+    "contact_person": {
+      "name": "",
+      "email": [],
+      "CC": []
+    }
+  },
+  {
+    "id_number": "",
+    "name": "中華民國醫師公會全國聯合會學分申請業務承辦人",
+    "phone": "0227527286 #114",
+    "email": [],
+    "specialties": [],
+    "achievements": [],
+    "academic_title": "",
+    "certificate_number": "",
+    "highest_education": {
+      "school": "",
+      "department": "",
+      "graduation_year": "",
+      "degree": ""
+    },
+    "current_position": {
+      "organization": "中華民國醫師公會全國聯合會",
+      "title": "",
+      "start_year": null,
+      "teaching_years": null,
+      "practice_years": null,
+      "research_years": null
+    },
+    "contact_person": {
+      "name": "",
+      "email": [],
+      "CC": []
+    }
+  },
+  {
+    "id_number": "",
+    "name": "躍獅連鎖藥局南門藥局",
+    "phone": "0223141111",
+    "email": [
+      "110002@yeschain.com.tw"
+    ],
+    "specialties": [],
+    "achievements": [],
+    "academic_title": "",
+    "certificate_number": "",
+    "highest_education": {
+      "school": "",
+      "department": "",
+      "graduation_year": "",
+      "degree": ""
+    },
+    "current_position": {
+      "organization": "躍獅連鎖藥局",
+      "title": "",
+      "start_year": null,
+      "teaching_years": null,
+      "practice_years": null,
+      "research_years": null
+    },
+    "contact_person": {
+      "name": "",
+      "email": [],
+      "CC": []
+    }
+  },
+  {
+    "id_number": "",
+    "name": "躍獅連鎖藥局南門藥局",
+    "phone": "0223920339",
+    "email": [
+      "110004@yeschain.com.tw"
+    ],
+    "specialties": [],
+    "achievements": [],
+    "academic_title": "",
+    "certificate_number": "",
+    "highest_education": {
+      "school": "",
+      "department": "",
+      "graduation_year": "",
+      "degree": ""
+    },
+    "current_position": {
+      "organization": "躍獅連鎖藥局",
+      "title": "",
+      "start_year": null,
+      "teaching_years": null,
+      "practice_years": null,
+      "research_years": null
+    },
+    "contact_person": {
+      "name": "黃泓錡",
+      "email": [],
+      "CC": []
     }
   }
 ]

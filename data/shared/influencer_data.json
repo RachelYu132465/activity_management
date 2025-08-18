@@ -29,7 +29,8 @@
     },
     "contact_person": {
       "name": "",
-      "email": ""
+      "email": [],
+      "CC": []
     }
   },
   {
@@ -59,7 +60,8 @@
     },
     "contact_person": {
       "name": "",
-      "email": ""
+      "email": [],
+      "CC": []
     }
   },
   {
@@ -93,7 +95,8 @@
     },
     "contact_person": {
       "name": "",
-      "email": ""
+      "email": [],
+      "CC": []
     }
   },
   {
@@ -112,7 +115,7 @@
     "highest_education": {
       "school": "國立台灣大學護理研究所",
       "department": "臨床試驗研究護理師組",
-      "graduation_year": null,
+      "graduation_year": "",
       "degree": "碩士肄業"
     },
     "current_position": {
@@ -125,7 +128,8 @@
     },
     "contact_person": {
       "name": "",
-      "email": ""
+      "email": [],
+      "CC": []
     }
   },
   {
@@ -162,7 +166,8 @@
     },
     "contact_person": {
       "name": "",
-      "email": ""
+      "email": [],
+      "CC": []
     }
   },
   {
@@ -196,94 +201,97 @@
     },
     "contact_person": {
       "name": "",
-      "email": ""
+      "email": [],
+      "CC": []
     }
   },
-
-    {
-      "id_number": "",
-      "name": "林奕汝",
-      "phone": "",
-      "email": [],
-      "specialties": [],
-      "achievements": [],
-      "academic_title": "",
-      "certificate_number": "",
-      "highest_education": {
-        "school": "",
-        "department": "",
-        "graduation_year": "",
-        "degree": ""
-      },
-      "current_position": {
-        "organization": "衛生福利部食品藥物管理署",
-        "title": "科長",
-        "start_year": null,
-        "teaching_years": null,
-        "practice_years": null,
-        "research_years": null
-      },
-      "contact_person": {
-        "name": "",
-        "email": ""
-      }
+  {
+    "id_number": "",
+    "name": "林奕汝",
+    "phone": "",
+    "email": [],
+    "specialties": [],
+    "achievements": [],
+    "academic_title": "",
+    "certificate_number": "",
+    "highest_education": {
+      "school": "",
+      "department": "",
+      "graduation_year": "",
+      "degree": ""
     },
-    {
-      "id_number": "",
-      "name": "官建村",
-      "phone": "",
-      "email": [],
-      "specialties": [],
-      "achievements": [],
-      "academic_title": "",
-      "certificate_number": "",
-      "highest_education": {
-        "school": "",
-        "department": "",
-        "graduation_year": "",
-        "degree": ""
-      },
-      "current_position": {
-        "organization": "承寶生技股份有限公司",
-        "title": "執行長",
-        "start_year": null,
-        "teaching_years": null,
-        "practice_years": null,
-        "research_years": null
-      },
-      "contact_person": {
-        "name": "",
-        "email": ""
-      }
+    "current_position": {
+      "organization": "衛生福利部食品藥物管理署",
+      "title": "科長",
+      "start_year": null,
+      "teaching_years": null,
+      "practice_years": null,
+      "research_years": null
     },
-    {
-      "id_number": "",
-      "name": "中山功一",
-      "phone": "",
+    "contact_person": {
+      "name": "",
       "email": [],
-      "specialties": [],
-      "achievements": [],
-      "academic_title": "",
-      "certificate_number": "",
-      "highest_education": {
-        "school": "",
-        "department": "",
-        "graduation_year": "",
-        "degree": ""
-      },
-      "current_position": {
-        "organization": "Arktus Therapeutics",
-        "title": "董事",
-        "start_year": null,
-        "teaching_years": null,
-        "practice_years": null,
-        "research_years": null
-      },
-      "contact_person": {
-        "name": "",
-        "email": ""
-      }
+      "CC": []
+    }
+  },
+  {
+    "id_number": "",
+    "name": "官建村",
+    "phone": "",
+    "email": [],
+    "specialties": [],
+    "achievements": [],
+    "academic_title": "",
+    "certificate_number": "",
+    "highest_education": {
+      "school": "",
+      "department": "",
+      "graduation_year": "",
+      "degree": ""
     },
+    "current_position": {
+      "organization": "承寶生技股份有限公司",
+      "title": "執行長",
+      "start_year": null,
+      "teaching_years": null,
+      "practice_years": null,
+      "research_years": null
+    },
+    "contact_person": {
+      "name": "",
+      "email": [],
+      "CC": []
+    }
+  },
+  {
+    "id_number": "",
+    "name": "中山功一",
+    "phone": "",
+    "email": [],
+    "specialties": [],
+    "achievements": [],
+    "academic_title": "",
+    "certificate_number": "",
+    "highest_education": {
+      "school": "",
+      "department": "",
+      "graduation_year": "",
+      "degree": ""
+    },
+    "current_position": {
+      "organization": "Arktus Therapeutics",
+      "title": "董事",
+      "start_year": null,
+      "teaching_years": null,
+      "practice_years": null,
+      "research_years": null
+    },
+    "contact_person": {
+      "name": "",
+      "email": [],
+      "CC": []
+    }
+  },
   {
     "id_number": "",
     "name": "林世嘉",
@@ -309,7 +317,8 @@
     },
     "contact_person": {
       "name": "",
-      "email": ""
+      "email": [],
+      "CC": []
     }
   },
   {
@@ -337,13 +346,14 @@
     },
     "contact_person": {
       "name": "",
-      "email": ""
+      "email": [],
+      "CC": []
     }
   },
   {
     "id_number": "",
     "name": "李財坤",
-    "phone": "",
+    "phone": "02-77003800#5204",
     "email": [],
     "specialties": [],
     "achievements": [],
@@ -364,15 +374,18 @@
       "research_years": null
     },
     "contact_person": {
-      "name": "",
-      "email": ""
+      "name": "黃秘書",
+      "email": ["yufen@dcb.org.tw"],
+      "CC": ["陳蕙蘭 <sonia@biopharm.org.tw>, 林才祐 <carltylin@biopharm.org.tw>, 林韋伶 <wllin@biopharm.org.tw>, 王美蘋 <snowapple@biopharm.org.tw>"]
     }
   },
   {
     "id_number": "",
     "name": "楊家琳",
     "phone": "",
-    "email": ["jenny.yang@mail.centurydev.com.tw"],
+    "email": [
+      "jenny.yang@mail.centurydev.com.tw"
+    ],
     "specialties": [],
     "achievements": [],
     "academic_title": "博士",
@@ -393,7 +406,8 @@
     },
     "contact_person": {
       "name": "",
-      "email": ""
+      "email": [],
+      "CC": []
     }
   },
   {
@@ -421,7 +435,8 @@
     },
     "contact_person": {
       "name": "",
-      "email": ""
+      "email": [],
+      "CC": []
     }
   },
   {
@@ -441,7 +456,7 @@
     },
     "current_position": {
       "organization": "中華民國醫師公會全國聯合會",
-      "title": null,
+      "title": "",
       "start_year": null,
       "teaching_years": null,
       "practice_years": null,
@@ -449,14 +464,17 @@
     },
     "contact_person": {
       "name": "",
-      "email": ""
+      "email": [],
+      "CC": []
     }
   },
   {
     "id_number": "",
     "name": "躍獅連鎖藥局南門藥局",
     "phone": "0223141111",
-    "email": ["110002@yeschain.com.tw"],
+    "email": [
+      "110002@yeschain.com.tw"
+    ],
     "specialties": [],
     "achievements": [],
     "academic_title": "",
@@ -469,7 +487,7 @@
     },
     "current_position": {
       "organization": "躍獅連鎖藥局",
-      "title": null,
+      "title": "",
       "start_year": null,
       "teaching_years": null,
       "practice_years": null,
@@ -477,14 +495,17 @@
     },
     "contact_person": {
       "name": "",
-      "email": ""
+      "email": [],
+      "CC": []
     }
   },
   {
     "id_number": "",
     "name": "躍獅連鎖藥局南門藥局",
     "phone": "0223920339",
-    "email": ["110004@yeschain.com.tw"],
+    "email": [
+      "110004@yeschain.com.tw"
+    ],
     "specialties": [],
     "achievements": [],
     "academic_title": "",
@@ -497,7 +518,7 @@
     },
     "current_position": {
       "organization": "躍獅連鎖藥局",
-      "title": null,
+      "title": "",
       "start_year": null,
       "teaching_years": null,
       "practice_years": null,
@@ -505,11 +526,8 @@
     },
     "contact_person": {
       "name": "黃泓錡",
-      "email": ""
+      "email": [],
+      "CC": []
     }
   }
-
-
-
-
 ]
