@@ -33,8 +33,8 @@
       "special_sessions": [
         {
           "after_speaker": 1,
-          "title": "主持人：林世嘉 執行長 財團法人台灣醫界聯盟基金會",
-          "duration": null
+          "title": "致詞與大合照",
+          "duration": 10
         },
         {
           "after_speaker": 3,
@@ -68,9 +68,15 @@
     "jointOrganizers": [
       "中山區正守里辦公處"
     ],
-    "attachments": [],
+    "attachments": ["不須錄影，要講師PPT"],
     "registration_urls": [],
-    "max_capacity":40
+    "max_capacity":40,
+    "agenda_settings": {
+      "start_time": "",
+      "end_time": "",
+      "speaker_minutes": null,
+      "special_sessions": []
+    }
   },
   {
     "id": 4,
@@ -94,9 +100,15 @@
       "台灣藥物臨床研究協會"
     ],
     "jointOrganizers": [],
-    "attachments": [],
+    "attachments": ["不須錄影，要講師PPT"],
     "registration_urls": [],
-    "max_capacity": 50
+    "max_capacity": 50,
+    "agenda_settings": {
+      "start_time": "",
+      "end_time": "",
+      "speaker_minutes": null,
+      "special_sessions": []
+    }
   },
   {
     "id": 5,
@@ -222,7 +234,14 @@
     "jointOrganizers": [],
     "attachments": [],
     "registration_urls": [],
-    "max_capacity": 150
+    "max_capacity": 150,
+
+    "agenda_settings": {
+      "start_time": "",
+      "end_time": "",
+      "speaker_minutes": null,
+      "special_sessions": []
+    }
   },
   {
     "id": 8,
@@ -247,6 +266,12 @@
     "jointOrganizers": [],
     "attachments": [],
     "registration_urls": [],
-    "max_capacity": 90
+    "max_capacity": 90,
+    "agenda_settings": {
+      "start_time": "",
+      "end_time": "",
+      "speaker_minutes": null,
+      "special_sessions": []
+    }
   }
 ]
