@@ -178,9 +178,9 @@ def parse_agenda(docx_path: Path, event_name: str) -> Dict[str, Any]:
         "speaker_minutes": speaker_minutes,
         "special_sessions": specials,
     }
-    activity = {
+    program = {
         "eventNames": [event_name],
-        # keep speaker details with activities; do not move to program data
+        "agenda_settings": agenda_settings,
         "speakers": talks,
         "activities_contacts": [{
             "ID": "",
@@ -195,27 +195,18 @@ def parse_agenda(docx_path: Path, event_name: str) -> Dict[str, Any]:
             "name_mail_use": "",
         }],
     }
-    program_agenda = {
-        "eventNames": [event_name],
-        "agenda_settings": agenda_settings,
-    }
-    return activity, program_agenda
+    return program
 
 if __name__ == "__main__":
     import argparse
-    ap = argparse.ArgumentParser(description="Parse a 3-column agenda DOCX (時間/主題/講者) into activities and program JSON.")
+    ap = argparse.ArgumentParser(description="Parse a 3-column agenda DOCX (時間/主題/講者) into program JSON with speakers.")
     ap.add_argument("--docx", required=True, help="Path to the agenda .docx")
     ap.add_argument("--event-name", required=True, help="Event name to put into eventNames")
-    ap.add_argument("--out", required=True, help="Output activities JSON file path")
-    ap.add_argument("--program-out", help="Output program JSON file path")
+    ap.add_argument("--out", required=True, help="Output program JSON file path")
     args = ap.parse_args()
 
-    activity, program = parse_agenda(Path(args.docx), args.event_name)
+    program = parse_agenda(Path(args.docx), args.event_name)
     out_path = Path(args.out)
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(json.dumps([activity], ensure_ascii=False, indent=2), encoding="utf-8")
-    if args.program_out:
-        prog_path = Path(args.program_out)
-        prog_path.parent.mkdir(parents=True, exist_ok=True)
-        prog_path.write_text(json.dumps(program, ensure_ascii=False, indent=2), encoding="utf-8")
+    out_path.write_text(json.dumps([program], ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"[OK] Wrote {out_path}")

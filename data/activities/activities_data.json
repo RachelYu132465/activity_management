@@ -23,7 +23,17 @@
     ],
     "activities_contacts": []
   },
-
+  {
+    "eventNames": ["鏈結亞洲：拓展臺灣生醫產業國際合作與市場新藍圖"],
+    "speakers": [
+      {"no": "1", "topic": "致詞與大合照", "name": "林世嘉 執行長", "start_time": "10:00", "end_time": "10:10"},
+      {"no": "2", "topic": "從新藥開發到臨床應用：打造亞洲生醫產業合作新格局", "name": "王玲美 總經理", "start_time": "10:10", "end_time": "10:35"},
+      {"no": "3", "topic": "台北生技園區助攻生醫新創國際佈局", "name": "楊家琳 副總經理", "start_time": "10:35", "end_time": "11:00"},
+      {"no": "4", "topic": "中之島Qross的生醫產業布局與國際合作商機", "name": "澤芳樹 理事長", "start_time": "11:10", "end_time": "11:35"},
+      {"no": "5", "topic": "綜合討論", "name": "所有講者", "start_time": "11:35", "end_time": "12:00"}
+    ],
+    "activities_contacts": []
+  },
   {
     "eventNames": ["再生醫療產業新契機：法制利基 × 創新技術 × 國際合作"],
     "speakers": [

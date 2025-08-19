@@ -19,21 +19,15 @@ from scripts.core.bootstrap import (
 initialize()
 
 # ---------- data loading ----------
-def load_activities() -> List[Dict[str, Any]]:
-    p = DATA_DIR / "activities" / "activities_data.json"
-    return json.loads(p.read_text(encoding="utf-8"))
-
 def load_programs() -> List[Dict[str, Any]]:
     p = DATA_DIR / "shared" / "program_data.json"
     return json.loads(p.read_text(encoding="utf-8"))
 
-def pick_event(activities: List[Dict[str, Any]], programs: List[Dict[str, Any]], event_name: str) -> Dict[str, Any]:
-    for ev in activities:
-        names = ev.get("eventNames") or []
+def pick_event(programs: List[Dict[str, Any]], event_name: str) -> Dict[str, Any]:
+    for prog in programs:
+        names = prog.get("eventNames") or []
         if any(event_name == n for n in names):
-            prog = next((p for p in programs if event_name in (p.get("eventNames") or [])), {})
-            ev["agenda_settings"] = prog.get("agenda_settings", {})
-            return ev
+            return prog
     raise SystemExit(f"找不到 event：{event_name}")
 
 # ---------- time helpers ----------
@@ -233,12 +227,11 @@ def export_agenda_docx(event: Dict[str, Any], out_path: Path):
 # ---------- main ----------
 if __name__ == "__main__":
     import argparse
-    ap = argparse.ArgumentParser(description="依 eventName 讀取 activities_data.json，輸出一頁 A4 的議程表 DOCX")
-    ap.add_argument("--event", required=True, help="event name（須與 activities_data.json 的 eventNames 完全相同）")
+    ap = argparse.ArgumentParser(description="依 eventName 讀取 program_data.json，輸出一頁 A4 的議程表 DOCX")
+    ap.add_argument("--event", required=True, help="event name（須與 program_data.json 的 eventNames 完全相同）")
     ap.add_argument("--out", default=str(OUTPUT_DIR / "letters" / "agenda.docx"), help="輸出路徑")
     args = ap.parse_args()
 
-    activities = load_activities()
     programs = load_programs()
-    event = pick_event(activities, programs, args.event)
+    event = pick_event(programs, args.event)
     export_agenda_docx(event, Path(args.out))
