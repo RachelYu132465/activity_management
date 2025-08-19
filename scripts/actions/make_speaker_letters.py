@@ -130,7 +130,7 @@ def make_letters(event_name: str, template_filename: str,
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(description="依 eventName 產出每位講者的《敬請協助提供CV與簡報》信件（Word）")
-    ap.add_argument("--event", required=True, help="event name（與 program/activities 的 eventNames 任一相符即可）")
+    ap.add_argument("--event", required=True, help="event name（與 program 的 eventNames 任一相符即可）")
     ap.add_argument("--template", default="敬請協助提供CV與簡報.docx", help="模板檔名（放在 templates/ 或其子資料夾）")
     ap.add_argument("--outdir", default=None, help="輸出資料夾（預設 output/letters）")
     ap.add_argument("--speaker-no", type=int, default=None, help="（選配）只產出此講者編號")

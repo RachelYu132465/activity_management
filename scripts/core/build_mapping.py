@@ -101,19 +101,14 @@ def compute_times(
     return times
 
 def get_event_speaker_mappings(event_name: str) -> List[Dict[str, Any]]:
-    """Return a list of merged program/activity/influencer info for *event_name*."""
+    """Return a list of merged program/influencer info for *event_name*."""
     programs = load_json("program_data.json")
-    activities = load_json("activities_data.json")
     influencers_raw = load_json("influencer_data.json")
     influencers = flatten_list(influencers_raw if isinstance(influencers_raw, list) else [influencers_raw])
 
     program = next((p for p in programs if event_name in (p.get("eventNames") or [])), None)
     if not program:
         raise ValueError(f"找不到 program: {event_name}")
-
-    activity = next((a for a in activities if event_name in (a.get("eventNames") or [])), None)
-    if not activity:
-        raise ValueError(f"找不到 activities: {event_name}")
 
     infl_map: Dict[str, Dict[str, Any]] = {i.get("name"): i for i in influencers if i.get("name")}
     # 以 organization 當備援 key
@@ -122,7 +117,7 @@ def get_event_speaker_mappings(event_name: str) -> List[Dict[str, Any]]:
         if org and org not in infl_map:
             infl_map[org] = i
 
-    speakers = list(activity.get("speakers") or [])
+    speakers = list(program.get("speakers") or [])
     settings = dict(program.get("agenda_settings") or {})
 
     # 先從活動資料中讀取講者的起迄時間
