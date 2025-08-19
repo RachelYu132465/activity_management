@@ -1,6 +1,5 @@
 [
   {
-
     "id": 2,
     "planName": "再生醫療產品技術鏈結與市場拓展計畫",
     "eventNames": [
@@ -25,7 +24,6 @@
     "jointOrganizers": [],
     "attachments": [],
     "registration_urls": [],
-
     "agenda_settings": {
       "start_time": "10:00",
       "end_time": "12:00",
@@ -43,9 +41,9 @@
         }
       ]
     },
-
-    "max_capacity": 70
-
+    "max_capacity": 70,
+    "speakers": [],
+    "activities_contacts": []
   },
   {
     "id": 3,
@@ -68,15 +66,19 @@
     "jointOrganizers": [
       "中山區正守里辦公處"
     ],
-    "attachments": ["不須錄影，要講師PPT"],
+    "attachments": [
+      "不須錄影，要講師PPT"
+    ],
     "registration_urls": [],
-    "max_capacity":40,
+    "max_capacity": 40,
     "agenda_settings": {
       "start_time": "",
       "end_time": "",
       "speaker_minutes": null,
       "special_sessions": []
-    }
+    },
+    "speakers": [],
+    "activities_contacts": []
   },
   {
     "id": 4,
@@ -100,7 +102,9 @@
       "台灣藥物臨床研究協會"
     ],
     "jointOrganizers": [],
-    "attachments": ["不須錄影，要講師PPT"],
+    "attachments": [
+      "不須錄影，要講師PPT"
+    ],
     "registration_urls": [],
     "max_capacity": 50,
     "agenda_settings": {
@@ -108,7 +112,9 @@
       "end_time": "",
       "speaker_minutes": null,
       "special_sessions": []
-    }
+    },
+    "speakers": [],
+    "activities_contacts": []
   },
   {
     "id": 5,
@@ -136,8 +142,9 @@
       "https://mpat.org.tw/EventDetail?id=228"
     ],
     "max_capacity": 90,
-    "agenda_settings": {"start_time": "09:30", "end_time": "16:50",
-
+    "agenda_settings": {
+      "start_time": "09:30",
+      "end_time": "16:50",
       "speaker_minutes": 50,
       "special_sessions": [
         {
@@ -166,8 +173,9 @@
           "duration": null
         }
       ]
-    }
-
+    },
+    "speakers": [],
+    "activities_contacts": []
   },
   {
     "id": 6,
@@ -192,7 +200,6 @@
     "jointOrganizers": [],
     "attachments": [],
     "registration_urls": [],
-
     "agenda_settings": {
       "start_time": "10:00",
       "end_time": "12:00",
@@ -210,8 +217,9 @@
         }
       ]
     },
-    "max_capacity": 70
-
+    "max_capacity": 70,
+    "speakers": [],
+    "activities_contacts": []
   },
   {
     "id": 7,
@@ -235,13 +243,14 @@
     "attachments": [],
     "registration_urls": [],
     "max_capacity": 150,
-
     "agenda_settings": {
       "start_time": "",
       "end_time": "",
       "speaker_minutes": null,
       "special_sessions": []
-    }
+    },
+    "speakers": [],
+    "activities_contacts": []
   },
   {
     "id": 8,
@@ -249,78 +258,147 @@
     "eventNames": [
       "藥品臨床試驗基礎教育訓練課程─東部場"
     ],
-
     "date": "2025-10-18",
-    "locations": ["佛教慈濟醫療財團法人花蓮慈濟醫院 協力樓二樓 和氣會議室"],
+    "locations": [
+      "佛教慈濟醫療財團法人花蓮慈濟醫院 協力樓二樓 和氣會議室"
+    ],
     "instructors": [],
-    "organizers": ["台灣醫界聯盟基金會"],
-    "coOrganizers": ["佛教慈濟醫療財團法人花蓮慈濟醫院"],
+    "organizers": [
+      "台灣醫界聯盟基金會"
+    ],
+    "coOrganizers": [
+      "佛教慈濟醫療財團法人花蓮慈濟醫院"
+    ],
     "jointOrganizers": [],
     "attachments": [],
     "registration_urls": [],
-
     "max_capacity": null,
-    "agenda_settings": {"start_time": "09:30", "end_time": "16:50", "speaker_minutes": null, "special_sessions": []}
+    "agenda_settings": {
+      "start_time": "09:30",
+      "end_time": "16:50",
+      "speaker_minutes": null,
+      "special_sessions": []
+    },
+    "speakers": [],
+    "activities_contacts": []
   },
   {
     "id": null,
     "planName": "鏈結亞洲：拓展臺灣生醫產業國際合作與市場新藍圖",
-    "eventNames": ["鏈結亞洲：拓展臺灣生醫產業國際合作與市場新藍圖"],
+    "eventNames": [
+      "鏈結亞洲：拓展臺灣生醫產業國際合作與市場新藍圖"
+    ],
     "date": "2025-09-24",
-    "locations": ["張榮發基金會國際會議中心803會議室"],
+    "locations": [
+      "張榮發基金會國際會議中心803會議室"
+    ],
     "instructors": [],
-    "organizers": ["台灣醫界聯盟基金會", "生物技術開發中心"],
+    "organizers": [
+      "台灣醫界聯盟基金會",
+      "生物技術開發中心"
+    ],
     "coOrganizers": [],
     "jointOrganizers": [],
     "attachments": [],
     "registration_urls": [],
     "max_capacity": null,
-    "agenda_settings": {"start_time": "10:00", "end_time": "12:00", "speaker_minutes": null, "special_sessions": []}
+    "agenda_settings": {
+      "start_time": "10:00",
+      "end_time": "12:00",
+      "speaker_minutes": null,
+      "special_sessions": []
+    },
+    "speakers": [],
+    "activities_contacts": []
   },
   {
     "id": null,
     "planName": "再生醫療產業新契機：法制利基 × 創新技術 × 國際合作",
-    "eventNames": ["再生醫療產業新契機：法制利基 × 創新技術 × 國際合作"],
+    "eventNames": [
+      "再生醫療產業新契機：法制利基 × 創新技術 × 國際合作"
+    ],
     "date": "2025-09-03",
-    "locations": ["張榮發基金會國際會議中心602會議室"],
+    "locations": [
+      "張榮發基金會國際會議中心602會議室"
+    ],
     "instructors": [],
-    "organizers": ["台灣醫界聯盟基金會", "生物技術開發中心"],
+    "organizers": [
+      "台灣醫界聯盟基金會",
+      "生物技術開發中心"
+    ],
     "coOrganizers": [],
     "jointOrganizers": [],
     "attachments": [],
     "registration_urls": [],
     "max_capacity": null,
-    "agenda_settings": {"start_time": "10:00", "end_time": "12:00", "speaker_minutes": null, "special_sessions": []}
+    "agenda_settings": {
+      "start_time": "10:00",
+      "end_time": "12:00",
+      "speaker_minutes": null,
+      "special_sessions": []
+    },
+    "speakers": [],
+    "activities_contacts": []
   },
   {
     "id": null,
     "planName": "受試者保護觀念活動─北部場",
-    "eventNames": ["受試者保護觀念活動─北部場"],
+    "eventNames": [
+      "受試者保護觀念活動─北部場"
+    ],
     "date": "2025-09-12",
-    "locations": ["中山區正守里辦公處"],
+    "locations": [
+      "中山區正守里辦公處"
+    ],
     "instructors": [],
-    "organizers": ["台灣醫界聯盟基金會"],
-    "coOrganizers": ["中山區正守里辦公處"],
+    "organizers": [
+      "台灣醫界聯盟基金會"
+    ],
+    "coOrganizers": [
+      "中山區正守里辦公處"
+    ],
     "jointOrganizers": [],
     "attachments": [],
     "registration_urls": [],
     "max_capacity": null,
-    "agenda_settings": {"start_time": "10:30", "end_time": "11:30", "speaker_minutes": null, "special_sessions": []}
+    "agenda_settings": {
+      "start_time": "10:30",
+      "end_time": "11:30",
+      "speaker_minutes": null,
+      "special_sessions": []
+    },
+    "speakers": [],
+    "activities_contacts": []
   },
   {
     "id": null,
     "planName": "藥品臨床試驗校園講座─北部場",
-    "eventNames": ["藥品臨床試驗校園講座─北部場"],
+    "eventNames": [
+      "藥品臨床試驗校園講座─北部場"
+    ],
     "date": "2025-09-19",
-    "locations": ["大同高中4F視聽教室"],
+    "locations": [
+      "大同高中4F視聽教室"
+    ],
     "instructors": [],
-    "organizers": ["台灣醫界聯盟基金會"],
-    "coOrganizers": ["大同高中", "台灣藥物臨床研究協會"],
+    "organizers": [
+      "台灣醫界聯盟基金會"
+    ],
+    "coOrganizers": [
+      "大同高中",
+      "台灣藥物臨床研究協會"
+    ],
     "jointOrganizers": [],
     "attachments": [],
     "registration_urls": [],
     "max_capacity": null,
-    "agenda_settings": {"start_time": "13:10", "end_time": "15:00", "speaker_minutes": null, "special_sessions": []}
+    "agenda_settings": {
+      "start_time": "13:10",
+      "end_time": "15:00",
+      "speaker_minutes": null,
+      "special_sessions": []
+    },
+    "speakers": [],
+    "activities_contacts": []
   }
-
 ]
