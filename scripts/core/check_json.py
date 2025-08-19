@@ -1,7 +1,15 @@
 
-import json, pathlib
-p=pathlib.Path(r"data\shared\program_data.json")
-s=p.read_text(encoding="utf-8")
+"""Validate that program_data.json contains valid JSON."""
+
+from pathlib import Path
+import json
+
+
+# Cross-platform path construction
+p = Path("data") / "shared" / "program_data.json"
+
+# Read the file and attempt to parse as JSON
+s = p.read_text(encoding="utf-8")
 try:
     json.loads(s)
     print("OK, length:", len(s))
