@@ -3,10 +3,15 @@
 
 Usage example:
     python scripts/actions/send_email_with_attachments.py data.json \
-        --attachments data/attachments --draft --templates templates/word --attach-pdf Yes
+        --attachments data/attachments --draft --templates templates/word --attach-pdf Yes \
+        --body-template templates/email_template.docx --attachment-field attach_column
 
 Environment variables used when ``--send`` is specified:
     SMTP_SERVER, SMTP_PORT, SMTP_USERNAME, SMTP_PASSWORD
+
+If ``--body-template`` is provided, the email body will be generated from a
+Word template where placeholders like ``{{name}}`` are replaced using values
+from each record in the JSON/Excel data file.
 """
 from __future__ import annotations
 
@@ -21,6 +26,10 @@ from email.message import EmailMessage
 from pathlib import Path
 from typing import Iterable, List, Dict, Any, Optional
 import smtplib
+try:
+    from docx import Document
+except ModuleNotFoundError:  # pragma: no cover - optional dependency
+    Document = None
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
@@ -119,6 +128,39 @@ def attach_word_templates(message: EmailMessage, templates_dir: Optional[Path]) 
         message.add_attachment(data, maintype=maintype, subtype=subtype, filename=file_path.name)
 
 
+def render_body_from_template(template_path: Path, record: Dict[str, Any]) -> str:
+    """Render a DOCX template into plain text using ``record`` values.
+
+    The template may contain placeholders like ``{{name}}`` which will be
+    replaced by the corresponding value in ``record``. Only top-level keys of
+    ``record`` are considered.
+    """
+    if Document is None:
+        raise ModuleNotFoundError("python-docx is required for --body-template support")
+    doc = Document(str(template_path))
+    mapping = {str(k): "" if v is None else str(v) for k, v in record.items()}
+
+    def _apply(text: str) -> str:
+        for key, val in mapping.items():
+            text = text.replace("{{" + key + "}}", val)
+        return text
+
+    for para in doc.paragraphs:
+        if "{{" in para.text:
+            for run in para.runs:
+                run.text = _apply(run.text)
+    for tbl in doc.tables:
+        for row in tbl.rows:
+            for cell in row.cells:
+                for para in cell.paragraphs:
+                    if "{{" in para.text:
+                        for run in para.runs:
+                            run.text = _apply(run.text)
+
+    body_lines = [p.text for p in doc.paragraphs]
+    return "\n".join(body_lines).strip()
+
+
 def sanitize_filename(s: str, max_len: int = 200) -> str:
     """Remove problematic chars and limit length for file names."""
     s = re.sub(r"[\\/:\*\?\"<>\|]+", "-", s or "")
@@ -128,7 +170,14 @@ def sanitize_filename(s: str, max_len: int = 200) -> str:
     return s
 
 
-def create_message(record: Dict[str, Any], default_attachments: Path, include_pdfs: bool, templates_dir: Optional[Path]) -> EmailMessage:
+def create_message(
+    record: Dict[str, Any],
+    default_attachments: Path,
+    include_pdfs: bool,
+    templates_dir: Optional[Path],
+    body_template: Optional[Path] = None,
+    attachments_field_name: Optional[str] = None,
+) -> EmailMessage:
     msg = EmailMessage()
     to_field = record.get("to") or record.get("recipient") or ""
     subject = str(record.get("subject") or "")
@@ -143,6 +192,11 @@ def create_message(record: Dict[str, Any], default_attachments: Path, include_pd
     msg["From"] = from_addr
 
     body = record.get("body", "") or ""
+    if body_template:
+        try:
+            body = render_body_from_template(body_template, record)
+        except Exception as exc:
+            logging.error("Failed to render body template %s: %s", body_template, exc)
     html = record.get("html")
     if html:
         msg.set_content(body if body else "This message contains HTML content.")
@@ -150,8 +204,15 @@ def create_message(record: Dict[str, Any], default_attachments: Path, include_pd
     else:
         msg.set_content(body)
 
-    attachments_field = record.get("attachments_dir") or record.get("attachments") or None
-    attachments_dir = Path(str(attachments_field)) if attachments_field else default_attachments
+    attachments_dir = default_attachments
+    if attachments_field_name:
+        field_val = record.get(attachments_field_name.lower())
+        if field_val:
+            attachments_dir = Path(str(field_val))
+    else:
+        attachments_field = record.get("attachments_dir") or record.get("attachments")
+        if attachments_field:
+            attachments_dir = Path(str(attachments_field))
 
     attach_files(msg, attachments_dir, include_pdfs=include_pdfs)
     attach_word_templates(msg, templates_dir)
@@ -213,6 +274,18 @@ def main(argv: Optional[Iterable[str]] = None) -> None:
         help="Directory containing Word templates to attach (.docx, .doc) (optional)",
     )
     parser.add_argument(
+        "--body-template",
+        type=Path,
+        default=None,
+        help="Word template file used to generate the email body with {{placeholders}}",
+    )
+    parser.add_argument(
+        "--attachment-field",
+        type=str,
+        default=None,
+        help="Record field name that specifies a directory of attachments (optional)",
+    )
+    parser.add_argument(
         "--attach-pdf",
         type=str,
         choices=["Yes", "No"],
@@ -249,7 +322,14 @@ def main(argv: Optional[Iterable[str]] = None) -> None:
     messages: List[EmailMessage] = []
     for record in records:
         try:
-            message = create_message(record, args.attachments, include_pdfs, args.templates)
+            message = create_message(
+                record,
+                args.attachments,
+                include_pdfs,
+                args.templates,
+                args.body_template,
+                args.attachment_field,
+            )
             messages.append(message)
         except Exception as e:
             logging.error("Failed to create message for record %s: %s", record, e)
