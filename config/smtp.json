@@ -1,0 +1,6 @@
+{
+  "smtp_server": "smtp.office365.com",
+  "smtp_port": 587,
+  "smtp_username": "tanyayu@mpat.org.tw",
+  "smtp_password": "@mpat.org.tw"
+}

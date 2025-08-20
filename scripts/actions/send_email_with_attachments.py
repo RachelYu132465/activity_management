@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
-"""Send or draft emails with attachments loaded from a directory.
+"""
+Send personalized email(s) for an identifier or for all followers of a program.
 
-Usage example:
-    python scripts/actions/send_email_with_attachments.py data.json \
-        --attachments data/attachments --draft --templates templates/word --attach-pdf Yes \
-        --body-template templates/email_template.docx --attachment-field attach_column
+Usage examples:
+  # send for a single identifier (keeps old behavior)
+  python scripts/actions/send_email_with_attachments.py jam123 --send
 
-Environment variables used when ``--send`` is specified:
-    SMTP_SERVER, SMTP_PORT, SMTP_USERNAME, SMTP_PASSWORD
+  # send to all followers of program id 5 using an explicit follower file
+  python scripts/actions/send_email_with_attachments.py --program 5 --followers-file data/follower.xlsx --sheet-name "Sheet1" --draft
 
-If ``--body-template`` is provided, the email body will be generated from a
-Word template where placeholders like ``{{name}}`` are replaced using values
-from each record in the JSON/Excel data file.
+Notes:
+ - Template rendering uses Jinja2 if installed (recommended). Otherwise falls back to a simple replace.
+ - Supports JSON, .xlsx, .xls (xls requires xlrd).
 """
 from __future__ import annotations
 
@@ -26,164 +26,422 @@ from email.message import EmailMessage
 from pathlib import Path
 from typing import Iterable, List, Dict, Any, Optional
 import smtplib
+
+# optional deps
 try:
     from docx import Document
-except ModuleNotFoundError:  # pragma: no cover - optional dependency
+except ModuleNotFoundError:
     Document = None
+
+try:
+    import jinja2
+except ModuleNotFoundError:
+    jinja2 = None
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
+# -------------------- DEFAULT PATHS (adjust if needed) --------------------
+BASE_DIR = Path(r"C:\Users\User\activity_management")
+DEFAULT_DATA_DIR = BASE_DIR / "data"
+DEFAULT_SHARED_JSON = DEFAULT_DATA_DIR / "shared" / "program_data.json"
+DEFAULT_TEMPLATE = BASE_DIR / "templates" / "letter_sample" / "notice_students.docx"
+DEFAULT_ATTACHMENTS_DIR = DEFAULT_DATA_DIR / "attachments"
+# ------------------------------------------------------------------------
+
+# -------------------- SMTP config loader ---------------------------------
+def load_smtp_config(path: Path) -> None:
+    try:
+        if not path.exists():
+            return
+        with path.open("r", encoding="utf-8") as fh:
+            conf = json.load(fh)
+        if isinstance(conf, dict):
+            if conf.get("smtp_server") and not os.environ.get("SMTP_SERVER"):
+                os.environ["SMTP_SERVER"] = str(conf["smtp_server"])
+            if conf.get("smtp_port") and not os.environ.get("SMTP_PORT"):
+                os.environ["SMTP_PORT"] = str(conf["smtp_port"])
+            if conf.get("smtp_username") and not os.environ.get("SMTP_USERNAME"):
+                os.environ["SMTP_USERNAME"] = str(conf["smtp_username"])
+            if conf.get("smtp_password") and not os.environ.get("SMTP_PASSWORD"):
+                os.environ["SMTP_PASSWORD"] = str(conf["smtp_password"])
+    except Exception as e:
+        logging.warning("Failed to load smtp config %s: %s", path, e)
+
+
+# -------------------- program_data loader & matcher -----------------------
+def load_programs(path: Path) -> List[Dict[str, Any]]:
+    if not path.exists():
+        return []
+    try:
+        with path.open("r", encoding="utf-8") as fh:
+            data = json.load(fh)
+    except Exception:
+        logging.warning("Failed to load program data from %s", path)
+        return []
+    if isinstance(data, dict):
+        return [data]
+    if isinstance(data, list):
+        return data
+    return []
+
+
+def find_program_by_id(programs: List[Dict[str, Any]], pid: str) -> Optional[Dict[str, Any]]:
+    if not programs:
+        return None
+    pid_s = str(pid).strip().lower()
+    for prog in programs:
+        if str(prog.get("id", "")).strip().lower() == pid_s:
+            return prog
+        # also check planName/title
+        if str(prog.get("planName", "")).strip().lower() == pid_s:
+            return prog
+        if str(prog.get("plan_name", "")).strip().lower() == pid_s:
+            return prog
+    return None
+
+
+# -------------------- data file discovery & loading -----------------------
+def find_data_file_by_id(data_dir: Path, target_id: str) -> Optional[Path]:
+    """Search data_dir (recursive) for JSON or Excel that contains target_id."""
+    target = str(target_id).strip()
+    # JSON first
+    for p in sorted(data_dir.rglob("*.json")):
+        try:
+            # skip shared program_data file
+            if p.resolve() == DEFAULT_SHARED_JSON.resolve():
+                continue
+            with p.open("r", encoding="utf-8") as fh:
+                data = json.load(fh)
+        except Exception:
+            continue
+        if isinstance(data, dict):
+            if any(str(k).strip() == target for k in data.keys()):
+                return p
+            if str(data.get("id", "")).strip() == target:
+                return p
+            for v in data.values():
+                if isinstance(v, list):
+                    for item in v:
+                        try:
+                            if str(item.get("id", "")).strip() == target:
+                                return p
+                        except Exception:
+                            continue
+        elif isinstance(data, list):
+            for item in data:
+                try:
+                    if str(item.get("id", "")).strip() == target:
+                        return p
+                except Exception:
+                    continue
+    # Excel
+    try:
+        openpyxl = importlib.import_module("openpyxl")
+    except ModuleNotFoundError:
+        openpyxl = None
+    try:
+        xlrd = importlib.import_module("xlrd")
+    except ModuleNotFoundError:
+        xlrd = None
+
+    for p in sorted(data_dir.rglob("*.xls")) + sorted(data_dir.rglob("*.xlsx")):
+        if p.resolve() == DEFAULT_SHARED_JSON.resolve():
+            continue
+        ext = p.suffix.lower()
+        if ext == ".xlsx" and openpyxl:
+            try:
+                wb = openpyxl.load_workbook(p, data_only=True, read_only=True)
+            except Exception:
+                continue
+            for sname in wb.sheetnames:
+                ws = wb[sname]
+                rows = list(ws.iter_rows(values_only=True))
+                if not rows:
+                    continue
+                headers = [str(h).strip().lower() if h is not None else "" for h in rows[0]]
+                id_idx = [i for i, h in enumerate(headers) if "id" in h and h != ""]
+                if not id_idx:
+                    continue
+                for row in rows[1:]:
+                    for idx in id_idx:
+                        if idx >= len(row):
+                            continue
+                        val = row[idx]
+                        if val is None:
+                            continue
+                        if str(val).strip() == target:
+                            wb.close()
+                            return p
+            wb.close()
+        elif ext == ".xls" and xlrd:
+            try:
+                book = xlrd.open_workbook(str(p))
+            except Exception:
+                continue
+            for sname in book.sheet_names():
+                sh = book.sheet_by_name(sname)
+                if sh.nrows == 0:
+                    continue
+                headers = [str(sh.cell_value(0, c)).strip().lower() for c in range(sh.ncols)]
+                id_idx = [i for i, h in enumerate(headers) if "id" in h and h != ""]
+                if not id_idx:
+                    continue
+                for r in range(1, sh.nrows):
+                    for idx in id_idx:
+                        try:
+                            val = sh.cell_value(r, idx)
+                        except Exception:
+                            continue
+                        if val is None or str(val).strip() == "":
+                            continue
+                        if str(val).strip() == target:
+                            return p
+    return None
+
 
 def load_records(path: Path, sheet_name: Optional[str] = None) -> List[Dict[str, Any]]:
-    """Load email records from a JSON or Excel file.
-
-    The file must contain objects with at least ``to``, ``subject`` and
-    ``body`` (or ``html``) fields. Excel support requires the ``openpyxl`` package.
-    If sheet_name is provided, that sheet will be read.
-    """
+    """Load records from JSON, .xlsx, or .xls. Return list of dicts (keys lowercased)."""
     ext = path.suffix.lower()
     if ext == ".json":
         with path.open("r", encoding="utf-8") as fh:
             data = json.load(fh)
         if isinstance(data, dict):
+            # dict of objects
+            if all(isinstance(v, dict) for v in data.values()):
+                out = []
+                for k, v in data.items():
+                    rec = {str(kk).strip().lower(): vv for kk, vv in v.items()}
+                    if "id" not in rec:
+                        rec["id"] = str(k)
+                    out.append(rec)
+                return out
             data = [data]
-        normalized = []
-        for r in data:
-            normalized.append({str(k).strip().lower(): v for k, v in r.items()})
-        return normalized
+        return [{str(k).strip().lower(): v for k, v in r.items()} for r in data]
 
-    if ext in {".xls", ".xlsx"}:
-        try:
+    if ext in {".xlsx", ".xls"}:
+        # prefer openpyxl for xlsx, xlrd for xls
+        if ext == ".xlsx":
             openpyxl = importlib.import_module("openpyxl")
-        except ModuleNotFoundError as exc:
-            raise ModuleNotFoundError("openpyxl is required to read Excel files") from exc
-        wb = openpyxl.load_workbook(path, data_only=True)
-        if sheet_name:
-            if sheet_name not in wb.sheetnames:
-                raise ValueError(f"Sheet '{sheet_name}' not found in {path} (available: {wb.sheetnames})")
-            ws = wb[sheet_name]
+            wb = openpyxl.load_workbook(path, data_only=True)
+            if sheet_name:
+                if sheet_name not in wb.sheetnames:
+                    raise ValueError(f"Sheet '{sheet_name}' not found in {path} (available: {wb.sheetnames})")
+                ws = wb[sheet_name]
+            else:
+                ws = wb.active
+            rows = list(ws.iter_rows(values_only=True))
+            if not rows:
+                return []
+            headers = [str(h).strip().lower() if h is not None else "" for h in rows[0]]
+            recs: List[Dict[str, Any]] = []
+            for row in rows[1:]:
+                r = {}
+                for i, val in enumerate(row):
+                    header = headers[i] if i < len(headers) else f"col_{i}"
+                    r[header] = val
+                recs.append(r)
+            return recs
         else:
-            ws = wb.active
-        rows = list(ws.iter_rows(values_only=True))
-        if not rows:
-            return []
-        headers = [str(h).strip().lower() if h is not None else "" for h in rows[0]]
-        records: List[Dict[str, Any]] = []
-        for row in rows[1:]:
-            record = {}
-            for i, val in enumerate(row):
-                header = headers[i] if i < len(headers) else f"col_{i}"
-                record[header] = val
-            records.append(record)
-        return records
+            # .xls using xlrd
+            xlrd = importlib.import_module("xlrd")
+            book = xlrd.open_workbook(str(path))
+            if sheet_name:
+                if sheet_name not in book.sheet_names():
+                    raise ValueError(f"Sheet '{sheet_name}' not found in {path} (available: {book.sheet_names()})")
+                sh = book.sheet_by_name(sheet_name)
+            else:
+                sh = book.sheet_by_index(0)
+            if sh.nrows == 0:
+                return []
+            headers = [str(sh.cell_value(0, c)).strip().lower() for c in range(sh.ncols)]
+            recs = []
+            for r in range(1, sh.nrows):
+                rowvals = [sh.cell_value(r, c) for c in range(sh.ncols)]
+                rec = {}
+                for i, val in enumerate(rowvals):
+                    header = headers[i] if i < len(headers) else f"col_{i}"
+                    rec[header] = val
+                recs.append(rec)
+            return recs
 
     raise ValueError(f"Unsupported file extension: {ext}")
 
 
-def attach_files(message: EmailMessage, directory: Path, include_pdfs: bool = True) -> None:
-    """Attach files from ``directory`` to ``message``.
-
-    If include_pdfs is False, PDF files will be skipped.
-    """
-    if not directory or not directory.exists():
-        logging.debug("Attachments directory %s does not exist — skipping attachments.", directory)
-        return
-
-    for file_path in sorted(directory.glob("*")):
-        if not file_path.is_file():
+def load_all_records_from_dir(data_dir: Path, sheet_name: Optional[str] = None) -> List[Dict[str, Any]]:
+    """Load all records from JSON/xlsx/xls files under data_dir except files in shared/."""
+    out: List[Dict[str, Any]] = []
+    for p in sorted(data_dir.rglob("*")):
+        if not p.is_file():
             continue
-        if not include_pdfs and file_path.suffix.lower() == ".pdf":
-            logging.debug("Skipping PDF due to --attach-pdf=No: %s", file_path.name)
+        if p.resolve() == DEFAULT_SHARED_JSON.resolve():
             continue
-        ctype, encoding = mimetypes.guess_type(str(file_path))
-        if ctype is None:
-            maintype, subtype = "application", "octet-stream"
-        else:
-            maintype, subtype = ctype.split("/", 1)
-        with file_path.open("rb") as fh:
-            data = fh.read()
-        message.add_attachment(data, maintype=maintype, subtype=subtype, filename=file_path.name)
-
-
-def attach_word_templates(message: EmailMessage, templates_dir: Optional[Path]) -> None:
-    """Attach Word templates (.docx, .doc) from templates_dir to message (if provided)."""
-    if not templates_dir:
-        return
-    if not templates_dir.exists():
-        logging.warning("Templates directory does not exist: %s", templates_dir)
-        return
-    for file_path in sorted(templates_dir.glob("*")):
-        if not file_path.is_file():
+        if "shared" in p.parts:
+            # skip shared folder files (except if you want to include)
             continue
-        if file_path.suffix.lower() not in {".docx", ".doc"}:
-            continue
-        with file_path.open("rb") as fh:
-            data = fh.read()
-        # use generic application/msword or appropriate mimetype
-        ctype, _ = mimetypes.guess_type(str(file_path))
-        if not ctype:
-            maintype, subtype = "application", "octet-stream"
-        else:
-            maintype, subtype = ctype.split("/", 1)
-        message.add_attachment(data, maintype=maintype, subtype=subtype, filename=file_path.name)
+        if p.suffix.lower() in {".json", ".xlsx", ".xls"}:
+            try:
+                recs = load_records(p, sheet_name=sheet_name)
+                out.extend(recs)
+            except Exception:
+                logging.debug("Failed to load %s, skipping.", p)
+                continue
+    return out
 
 
-def render_body_from_template(template_path: Path, record: Dict[str, Any]) -> str:
-    """Render a DOCX template into plain text using ``record`` values.
-
-    The template may contain placeholders like ``{{name}}`` which will be
-    replaced by the corresponding value in ``record``. Only top-level keys of
-    ``record`` are considered.
-    """
+# -------------------- template rendering -----------------------------------
+def render_body_from_template(template_path: Path, context: Dict[str, Any]) -> str:
     if Document is None:
-        raise ModuleNotFoundError("python-docx is required for --body-template support")
+        raise ModuleNotFoundError("python-docx is required for template rendering")
     doc = Document(str(template_path))
-    mapping = {str(k): "" if v is None else str(v) for k, v in record.items()}
 
-    def _apply(text: str) -> str:
-        for key, val in mapping.items():
-            text = text.replace("{{" + key + "}}", val)
-        return text
+    jenv = None
+    if jinja2 is not None:
+        try:
+            jenv = jinja2.Environment(undefined=jinja2.StrictUndefined)
+        except Exception:
+            jenv = None
+
+    def render_text(text: str) -> str:
+        if not text:
+            return text
+        if jenv is not None:
+            try:
+                tmpl = jenv.from_string(text)
+                return tmpl.render(**context)
+            except Exception:
+                pass
+        out = text
+        flat: Dict[str, str] = {}
+        for topk, topv in context.items():
+            if isinstance(topv, dict):
+                for subk, subv in topv.items():
+                    flat_key = f"{topk}.{subk}"
+                    flat[flat_key] = "" if subv is None else str(subv)
+            else:
+                flat[str(topk)] = "" if topv is None else str(topv)
+        for k, v in flat.items():
+            out = out.replace("{{" + k + "}}", v)
+            out = out.replace("{{ " + k + " }}", v)
+        return out
 
     for para in doc.paragraphs:
         if "{{" in para.text:
             for run in para.runs:
-                run.text = _apply(run.text)
+                try:
+                    run.text = render_text(run.text)
+                except Exception:
+                    pass
+
     for tbl in doc.tables:
         for row in tbl.rows:
             for cell in row.cells:
                 for para in cell.paragraphs:
                     if "{{" in para.text:
                         for run in para.runs:
-                            run.text = _apply(run.text)
+                            try:
+                                run.text = render_text(run.text)
+                            except Exception:
+                                pass
 
     body_lines = [p.text for p in doc.paragraphs]
     return "\n".join(body_lines).strip()
 
 
+# -------------------- attachments & helpers --------------------------------
 def sanitize_filename(s: str, max_len: int = 200) -> str:
-    """Remove problematic chars and limit length for file names."""
     s = re.sub(r"[\\/:\*\?\"<>\|]+", "-", s or "")
     s = re.sub(r"\s+", " ", s).strip()
-    if len(s) > max_len:
-        s = s[:max_len]
-    return s
+    return s[:max_len]
 
 
-def create_message(
-    record: Dict[str, Any],
-    default_attachments: Path,
-    include_pdfs: bool,
-    templates_dir: Optional[Path],
-    body_template: Optional[Path] = None,
-    attachments_field_name: Optional[str] = None,
-) -> EmailMessage:
+def attach_file_to_msg(msg: EmailMessage, p: Path):
+    if not p.exists():
+        logging.debug("Attachment not found: %s", p)
+        return
+    ctype, _ = mimetypes.guess_type(str(p))
+    if ctype:
+        maintype, subtype = ctype.split("/", 1)
+    else:
+        maintype, subtype = "application", "octet-stream"
+    with p.open("rb") as fh:
+        data = fh.read()
+    msg.add_attachment(data, maintype=maintype, subtype=subtype, filename=p.name)
+
+
+def attach_entries_from_list(msg: EmailMessage, entries: List[str], include_pdfs: bool = True):
+    for e in entries:
+        if not e:
+            continue
+        p = Path(e)
+        if not p.is_absolute():
+            p = (BASE_DIR / e).resolve()
+        if p.is_dir():
+            for f in sorted(p.glob("*")):
+                if not f.is_file():
+                    continue
+                if not include_pdfs and f.suffix.lower() == ".pdf":
+                    continue
+                attach_file_to_msg(msg, f)
+        else:
+            attach_file_to_msg(msg, p)
+
+
+# -------------------- message creation -------------------------------------
+def create_message(record: Dict[str, Any], template_path: Optional[Path], attachments_entries: List[str], include_pdfs: bool, templates_dir: Optional[Path]) -> EmailMessage:
     msg = EmailMessage()
-    to_field = record.get("to") or record.get("recipient") or ""
-    subject = str(record.get("subject") or "")
+
+    # extended list of possible email field names (English + common Chinese variants)
+    EMAIL_FIELDS = [
+        "mail", "email", "to", "recipient", "e-mail", "email_address", "address", "contact_email",
+        "電子郵件", "電子郵箱", "信箱", "聯絡信箱", "emailaddress"
+    ]
+    to_field = ""
+    for ef in EMAIL_FIELDS:
+        # keys in record are lowercased by load_records; chinese also present as-is but lowercased
+        val = record.get(ef)
+        if val:
+            to_field = str(val).strip()
+            break
+    if not to_field:
+        # last resort: check any value that looks like an email using regex
+        email_re = re.compile(r"[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}")
+        for k, v in record.items():
+            try:
+                if v and isinstance(v, str) and email_re.search(v):
+                    to_field = v.strip()
+                    break
+            except Exception:
+                continue
+    if not to_field:
+        logging.warning("No recipient email found in record. Checked fields: %s. Record keys: %s", EMAIL_FIELDS, list(record.keys()))
+
+    # Subject composition: prefer record.subject else template_name - program.planName - event0
+    if record.get("subject"):
+        subject = str(record.get("subject"))
+    else:
+        tpl_name = template_path.name if template_path else ""
+        prog = record.get("program_data") or {}
+        plan_name = prog.get("planName") or prog.get("plan_name") or prog.get("plan") or ""
+        event0 = ""
+        possible_event_keys = ("eventNames", "event_names", "events", "eventList", "event_list")
+        for k in possible_event_keys:
+            if k in prog:
+                ev = prog.get(k)
+                if isinstance(ev, (list, tuple)) and ev:
+                    event0 = str(ev[0])
+                elif isinstance(ev, str) and ev:
+                    event0 = ev
+                break
+        parts = [p for p in (tpl_name, plan_name, event0) if p]
+        if parts:
+            subject = " - ".join(parts)
+        else:
+            subject = "活動通知"
+
     from_addr = os.environ.get("SMTP_USERNAME", "noreply@example.com")
 
-    msg["To"] = to_field
+    if to_field:
+        msg["To"] = to_field
     if record.get("cc"):
         msg["Cc"] = str(record.get("cc"))
     if record.get("bcc"):
@@ -192,11 +450,21 @@ def create_message(
     msg["From"] = from_addr
 
     body = record.get("body", "") or ""
-    if body_template:
+    if template_path and template_path.exists():
+        context = {}
+        if "follower" in record and isinstance(record["follower"], dict):
+            context["follower"] = {k: ("" if v is None else v) for k, v in record["follower"].items()}
+        else:
+            context["follower"] = {k: ("" if v is None else v) for k, v in record.items()}
+        if "program_data" in record and isinstance(record["program_data"], dict):
+            context["program_data"] = record["program_data"]
+        else:
+            context["program_data"] = record.get("program_data", {}) or {}
         try:
-            body = render_body_from_template(body_template, record)
-        except Exception as exc:
-            logging.error("Failed to render body template %s: %s", body_template, exc)
+            body = render_body_from_template(template_path, context)
+        except Exception as e:
+            logging.warning("Template render failed for %s: %s", template_path, e)
+
     html = record.get("html")
     if html:
         msg.set_content(body if body else "This message contains HTML content.")
@@ -204,21 +472,17 @@ def create_message(
     else:
         msg.set_content(body)
 
-    attachments_dir = default_attachments
-    if attachments_field_name:
-        field_val = record.get(attachments_field_name.lower())
-        if field_val:
-            attachments_dir = Path(str(field_val))
-    else:
-        attachments_field = record.get("attachments_dir") or record.get("attachments")
-        if attachments_field:
-            attachments_dir = Path(str(attachments_field))
-
-    attach_files(msg, attachments_dir, include_pdfs=include_pdfs)
-    attach_word_templates(msg, templates_dir)
+    attach_entries_from_list(msg, attachments_entries or [], include_pdfs=include_pdfs)
+    if templates_dir:
+        td = Path(templates_dir)
+        if td.exists():
+            for f in sorted(td.glob("*")):
+                if f.suffix.lower() in {".docx", ".doc"}:
+                    attach_file_to_msg(msg, f)
     return msg
 
 
+# -------------------- send & save ------------------------------------------
 def send_all_messages(messages: List[EmailMessage]) -> None:
     server = os.environ.get("SMTP_SERVER")
     if not server:
@@ -258,93 +522,235 @@ def save_draft(msg: EmailMessage, directory: Path) -> None:
     logging.info("Saved draft: %s", path)
 
 
+# -------------------- helper: determine if record belongs to program ---------
+def record_matches_program(record: Dict[str, Any], program: Dict[str, Any]) -> bool:
+    """Return True if record references the given program (by id or name)."""
+    if not program:
+        return False
+    pid = str(program.get("id", "")).strip().lower()
+    pname = str(program.get("planName", "") or program.get("plan_name", "")).strip().lower()
+    # check common fields in record
+    candidate_keys = ("planid", "plan_id", "activity_id", "activityid", "program_id", "programid", "id", "planname", "plan_name", "program", "plan")
+    for k in candidate_keys:
+        v = record.get(k)
+        if v is None:
+            continue
+        vs = str(v).strip().lower()
+        if vs == pid or vs == pname or (pname and pname in vs):
+            return True
+        # if record field is a list or comma separated values, check items
+        if isinstance(v, (list, tuple)):
+            for it in v:
+                if str(it).strip().lower() in (pid, pname):
+                    return True
+        if isinstance(v, str) and "," in v:
+            for it in [x.strip().lower() for x in v.split(",") if x.strip()]:
+                if it in (pid, pname):
+                    return True
+    return False
+
+
+# -------------------- main --------------------------------------------------
 def main(argv: Optional[Iterable[str]] = None) -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("data", type=Path, help="Path to JSON or Excel file")
-    parser.add_argument(
-        "--attachments",
-        type=Path,
-        default=Path("data/attachments"),
-        help="Default directory containing files to attach",
-    )
-    parser.add_argument(
-        "--templates",
-        type=Path,
-        default=None,
-        help="Directory containing Word templates to attach (.docx, .doc) (optional)",
-    )
-    parser.add_argument(
-        "--body-template",
-        type=Path,
-        default=None,
-        help="Word template file used to generate the email body with {{placeholders}}",
-    )
-    parser.add_argument(
-        "--attachment-field",
-        type=str,
-        default=None,
-        help="Record field name that specifies a directory of attachments (optional)",
-    )
-    parser.add_argument(
-        "--attach-pdf",
-        type=str,
-        choices=["Yes", "No"],
-        default="Yes",
-        help="Whether to attach PDFs from the attachments directory (Yes/No). Default Yes.",
-    )
-    parser.add_argument(
-        "--sheet-name",
-        type=str,
-        default=None,
-        help="If data is an Excel file, specify the sheet name to read (optional).",
-    )
-    parser.add_argument(
-        "--output",
-        type=Path,
-        default=Path("output/drafts"),
-        help="Directory to store draft emails",
-    )
+    parser.add_argument("identifier", nargs="?", default=None, help="ID to locate the data record in data/ (optional when --program used)")
+    parser.add_argument("--program", type=str, default=None, help="Program id to send to all followers of that program (e.g. 5)")
+    parser.add_argument("--followers-file", type=Path, default=None, help="Optional follower file (json/xlsx/xls) to use when --program provided; if omitted, script will search data dir and match by program id as before.")
+    parser.add_argument("--data-dir", type=Path, default=DEFAULT_DATA_DIR, help="Directory to search for data files")
+    parser.add_argument("--template", type=Path, default=DEFAULT_TEMPLATE, help="Template docx to render body (optional)")
+    parser.add_argument("--attachments-dir", type=Path, default=DEFAULT_ATTACHMENTS_DIR, help="Default attachments dir")
+    parser.add_argument("--sheet-name", type=str, default=None, help="Excel sheet name to read (optional)")
+    parser.add_argument("--templates-folder", type=Path, default=None, help="Folder whose .docx/.doc to attach in addition")
+    parser.add_argument("--output", type=Path, default=Path("output/drafts"), help="Directory to save drafts")
     group = parser.add_mutually_exclusive_group()
     group.add_argument("--send", action="store_true", help="Send emails via SMTP")
-    group.add_argument("--draft", action="store_true", help="Only save drafts (default)")
+    group.add_argument("--draft", action="store_true", help="Save drafts only (default)")
     args = parser.parse_args(argv)
 
     if not args.send and not args.draft:
         args.draft = True
 
-    include_pdfs = True if args.attach_pdf == "Yes" else False
+    load_smtp_config(Path("config/smtp.json"))
 
-    records = load_records(args.data, sheet_name=args.sheet_name)
-    if not records:
-        logging.warning("No records found in %s", args.data)
-        return
+    # load programs
+    programs = load_programs(DEFAULT_SHARED_JSON)
 
     messages: List[EmailMessage] = []
-    for record in records:
-        try:
-            message = create_message(
-                record,
-                args.attachments,
-                include_pdfs,
-                args.templates,
-                args.body_template,
-                args.attachment_field,
-            )
-            messages.append(message)
-        except Exception as e:
-            logging.error("Failed to create message for record %s: %s", record, e)
 
+    # -------- PROGRAM MODE: gather all follower records that belong to the program -------
+    if args.program:
+        prog = find_program_by_id(programs, args.program)
+        if not prog:
+            logging.error("Program with id '%s' not found in %s", args.program, DEFAULT_SHARED_JSON)
+            return
+        logging.info("Operating in program mode for program id %s -> %s", args.program, prog.get("planName") or prog.get("id"))
+
+        # If user provided an explicit follower file, load it and use all its records
+        follower_records: List[Dict[str, Any]] = []
+        if args.followers_file:
+            ff = Path(args.followers_file)
+            if not ff.exists():
+                logging.error("Followers file %s not found.", ff)
+                return
+            try:
+                follower_records = load_records(ff, sheet_name=args.sheet_name)
+            except Exception as e:
+                logging.error("Failed to load followers from %s: %s", ff, e)
+                return
+            if not follower_records:
+                logging.error("No follower records loaded from %s", ff)
+                return
+            logging.info("Loaded %d follower records from %s", len(follower_records), ff)
+        else:
+            # original behavior: scan data dir and filter those that match program
+            all_recs = load_all_records_from_dir(args.data_dir, sheet_name=args.sheet_name)
+            if not all_recs:
+                logging.error("No records found under %s", args.data_dir)
+                return
+            follower_records = [r for r in all_recs if record_matches_program(r, prog)]
+            if not follower_records:
+                logging.error(
+                    "No follower records matched program id %s under %s. "
+                    "If your follower file does not contain program identifiers, "
+                    "consider using --followers-file to point directly to the follower list.",
+                    args.program, args.data_dir
+                )
+                return
+
+        # create messages for each follower record and attach program data
+        for rec in follower_records:
+            rec_for_message = dict(rec)
+            rec_for_message["program_data"] = prog
+            rec_for_message["follower"] = {k: ("" if v is None else v) for k, v in rec.items()}
+
+            # attachments resolution (same logic as before)
+            attachments_entries: List[str] = []
+            for candidate_field in ("attach_column", "attachments", "attachment", "attachments_dir", "attachment_path"):
+                val = rec.get(candidate_field)
+                if val:
+                    parts = [p.strip() for p in str(val).split(",") if p.strip()]
+                    attachments_entries.extend(parts)
+                    break
+            if not attachments_entries:
+                candidate_folder = Path(args.attachments_dir) / str(rec.get("id") or rec.get("to") or "").strip()
+                if candidate_folder.exists():
+                    attachments_entries.append(str(candidate_folder))
+                else:
+                    common = Path(args.attachments_dir) / "common"
+                    if common.exists():
+                        attachments_entries.append(str(common))
+
+            # template override support
+            body_template_path = None
+            if rec.get("body_template"):
+                body_template_path = Path(str(rec.get("body_template")))
+            elif prog and isinstance(prog, dict) and prog.get("body_template"):
+                body_template_path = Path(str(prog.get("body_template")))
+            else:
+                body_template_path = args.template
+
+            try:
+                msg = create_message(
+                    rec_for_message,
+                    template_path=Path(body_template_path) if body_template_path else None,
+                    attachments_entries=attachments_entries,
+                    include_pdfs=True,
+                    templates_dir=args.templates_folder,
+                )
+                messages.append(msg)
+            except Exception as e:
+                logging.error("Failed to create message for record %s: %s", rec, e)
+
+    # -------- IDENTIFIER MODE: behave as previous (single record lookup) -----------
+    else:
+        if not args.identifier:
+            logging.error("No identifier provided. Either pass an identifier or use --program <id>.")
+            return
+        found = find_data_file_by_id(args.data_dir, args.identifier)
+        if not found:
+            logging.error("No data file containing ID %s found under %s", args.identifier, args.data_dir)
+            return
+        logging.info("Using data file: %s", found)
+        records = load_records(found, sheet_name=args.sheet_name)
+        if not records:
+            logging.error("No records loaded from %s", found)
+            return
+
+        def matches(rec: Dict[str, Any], ident: str) -> bool:
+            for k in ("id", "to", "recipient", "email"):
+                v = rec.get(k)
+                if v is None:
+                    continue
+                if str(v).strip().lower() == ident.strip().lower():
+                    return True
+            return False
+
+        matched = [r for r in records if matches(r, args.identifier)]
+        if not matched:
+            logging.error("No record matching identifier %s inside %s", args.identifier, found)
+            return
+
+        for rec in matched:
+            # fixed: initialize prog properly (no walrus misuse)
+            prog = None
+            # try to find program for this record from loaded programs
+            for p in programs:
+                if record_matches_program(rec, p):
+                    prog = p
+                    break
+
+            rec_for_message = dict(rec)
+            rec_for_message["program_data"] = prog or {}
+            rec_for_message["follower"] = {k: ("" if v is None else v) for k, v in rec.items()}
+
+            attachments_entries: List[str] = []
+            for candidate_field in ("attach_column", "attachments", "attachment", "attachments_dir", "attachment_path"):
+                val = rec.get(candidate_field)
+                if val:
+                    parts = [p.strip() for p in str(val).split(",") if p.strip()]
+                    attachments_entries.extend(parts)
+                    break
+            if not attachments_entries:
+                candidate_folder = Path(args.attachments_dir) / str(args.identifier).strip()
+                if candidate_folder.exists():
+                    attachments_entries.append(str(candidate_folder))
+                else:
+                    common = Path(args.attachments_dir) / "common"
+                    if common.exists():
+                        attachments_entries.append(str(common))
+
+            body_template_path = None
+            if rec.get("body_template"):
+                body_template_path = Path(str(rec.get("body_template")))
+            elif prog and isinstance(prog, dict) and prog.get("body_template"):
+                body_template_path = Path(str(prog.get("body_template")))
+            else:
+                body_template_path = args.template
+
+            try:
+                msg = create_message(
+                    rec_for_message,
+                    template_path=Path(body_template_path) if body_template_path else None,
+                    attachments_entries=attachments_entries,
+                    include_pdfs=True,
+                    templates_dir=args.templates_folder,
+                )
+                messages.append(msg)
+            except Exception as e:
+                logging.error("Failed to create message for record %s: %s", rec, e)
+
+    # ---- send or save drafts ----
     if args.send:
         try:
             send_all_messages(messages)
         except Exception as e:
             logging.error("Failed to send messages: %s", e)
     else:
-        for msg in messages:
+        for m in messages:
             try:
-                save_draft(msg, args.output)
+                save_draft(m, args.output)
             except Exception as e:
-                logging.error("Failed to save draft for %s: %s", msg.get("To"), e)
+                logging.error("Failed to save draft for %s: %s", m.get("To"), e)
 
 
 if __name__ == "__main__":
