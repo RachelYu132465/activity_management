@@ -49,7 +49,7 @@ def _pick_agenda_table(doc: Document):
                 if len(cells) >= 3:
                     headers.append((norm(cells[0].text), norm(cells[1].text), norm(cells[2].text)))
             header_text = " ".join(["|".join(h) for h in headers])
-            if ("時間" in header_text) and ("主題" in header_text or "主旨" in header_text) and ("講者" in header_text or "講師" in header_text):
+            if ("時間" in header_text) and ("主題" in header_text or "主旨" in header_text or "議題" in header_text) and ("講者" in header_text or "講師" in header_text):
                 return tbl
     return doc.tables[0] if doc.tables else None
 
@@ -58,6 +58,8 @@ def _pick_agenda_table(doc: Document):
 SPECIAL_RULES: List[Tuple[re.Pattern, str, bool]] = [
     # (pattern, normalized_title, is_end_of_day)
     (re.compile(r"(問卷|後測|後測與問卷|問卷與後測|closing|結語)", re.I), "問卷與後測", True),
+    (re.compile(r"(綜合討論|討論|討論時間)", re.I),                           "綜合討論", False),
+    (re.compile(r"(兌獎)", re.I),                           "兌獎", False),
     (re.compile(r"(午餐|午休|午間)", re.I),                           "午間休息", False),
     (re.compile(r"(大合照|合照)", re.I),                               "大合照",   False),
     (re.compile(r"(致詞|開場)", re.I),                                 "致詞",     False),
