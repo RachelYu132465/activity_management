@@ -4,10 +4,12 @@ import smtplib
 from email.message import EmailMessage
 
 # ----- 把下面密碼改成你實際的 App Password（測試用） -----
-SMTP_SERVER = "smtp.office365.com"
+# SMTP_SERVER = "smtp.office365.com"
+SMTP_SERVER =  "smtp.gmail.com"
 SMTP_PORT = 587
-SMTP_USER = "tanyayu@mpat.org.tw"
-SMTP_PASS = "@mpat.org.tw"   # <<--- 把這裡換成你剛產生的 16 位 App password
+SMTP_USER   = "tanyayu@mpat.org.tw"
+SMTP_PASS   = "ligqpzltvcsjksoq"
+
 # ----------------------------------------------------------
 
 # 收件測試用（預設寄給自己）
