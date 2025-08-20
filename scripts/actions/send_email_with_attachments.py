@@ -332,12 +332,61 @@ def _fallback_render_body_from_template(template_path: Path, context: Dict[str, 
 
     placeholder_re = re.compile(r"\{\{\s*(.*?)\s*\}\}")
 
+    # Embedded minimal helpers. These only cover common cases needed for
+    # fallback rendering when project-level template_utils is unavailable.
+
+    def format_chinese_date(value: Any) -> str:
+        """Basic YYYY年M月D日(星期X) formatter for ISO-like strings."""
+        from datetime import datetime, date
+        if value is None:
+            return ""
+        if isinstance(value, datetime):
+            dt = value.date()
+        elif isinstance(value, date):
+            dt = value
+        else:
+            try:
+                dt = datetime.fromisoformat(str(value)).date()
+            except Exception:
+                return str(value)
+        wmap = ["一", "二", "三", "四", "五", "六", "日"]
+        return f"{dt.year}年{dt.month}月{dt.day}日(星期{wmap[dt.weekday()]})"
+
+    def _wrap_highlight(s: str) -> str:
+        """No-op highlight wrapper for fallback rendering."""
+        return s
+
+    def _apply_filters(val: Any, filters: List[str]) -> str:
+        s = "" if val is None else str(val)
+        for f in filters:
+            if tu is None:
+                if f in ("cn_date", "cnDate", "format_date"):
+                    s = format_chinese_date(s)
+                elif f in ("hl", "highlight"):
+                    s = _wrap_highlight(s)
+            else:
+                if f in ("cn_date", "cnDate", "format_date") and hasattr(tu, "format_chinese_date"):
+                    s = tu.format_chinese_date(s)
+                elif f in ("hl", "highlight") and hasattr(tu, "_wrap_highlight"):
+                    s = tu._wrap_highlight(s)
+        return s
+
     def render_text(text: str) -> str:
         if not text:
             return text
+
         def _replace(m: re.Match) -> str:
-            key = re.sub(r"\s+", "", m.group(1))
-            return flat.get(key, m.group(0))
+            expr = m.group(1).strip()
+            parts = [p.strip() for p in expr.split("|") if p.strip()]
+            if not parts:
+                return m.group(0)
+            key = re.sub(r"\s+", "", parts[0])
+            filters = parts[1:]
+            val = flat.get(key)
+            if val is None:
+                return m.group(0)
+            return _apply_filters(val, filters)
+
         return placeholder_re.sub(_replace, text)
 
     for para in doc.paragraphs:
