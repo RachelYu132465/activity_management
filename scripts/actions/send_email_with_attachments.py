@@ -339,23 +339,36 @@ def _fallback_render_body_from_template(template_path: Path, context: Dict[str, 
             key = re.sub(r"\s+", "", m.group(1))
             return flat.get(key, m.group(0))
         return placeholder_re.sub(_replace, text)
+    def process_paragraphs(paragraphs: Iterable[Any]):
+        for para in paragraphs:
+            if "{{" in para.text or "{%" in para.text:
+                try:
+                    new_text = render_text(para.text)
+                except Exception:
+                    new_text = para.text
+                if new_text is not None:
+                    new_text = new_text.replace("\\n", "\n")
+                if para.runs:
+                    para.runs[0].text = new_text
+                    for r in para.runs[1:]:
+                        r.text = ""
+                else:
+                    para.add_run(new_text)
 
-    for para in doc.paragraphs:
-        if "{{" in para.text or "{%" in para.text:
-            try:
-                new_text = render_text(para.text)
-            except Exception:
-                new_text = para.text
-            if new_text is not None:
-                new_text = new_text.replace("\\n", "\n")
-            if para.runs:
-                para.runs[0].text = new_text
-                for r in para.runs[1:]:
-                    r.text = ""
-            else:
-                para.add_run(new_text)
+    # process top-level paragraphs
+    process_paragraphs(doc.paragraphs)
 
-    body_lines = [p.text for p in doc.paragraphs]
+    # process paragraphs inside tables
+    for table in doc.tables:
+        for row in table.rows:
+            for cell in row.cells:
+                process_paragraphs(cell.paragraphs)
+
+    body_lines: List[str] = [p.text for p in doc.paragraphs]
+    for table in doc.tables:
+        for row in table.rows:
+            for cell in row.cells:
+                body_lines.extend(p.text for p in cell.paragraphs)
     return "\n".join(body_lines).strip()
 
 
