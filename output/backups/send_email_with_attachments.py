@@ -471,9 +471,15 @@ def create_message(record: Dict[str, Any], template_path: Optional[Path], attach
             from datetime import datetime
             date_str = datetime.now().strftime("%Y-%m-%d")
 
-        parts = [p for p in (tpl_name, plan_name, event0) if p]
+        parts = []
+        if tpl_name:
+            parts.append(f"【{tpl_name}】")
         if date_str:
             parts.append(date_str)
+        if plan_name:
+            parts.append(plan_name)
+        if event0:
+            parts.append(event0)
         subject = " - ".join(parts) if parts else "活動通知"
 
     from_addr = os.environ.get("SMTP_USERNAME", "noreply@example.com")
