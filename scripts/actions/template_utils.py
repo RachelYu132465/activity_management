@@ -198,17 +198,25 @@ def render_body_from_template(template_path: Path, context: Dict[str, Any]) -> s
                 pass
         out = text
         flat: Dict[str, str] = {}
-        for topk, topv in context.items():
-            if isinstance(topv, dict):
-                for subk, subv in topv.items():
-                    flat_key = f"{topk}.{subk}"
-                    flat[flat_key] = "" if subv is None else str(subv)
+
+        def _flatten(prefix: str, val: Any) -> None:
+            if isinstance(val, dict):
+                for k, v in val.items():
+                    _flatten(f"{prefix}.{k}" if prefix else str(k), v)
+            elif isinstance(val, (list, tuple)):
+                for i, item in enumerate(val):
+                    _flatten(f"{prefix}[{i}]" if prefix else f"[{i}]", item)
             else:
-                flat[str(topk)] = "" if topv is None else str(topv)
-        for k, v in flat.items():
-            out = out.replace("{{" + k + "}}", v)
-            out = out.replace("{{ " + k + " }}", v)
-        return out
+                flat[prefix] = "" if val is None else str(val)
+
+        for k, v in context.items():
+            _flatten(str(k), v)
+
+        def _replace(match: re.Match) -> str:
+            key = re.sub(r"\s+", "", match.group(1))
+            return flat.get(key, match.group(0))
+
+        return re.sub(r"\{\{\s*(.*?)\s*\}\}", _replace, text)
 
     for para in doc.paragraphs:
         if "{{" in para.text or "{%" in para.text:
