@@ -3,7 +3,7 @@
     "id_number": "N120300638",
     "name": "張正雄",
     "phone": "0937738728",
-    "email": [],
+    "email": ["張正雄 <cs4816@gmail.com>"],
     "specialties": [
       "內科學",
       "血液腫瘤病學"
@@ -37,7 +37,7 @@
     "id_number": "R120895779",
     "name": "蕭金福",
     "phone": "037-206166#36106",
-    "email": [],
+    "email": ["蕭金福 <chinfu@nhri.edu.tw>"],
     "specialties": [
       "臨床試驗統計"
     ],
@@ -68,7 +68,7 @@
     "id_number": "N222958518",
     "name": "陳書毓",
     "phone": "0983542085",
-    "email": [],
+    "email": ["陳書毓<sychen@ntunhs.edu.tw>"],
     "specialties": [
       "研究倫理",
       "腫瘤護理",
@@ -103,7 +103,7 @@
     "id_number": "L221887330",
     "name": "張杏焄",
     "phone": "03-3281200*8152",
-    "email": [],
+    "email": ["杏焄_CC <sissi.cc566@msa.hinet.net>"],
     "specialties": [
       "腫瘤護理",
       "兒科疫苗試驗護理",
@@ -136,7 +136,7 @@
     "id_number": "S120927615",
     "name": "蘇矢立",
     "phone": "0930863001",
-    "email": [],
+    "email": ["89933(蘇矢立)<89933@cch.org.tw>"],
     "specialties": [
       "糖尿病",
       "高血脂",
