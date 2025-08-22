@@ -44,7 +44,6 @@
     "speakers": [
       {
         "no": 1,
-        "type": "主持人",
         "topic": "致詞與大合照",
         "name": "李財坤",
         "start_time": "10:00",
@@ -52,7 +51,6 @@
       },
       {
         "no": 2,
-        "type": "講者",
         "topic": "再生醫療製劑管理政策",
         "name": "林奕汝",
         "start_time": "10:10",
@@ -60,7 +58,6 @@
       },
       {
         "no": 3,
-        "type": "講者",
         "topic": "多元CAR-T平台推動個人化免疫治療新紀元",
         "name": "官建村",
         "start_time": "10:35",
@@ -68,7 +65,6 @@
       },
       {
         "no": 4,
-        "type": "講者",
         "topic": "再生醫療產品新進展與台灣合作新契機【英語演講】",
         "name": "中山功一",
         "start_time": "11:10",
@@ -76,7 +72,6 @@
       },
       {
         "no": 5,
-        "type": "綜合討論",
         "topic": "綜合討論",
         "name": "所有講者",
         "start_time": "11:35",
@@ -136,7 +131,6 @@
     "speakers": [
       {
         "no": 1,
-        "type": "講者",
         "topic": "如果您是臨床試驗受試者，要注意哪些權利與義務？",
         "name": "封威蓮",
         "start_time": "10:40",
@@ -194,7 +188,6 @@
     "speakers": [
       {
         "no": 1,
-        "type": "",
         "topic": "臨床試驗相關產業職涯發展講座",
         "name": "張君涵",
         "start_time": "13:25",
@@ -264,7 +257,6 @@
     "speakers": [
       {
         "no": 1,
-        "type": "講者",
         "topic": "人體試驗委員會的角色與審查會議的過程",
         "name": "陳書毓",
         "start_time": "10:00",
@@ -272,7 +264,6 @@
       },
       {
         "no": 2,
-        "type": "講者",
         "topic": "性別意識對臨床試驗的影響",
         "name": "陳書毓",
         "start_time": "11:00",
@@ -280,7 +271,6 @@
       },
       {
         "no": 3,
-        "type": "講者",
         "topic": "人體研究之利益衝突及其管理",
         "name": "蘇矢立",
         "start_time": "11:50",
@@ -288,7 +278,6 @@
       },
       {
         "no": 4,
-        "type": "講者",
         "topic": "藥品臨床試驗之收案、執行與管理(含受試者同意書撰寫)",
         "name": "張杏焄",
         "start_time": "13:40",
@@ -296,7 +285,6 @@
       },
       {
         "no": 5,
-        "type": "講者",
         "topic": "臨床試驗研究計畫書撰寫注意事項與審查重點",
         "name": "張正雄",
         "start_time": "14:40",
@@ -304,7 +292,6 @@
       },
       {
         "no": 6,
-        "type": "講者",
         "topic": "藥品臨床試驗相關統計學",
         "name": "蕭金福",
         "start_time": "15:30",
@@ -336,7 +323,7 @@
     "jointOrganizers": [],
     "attachments": [],
     "registration_urls": [],
-    "max_capacity": 130,
+    "max_capacity": 70,
     "agenda_settings": {
       "start_time": "10:00",
       "end_time": "12:00",
@@ -355,18 +342,8 @@
       ]
     },
     "speakers": [
-
-      {
-        "no": 0,
-        "type": "主持人",
-        "topic": "致詞與大合照",
-        "name": "林世嘉",
-        "start_time": "10:00",
-        "end_time": "10:10"
-      },
       {
         "no": 1,
-        "type": "講者",
         "topic": "從新藥開發到臨床應用：打造亞洲生醫產業合作新格局",
         "name": "王玲美",
         "start_time": "10:10",
@@ -374,7 +351,6 @@
       },
       {
         "no": 2,
-        "type": "講者",
         "topic": "臺灣生醫產業海外市場鏈結現況與展望",
         "name": "楊家琳",
         "start_time": "10:35",
@@ -382,7 +358,6 @@
       },
       {
         "no": 3,
-        "type": "講者",
         "topic": "中之島Qross的生醫產業布局與國際合作商機",
         "name": "澤芳樹",
         "start_time": "11:10",
@@ -390,7 +365,6 @@
       },
       {
         "no": 4,
-        "type": "綜合討論",
         "topic": "綜合討論",
         "name": "所有講者",
         "start_time": "11:35",
@@ -420,7 +394,7 @@
     "jointOrganizers": [],
     "attachments": [],
     "registration_urls": [],
-    "max_capacity": null,
+    "max_capacity": 150,
     "agenda_settings": {
       "start_time": "",
       "end_time": "",
@@ -488,7 +462,6 @@
     "speakers": [
       {
         "no": 1,
-        "type": "講者",
         "topic": "研究計畫撰寫與研究設計與新趨勢",
         "name": "陳中奎",
         "start_time": "10:00",
@@ -496,7 +469,6 @@
       },
       {
         "no": 2,
-        "type": "講者",
         "topic": "臨床試驗中的性別考量與倫理議題",
         "name": "張中興",
         "start_time": "11:00",
@@ -504,7 +476,6 @@
       },
       {
         "no": 3,
-        "type": "講者",
         "topic": "藥品臨床試驗統計分析（常用方法與常見缺失）",
         "name": "丁迺迪",
         "start_time": "11:50",
@@ -512,7 +483,6 @@
       },
       {
         "no": 4,
-        "type": "講者",
         "topic": "臨床試驗中各角色的分工與職責",
         "name": "王健興",
         "start_time": "13:40",
@@ -520,7 +490,6 @@
       },
       {
         "no": 5,
-        "type": "講者",
         "topic": "臨床試驗之藥品不良反應通報",
         "name": "張維舜",
         "start_time": "14:40",
@@ -528,14 +497,12 @@
       },
       {
         "no": 6,
-        "type": "講者",
         "topic": "醫院端如何準備監測?",
         "name": "封威蓮",
         "start_time": "15:30",
         "end_time": "16:20"
       }
     ],
-
     "activities_contacts": []
   }
 ]
