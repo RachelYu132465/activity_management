@@ -174,3 +174,22 @@ def get_event_speaker_mappings(event_name: str) -> List[Dict[str, Any]]:
         mapping["safe_filename"] = sanitize_filename(name or inf.get("name") or "TBD")
         results.append(mapping)
     return results
+
+
+def get_program_speaker_mappings(program_id: str) -> List[Dict[str, Any]]:
+    """Convenience wrapper to fetch speaker mappings by program id."""
+    # 確保 load_json 在 scope 內
+    programs = load_json("program_data.json")
+    pid = str(program_id).strip()
+    program = next((p for p in programs if str(p.get("id", "")).strip() == pid), None)
+    if not program:
+        raise ValueError(f"找不到 program id: {program_id}")
+    event_names = program.get("eventNames") or []
+    if not event_names:
+        raise ValueError(f"program id {program_id} 缺少 eventNames")
+    # 若 get_event_speaker_mappings 會自己根據 program 決定，請確保 data source 一致
+    mappings = get_event_speaker_mappings(event_names[0])
+    for m in mappings:
+        # attach program data explicitly
+        m.setdefault("program_data", program)
+    return mappings
