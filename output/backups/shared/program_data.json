@@ -20,10 +20,7 @@
     "coOrganizers": [],
     "jointOrganizers": [],
     "attachments": [],
-    "registration_urls": [
-      "https://docs.google.com/forms/d/1OlnqupGzm35GJDyNtUOcQx-5aYMNosU8b5_Aqbf1HC4/edit"
-    ],
-    "max_capacity": 70,
+    "registration_urls": ["https://docs.google.com/forms/d/1OlnqupGzm35GJDyNtUOcQx-5aYMNosU8b5_Aqbf1HC4/edit"],
     "agenda_settings": {
       "start_time": "10:00",
       "end_time": "12:00",
@@ -41,6 +38,7 @@
         }
       ]
     },
+    "max_capacity": 70,
     "speakers": [
       {
         "no": 1,
@@ -80,6 +78,7 @@
     ],
     "activities_contacts": []
   },
+
   {
     "id": 3,
     "planName": "114年度「精進藥品臨床試驗品質及受試者權益促進計畫」",
@@ -139,6 +138,7 @@
     ],
     "activities_contacts": []
   },
+
   {
     "id": 4,
     "planName": "114年度「精進藥品臨床試驗品質及受試者權益促進計畫」",
@@ -164,7 +164,9 @@
     "attachments": [
       "不須錄影，要講師PPT",
       "https://docs.google.com/forms/d/1Mh8CIiC8mHLzFL_vdopQreZkgOHjc9P2-U2mTfujP_I/edit",
-      "https://docs.google.com/forms/d/1wjnBi4JeOO0a_iIJcz1ON3TZFA47lFmjJevwHPgj5jY/edit"
+     "https://docs.google.com/forms/d/1wjnBi4JeOO0a_iIJcz1ON3TZFA47lFmjJevwHPgj5jY/edit"
+
+
     ],
     "registration_urls": [],
     "max_capacity": 50,
@@ -196,6 +198,7 @@
     ],
     "activities_contacts": []
   },
+
   {
     "id": 5,
     "planName": "114年度「精進藥品臨床試驗品質及受試者權益促進計畫」",
@@ -300,6 +303,8 @@
     ],
     "activities_contacts": []
   },
+
+
   {
     "id": 6,
     "planName": "再生醫療產品技術鏈結與市場拓展計畫",
@@ -323,7 +328,6 @@
     "jointOrganizers": [],
     "attachments": [],
     "registration_urls": [],
-    "max_capacity": 70,
     "agenda_settings": {
       "start_time": "10:00",
       "end_time": "12:00",
@@ -341,6 +345,7 @@
         }
       ]
     },
+    "max_capacity": 70,
     "speakers": [
       {
         "no": 1,
@@ -373,6 +378,7 @@
     ],
     "activities_contacts": []
   },
+
   {
     "id": 7,
     "planName": "再生醫療產品技術鏈結與市場拓展計畫",
@@ -404,6 +410,7 @@
     "speakers": [],
     "activities_contacts": []
   },
+
   {
     "id": 8,
     "planName": "114年度「精進藥品臨床試驗品質及受試者權益促進計畫」",
@@ -505,4 +512,12 @@
     ],
     "activities_contacts": []
   }
+
+
+
+
+
+
+
+
 ]

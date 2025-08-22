@@ -3,9 +3,7 @@
     "id_number": "N120300638",
     "name": "張正雄",
     "phone": "0937738728",
-    "email": [
-      "張正雄 <cs4816@gmail.com>"
-    ],
+    "email": ["張正雄 <cs4816@gmail.com>"],
     "specialties": [
       "內科學",
       "血液腫瘤病學"
@@ -21,9 +19,6 @@
       "graduation_year": "1983",
       "degree": "學士"
     },
-    "experience": [
-      "彰化基督教醫院  血腫科 主治醫師\n彰化基督教醫院 院長室 醫療副院長\n國立虎尾科技大學 通識中心 兼任助理教授"
-    ],
     "current_position": {
       "organization": "彰濱秀傳紀念醫院院長室",
       "title": "醫療副院長",
@@ -42,9 +37,7 @@
     "id_number": "R120895779",
     "name": "蕭金福",
     "phone": "037-206166#36106",
-    "email": [
-      "蕭金福 <chinfu@nhri.edu.tw>"
-    ],
+    "email": ["蕭金福 <chinfu@nhri.edu.tw>"],
     "specialties": [
       "臨床試驗統計"
     ],
@@ -57,9 +50,6 @@
       "graduation_year": "1997",
       "degree": "學士"
     },
-    "experience": [
-      "國家衛生研究院 生物統計與生物資訊研究組 博士後研究員\n國家衛生研究院群體健康科學研究所 副研究員\n國家衛生研究院群體健康科學研究所 助研究員"
-    ],
     "current_position": {
       "organization": "國家衛生研究院群體健康科學研究所",
       "title": "研究員",
@@ -78,9 +68,7 @@
     "id_number": "N222958518",
     "name": "陳書毓",
     "phone": "0983542085",
-    "email": [
-      "陳書毓<sychen@ntunhs.edu.tw>"
-    ],
+    "email": ["陳書毓<sychen@ntunhs.edu.tw>"],
     "specialties": [
       "研究倫理",
       "腫瘤護理",
@@ -97,9 +85,6 @@
       "graduation_year": "107年",
       "degree": "博士"
     },
-    "experience": [
-      "財團法人醫學研究倫理基金會聯合人體試驗委員會 委員暨執行秘書\n彰化基督教醫院 督導長"
-    ],
     "current_position": {
       "organization": "國立臺北護理健康大學",
       "title": "助理教授",
@@ -118,9 +103,7 @@
     "id_number": "L221887330",
     "name": "張杏焄",
     "phone": "03-3281200*8152",
-    "email": [
-      "杏焄_CC <sissi.cc566@msa.hinet.net>"
-    ],
+    "email": ["杏焄_CC <sissi.cc566@msa.hinet.net>"],
     "specialties": [
       "腫瘤護理",
       "兒科疫苗試驗護理",
@@ -135,9 +118,6 @@
       "graduation_year": "",
       "degree": "碩士肄業"
     },
-    "experience": [
-      "國家衛生研究院癌症症研究組派駐台大醫院 研究護士\n國家衛生研究院癌症症研究組派駐林口長庚 研究護士\n林口長庚兒童醫院 兒童健康研究部 研究助理\n林口長庚醫院 骨髓移植病房 護士\n林口長庚醫院 腫瘤科7A 護士"
-    ],
     "current_position": {
       "organization": "長庚醫療財團法人林口總院",
       "title": "研究護理師",
@@ -156,9 +136,7 @@
     "id_number": "S120927615",
     "name": "蘇矢立",
     "phone": "0930863001",
-    "email": [
-      "89933(蘇矢立)<89933@cch.org.tw>"
-    ],
+    "email": ["89933(蘇矢立)<89933@cch.org.tw>"],
     "specialties": [
       "糖尿病",
       "高血脂",
@@ -178,7 +156,6 @@
       "graduation_year": "112",
       "degree": "博士"
     },
-    "experience": [],
     "current_position": {
       "organization": "彰化基督教醫院",
       "title": "主治醫師",
@@ -193,7 +170,41 @@
       "CC": []
     }
   },
-
+  {
+    "id_number": "N222958518",
+    "name": "陳書毓",
+    "phone": "0983542085",
+    "email": [],
+    "specialties": [
+      "研究倫理",
+      "腫瘤護理",
+      "護理行政",
+      "實證護理",
+      "高齡健康照護"
+    ],
+    "achievements": [],
+    "academic_title": "助理教授",
+    "certificate_number": "",
+    "highest_education": {
+      "school": "國立臺灣大學",
+      "department": "護理學研究所博士班",
+      "graduation_year": "107年",
+      "degree": "博士"
+    },
+    "current_position": {
+      "organization": "國立臺北護理健康大學",
+      "title": "助理教授",
+      "start_year": 2024,
+      "teaching_years": 1,
+      "practice_years": 1,
+      "research_years": 1
+    },
+    "contact_person": {
+      "name": "",
+      "email": [],
+      "CC": []
+    }
+  },
   {
     "id_number": "",
     "name": "林奕汝",
@@ -209,7 +220,6 @@
       "graduation_year": "",
       "degree": ""
     },
-    "experience": [],
     "current_position": {
       "organization": "衛生福利部食品藥物管理署",
       "title": "科長",
@@ -239,7 +249,6 @@
       "graduation_year": "",
       "degree": ""
     },
-    "experience": [],
     "current_position": {
       "organization": "承寶生技股份有限公司",
       "title": "執行長",
@@ -269,7 +278,6 @@
       "graduation_year": "",
       "degree": ""
     },
-    "experience": [],
     "current_position": {
       "organization": "Arktus Therapeutics",
       "title": "董事",
@@ -299,7 +307,6 @@
       "graduation_year": "",
       "degree": ""
     },
-    "experience": [],
     "current_position": {
       "organization": "財團法人台灣醫界聯盟基金會",
       "title": "執行長",
@@ -329,7 +336,6 @@
       "graduation_year": "",
       "degree": ""
     },
-    "experience": [],
     "current_position": {
       "organization": "仲恩生醫",
       "title": "總經理",
@@ -359,7 +365,6 @@
       "graduation_year": "",
       "degree": ""
     },
-    "experience": [],
     "current_position": {
       "organization": "生物技術開發中心",
       "title": "執行長",
@@ -370,12 +375,8 @@
     },
     "contact_person": {
       "name": "黃秘書",
-      "email": [
-        "yufen@dcb.org.tw"
-      ],
-      "CC": [
-        "陳蕙蘭 <sonia@biopharm.org.tw>, 林才祐 <carltylin@biopharm.org.tw>, 林韋伶 <wllin@biopharm.org.tw>, 王美蘋 <snowapple@biopharm.org.tw>"
-      ]
+      "email": ["yufen@dcb.org.tw"],
+      "CC": ["陳蕙蘭 <sonia@biopharm.org.tw>, 林才祐 <carltylin@biopharm.org.tw>, 林韋伶 <wllin@biopharm.org.tw>, 王美蘋 <snowapple@biopharm.org.tw>"]
     }
   },
   {
@@ -395,7 +396,6 @@
       "graduation_year": "",
       "degree": ""
     },
-    "experience": [],
     "current_position": {
       "organization": "世康開發股份有限公司",
       "title": "副總經理",
@@ -425,7 +425,6 @@
       "graduation_year": "",
       "degree": ""
     },
-    "experience": [],
     "current_position": {
       "organization": "中之島Qross",
       "title": "理事長",
@@ -455,7 +454,6 @@
       "graduation_year": "",
       "degree": ""
     },
-    "experience": [],
     "current_position": {
       "organization": "中華民國醫師公會全國聯合會",
       "title": "",
@@ -487,7 +485,6 @@
       "graduation_year": "",
       "degree": ""
     },
-    "experience": [],
     "current_position": {
       "organization": "躍獅連鎖藥局",
       "title": "",
@@ -519,7 +516,6 @@
       "graduation_year": "",
       "degree": ""
     },
-    "experience": [],
     "current_position": {
       "organization": "躍獅連鎖藥局",
       "title": "",
