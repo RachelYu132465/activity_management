@@ -20,7 +20,7 @@
     "coOrganizers": [],
     "jointOrganizers": [],
     "attachments": [],
-    "registration_urls": [],
+    "registration_urls": ["https://docs.google.com/forms/d/1OlnqupGzm35GJDyNtUOcQx-5aYMNosU8b5_Aqbf1HC4/edit"],
     "agenda_settings": {
       "start_time": "10:00",
       "end_time": "12:00",
@@ -162,7 +162,11 @@
     ],
     "jointOrganizers": [],
     "attachments": [
-      "不須錄影，要講師PPT"
+      "不須錄影，要講師PPT",
+      "https://docs.google.com/forms/d/1Mh8CIiC8mHLzFL_vdopQreZkgOHjc9P2-U2mTfujP_I/edit",
+     "https://docs.google.com/forms/d/1wjnBi4JeOO0a_iIJcz1ON3TZFA47lFmjJevwHPgj5jY/edit"
+
+
     ],
     "registration_urls": [],
     "max_capacity": 50,
