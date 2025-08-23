@@ -1,11 +1,12 @@
 from __future__ import annotations
-import json
 import re
 import unicodedata
 import logging
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Tuple, Callable, Optional
+
+from scripts.core.data_util import read_json_relaxed
 
 # --- minimal, safe bootstrap ---
 _THIS = Path(__file__).resolve()
@@ -31,16 +32,6 @@ def sanitize_filename(name: str, max_len: int = 100) -> str:
     s = re.sub(INVALID_WIN, " ", s)
     s = re.sub(r"\s+", " ", s).strip()
     return s[:max_len]
-
-
-def read_json_relaxed(p: Path) -> Any:
-    """Load a JSON file allowing trailing commas and UTF-8 BOM."""
-    s = p.read_text(encoding="utf-8")
-    if s and s[0] == "\ufeff":
-        s = s.lstrip("\ufeff")
-    # remove trailing commas in objects/arrays (basic)
-    s = re.sub(r",\s*(?=[}\]])", "", s)
-    return json.loads(s)
 
 
 def flatten_list(data: Iterable[Any]) -> List[Dict[str, Any]]:
