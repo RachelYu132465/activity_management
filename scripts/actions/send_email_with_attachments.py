@@ -433,11 +433,11 @@ def save_draft(msg: EmailMessage, directory: Path) -> None:
     directory.mkdir(parents=True, exist_ok=True)
     to_safe = sanitize_filename(msg.get("To", "unknown"))
     subj_safe = sanitize_filename(msg.get("Subject", "no-subject"))
-    filename = f"{to_safe}_{subj_safe}.eml"
+    filename = f"{subj_safe}.eml"
     path = directory / filename
     i = 1
     while path.exists():
-        path = directory / f"{to_safe}_{subj_safe}-{i}.eml"
+        path = directory / f"{subj_safe}-{i}.eml"
         i += 1
     with path.open("wb") as fh:
         fh.write(msg.as_bytes())

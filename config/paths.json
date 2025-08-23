@@ -1,9 +1,10 @@
 {
-  "BaseFolder": "D:/Events",
-  "Templates": "templates",
-  "OutputLetters": "output/letters",
-  "OutputReports": "output/reports",
-  "ActivitiesData": "data/activities",
-  "Data": "data",
-  "Output": "output"
+  "BaseFolder": "",
+  "Templates": "${BaseFolder}/templates",
+  "OutputLetters": "${BaseFolder}/output/letters",
+  "OutputReports": "${BaseFolder}/output/reports",
+  "ActivitiesData": "${BaseFolder}/data/activities",
+  "Data": "${BaseFolder}/data",
+  "Output": "${BaseFolder}/output",
+  "Chrome": "C:/Program Files/Google/Chrome/Application/chrome.exe"
 }
