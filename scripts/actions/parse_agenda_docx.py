@@ -71,7 +71,7 @@ END_TITLES = { title for _, title, is_end in SPECIAL_RULES if is_end }
 
 def _match_special_title(topic_text: str, speaker_text: str) -> Tuple[Optional[str], bool]:
     """回傳 (normalized_title, is_end_of_day)；若無匹配則 (None, False)"""
-    hay = f"{_clean_text(topic_text)}\n{_clean_text(speaker_text)}"
+    hay = "{}\n{}".format(_clean_text(topic_text), _clean_text(speaker_text))
     for pat, norm_title, is_end in SPECIAL_RULES:
         if pat.search(hay):
             return norm_title, is_end
@@ -211,4 +211,4 @@ if __name__ == "__main__":
     out_path = Path(args.out)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps([program], ensure_ascii=False, indent=2), encoding="utf-8")
-    print(f"[OK] Wrote {out_path}")
+    print("[OK] Wrote {}".format(out_path))

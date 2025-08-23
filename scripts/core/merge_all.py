@@ -35,7 +35,7 @@ def _read_json_relaxed(p: Path) -> tuple[object, list[str]]:
         if cleaned != s:
             try:
                 obj = json.loads(cleaned)
-                warnings.append(f"{p.name}: trailing commas removed in-memory; please fix file.")
+                warnings.append("{}: trailing commas removed in-memory; please fix file.".format(p.name))
                 return obj, warnings
             except JSONDecodeError:
                 raise
@@ -46,11 +46,11 @@ def read_csv(p: Path) -> list[dict]:
         return list(csv.DictReader(f))
 
 def try_find_payload(stem: str) -> tuple[str, Path | None]:
-    cand = DATA_DIR / f"{stem}_data.json"
+    cand = DATA_DIR / ("{}_data.json".format(stem))
     if cand.exists(): return ("json", cand)
-    cand = DATA_DIR / f"{stem}.csv"
+    cand = DATA_DIR / ("{}.csv".format(stem))
     if cand.exists(): return ("csv", cand)
-    for q in DATA_DIR.rglob(f"{stem}_data.json"):
+    for q in DATA_DIR.rglob("{}_data.json".format(stem)):
         return ("json", q)
     return ("none", None)
 
@@ -185,7 +185,7 @@ def _backup_file(src: Path) -> Path:
     ts = datetime.now().strftime("%Y%m%d-%H%M%S")
     suffix = ''.join(src.suffixes)
     stem = src.name[:-len(suffix)] if suffix else src.name
-    backup_path = dest_dir / f"{stem}.{ts}.bak{suffix or '.json'}"
+    backup_path = dest_dir / ("{}.{}.bak{}".format(stem, ts, suffix or '.json'))
     backup_path.write_bytes(src.read_bytes())
     return backup_path
 
@@ -207,7 +207,7 @@ def batch_merge(overwrite: bool=False) -> list[tuple[str, str]]:
         name = schema_fp.stem
         try:
             schema_obj, warns = _read_json_relaxed(schema_fp)
-            for w in warns: report.append((name, f"WARNING: {w}"))
+            for w in warns: report.append((name, "WARNING: {}".format(w)))
             defaults = schema_defaults_from(schema_obj)
             if not isinstance(defaults, dict):
                 report.append((name, "skip (invalid schema format)"))
@@ -215,13 +215,13 @@ def batch_merge(overwrite: bool=False) -> list[tuple[str, str]]:
 
             payload_type, payload_path = try_find_payload(name)
             if payload_type == "none":
-                out_fp = OUTPUT_DIR / f"{name}_merged.json"
+                out_fp = OUTPUT_DIR / ("{}_merged.json".format(name))
                 _write_json(out_fp, [])
                 report.append((name, "no payload found -> wrote empty []"))
                 continue
 
             rows, w2 = load_records(payload_type, payload_path)
-            for w in w2: report.append((name, f"WARNING: {w}"))
+            for w in w2: report.append((name, "WARNING: {}".format(w)))
 
             # 新流程：先依 schema 預設遞迴轉型，再深合併
             coerced_rows = [coerce_by_schema(r, defaults) for r in rows]
@@ -231,23 +231,23 @@ def batch_merge(overwrite: bool=False) -> list[tuple[str, str]]:
                 if payload_type == "json":
                     b = _backup_file(payload_path)
                     _write_json(payload_path, merged)
-                    report.append((name, f"OVERWROTE {payload_path.relative_to(BASE_DIR)} [{len(merged)} rows] (backup: {b.relative_to(BASE_DIR)})"))
+                    report.append((name, "OVERWROTE {} [{} rows] (backup: {})".format(payload_path.relative_to(BASE_DIR), len(merged), b.relative_to(BASE_DIR))))
                 elif payload_type == "csv":
-                    target_json = payload_path.with_name(f"{payload_path.stem}_data.json")
+                    target_json = payload_path.with_name("{}_data.json".format(payload_path.stem))
                     if target_json.exists():
                         b = _backup_file(target_json)
-                        note = f"(backup: {b.relative_to(BASE_DIR)})"
+                        note = "(backup: {})".format(b.relative_to(BASE_DIR))
                     else:
                         note = "(new file)"
                     _write_json(target_json, merged)
-                    report.append((name, f"CSV source -> wrote {target_json.relative_to(BASE_DIR)} [{len(merged)} rows] {note}"))
+                    report.append((name, "CSV source -> wrote {} [{} rows] {}".format(target_json.relative_to(BASE_DIR), len(merged), note)))
             else:
-                out_fp = OUTPUT_DIR / f"{name}_merged.json"
+                out_fp = OUTPUT_DIR / ("{}_merged.json".format(name))
                 _write_json(out_fp, merged)
-                report.append((name, f"OK ({payload_type}) -> {out_fp.relative_to(BASE_DIR)} [{len(merged)} rows]"))
+                report.append((name, "OK ({}) -> {} [{} rows]".format(payload_type, out_fp.relative_to(BASE_DIR), len(merged))))
 
         except Exception as e:
-            report.append((name, f"ERROR: {e!r}"))
+            report.append((name, "ERROR: {!r}".format(e)))
 
     return report
 
@@ -258,4 +258,4 @@ if __name__ == "__main__":
     results = batch_merge(overwrite=args.overwrite)
     print("=== Merge Report ===")
     for name, status in results:
-        print(f"- {name}: {status}")
+        print("- {}: {}".format(name, status))
