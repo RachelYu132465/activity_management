@@ -12,7 +12,10 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from jinja2 import Environment, FileSystemLoader, select_autoescape, Undefined
+
+from jinja2 import Environment, FileSystemLoader, select_autoescape, StrictUndefined
+from jinja2.exceptions import UndefinedError
+
 import traceback
 
 # Direct import from bootstrap (requested "direct" style)
@@ -140,6 +143,7 @@ env = Environment(
     loader=FileSystemLoader(str(TEMPLATE_DIR)),
     autoescape=select_autoescape(["html", "xml"]),
     undefined=LoggingUndefined,
+
 )
 
 try:
@@ -151,8 +155,9 @@ except Exception as e:
 # Render HTML directly with raw program data
 try:
     html = tpl.render(**program_data, assets={})
-except Exception as e:
-    print(f"Template rendering failed: {e}", file=sys.stderr)
+
+except UndefinedError as e:
+    print("Template rendering failed due to missing variable:", file=sys.stderr)
     traceback.print_exc()
     sys.exit(1)
 
