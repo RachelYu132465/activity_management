@@ -2,17 +2,17 @@
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from weasyprint import HTML
 import json
+import sys
+
 
 from scripts.core.bootstrap import TEMPLATE_DIR, OUTPUT_DIR, PROGRAM_JSON
 
 DATA_FILE = PROGRAM_JSON
 
 
-os.makedirs("output", exist_ok=True)
 
-# load data
-with open(DATA_FILE, "r", encoding="utf8") as f:
-    data = json.load(f)
+OUTPUT_DIR.makedirs("output", exist_ok=True)
+
 
 env = Environment(
     loader=FileSystemLoader(TEMPLATES_DIR),
