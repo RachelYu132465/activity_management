@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>{{ program.title or "論壇手冊" }}</title>
+    <title>{{ program_data.title or "論壇手冊" }}</title>
 
     <style>
         /* A4 印刷基礎 */
@@ -112,8 +112,8 @@ img { max-width: 100%; height: auto; }
     {% if assets.logo_url %}
     <img src="{{ assets.logo_url }}" alt="logo" style="max-height:90px; margin-bottom:8px;">
     {% endif %}
-    <div class="title">{{ program.title }}</div>
-    <div class="meta">{{ program.date }} | {{ program.location }}</div>
+    <div class="title">{{ program_data.eventNames[0] }}</div>
+    <div class="meta">{{ program_data.date }} | {{ program_data.locations[0] }}</div>
     <div style="margin-top:12px; font-size:11pt; color:#555;">
         主辦：{{ organizers | join('、') }}<br/>
         協辦：{{ co_organizers | join('、') }}
@@ -135,22 +135,23 @@ img { max-width: 100%; height: auto; }
 <!-- 論壇資訊（整頁：若資訊過少仍保留空白讓它佔一頁） -->
 <section class="page-full forum-info" aria-label="論壇資訊 Forum Info">
     <h2>論壇資訊 / Forum Info</h2>
-    <p><strong>名稱 / Title：</strong> {{ program.title }}</p>
-    <p><strong>日期 / Date：</strong> {{ program.date }}</p>
-    <p><strong>地點 / Venue：</strong> {{ program.location }}</p>
-    <p><strong>主辦單位 / Organizer：</strong> {{ organizers | join('、') }}</p>
-    <p><strong>協辦單位 / Co-organizer：</strong> {{ co_organizers | join('、') }}</p>
-    {% if program.contact %}
-    <p><strong>聯絡 / Contact：</strong> {{ program.contact }}</p>
+    <p><strong>名稱 / Title：</strong> {{ program_data.title }}</p>
+    <p><strong>日期 / Date：</strong> {{ program_data.date }}</p>
+    <p><strong>地點 / Venue：</strong> {{ program_data.locations[0] }}</p>
+    <p><strong>地點 / Venue：</strong> {{ program_data.locations[1] }}</p>
+    <p><strong>主辦單位 / Organizer：</strong> {{ program_data.organizers | join('、') }}</p>
+    <p><strong>協辦單位 / Co-organizer：</strong> {{ program_data.co_organizers | join('、') }}</p>
+    {% if program_data.contact %}
+    <p><strong>聯絡 / Contact：</strong> {{ program_data.contact }}</p>
     {% endif %}
 </section>
 
 <!-- 論壇須知（整頁） -->
 <section class="page-full notes" aria-label="論壇須知 Notes">
     <h2>論壇須知 / Notes</h2>
-    {% if program.notes %}
+    {% if program_data.notes %}
     <ul>
-        {% for note in program.notes %}
+        {% for note in program_data.notes %}
         <li>{{ note }}</li>
         {% endfor %}
     </ul>
@@ -172,7 +173,7 @@ img { max-width: 100%; height: auto; }
         </tr>
         </thead>
         <tbody>
-        {% for item in program.schedule %}
+        {% for item in program_data.schedule %}
         <tr>
             <td>{{ item.time }}</td>
             <td>{{ item.topic }}</td>
@@ -185,7 +186,7 @@ img { max-width: 100%; height: auto; }
 </section>
 
 <!-- 主持人：每位主持人各一頁 -->
-{% for chair in program.chairs %}
+{% for chair in program_data.chairs %}
 <section class="page-full" aria-label="主持人 Chair">
     <h2>主持人 / Chair</h2>
     <div class="person-card">
@@ -202,7 +203,7 @@ img { max-width: 100%; height: auto; }
 {% endfor %}
 
 <!-- 講者：每位講者各一頁 -->
-{% for sp in program.speakers %}
+{% for sp in program_data.speakers %}
 <section class="page-full" aria-label="講者 Speaker">
     <h2>講者 / Speaker</h2>
     <div class="person-card">
