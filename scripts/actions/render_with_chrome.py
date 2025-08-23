@@ -15,16 +15,23 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 # Direct import from bootstrap (requested "direct" style)
 from scripts.core.bootstrap import TEMPLATE_DIR, OUTPUT_DIR, DATA_DIR, CHROME_BIN
 
-DATA_FILE = DATA_DIR / "shared" / "program_data.json"
+# -------------------------
+# === 可改常數 / Single place to change ===
+# 改這裡就可以：要改 JSON 檔名/路徑或是模板裡想要的 key（例如 "program_data"）
+# Change these two constants if your JSON filename or template variable name changes.
+PROGRAM_JSON_FILENAME = DATA_DIR / "shared" / "program_data.json"
+PROGRAM_DATA_KEY = "program_data"
+# -------------------------
+
 # Ensure output directory exists
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 # Load program data
 try:
-    with DATA_FILE.open("r", encoding="utf-8") as fh:
+    with PROGRAM_JSON_FILENAME.open("r", encoding="utf-8") as fh:
         data = json.load(fh)
 except Exception as e:
-    print(f"Failed to load {DATA_FILE}: {e}", file=sys.stderr)
+    print(f"Failed to load {PROGRAM_JSON_FILENAME}: {e}", file=sys.stderr)
     sys.exit(1)
 
 # Prepare Jinja2 environment
@@ -39,15 +46,39 @@ except Exception as e:
     print(f"Template not found in {TEMPLATE_DIR}: {e}", file=sys.stderr)
     sys.exit(1)
 
-# Render HTML
+# --- Render HTML (use PROGRAM_DATA_KEY to control template variable name) ---
 try:
-    if isinstance(data, dict):
-        html = tpl.render(**data)
+    # program_candidate: prefer top-level key matching PROGRAM_DATA_KEY, otherwise treat entire JSON as program_data
+    if isinstance(data, dict) and PROGRAM_DATA_KEY in data:
+        program = data[PROGRAM_DATA_KEY]
     else:
-        html = tpl.render(data=data)
+        # if your JSON is already the program object, use it directly
+        program = data if isinstance(data, dict) else {"title": "論壇手冊"}
+
+    # Ensure safe defaults so template for-loops / accesses won't crash
+    if isinstance(program, dict):
+        program.setdefault("schedule", [])
+        program.setdefault("chairs", [])
+        program.setdefault("speakers", [])
+        program.setdefault("eventNames", [program.get("title", "論壇手冊")])
+        program.setdefault("locations", program.get("locations") or [""])
+        program.setdefault("date", program.get("date", ""))
+
+    # Build a top-level context exposing the chosen PROGRAM_DATA_KEY var
+    # so the template can reference {{ program_data }} (or whatever PROGRAM_DATA_KEY is)
+    context = {
+        PROGRAM_DATA_KEY: program,
+        # also expose some convenient top-level fallbacks for template variables
+        "organizers": (data.get("organizers") if isinstance(data, dict) else None) or program.get("organizers") or [],
+        "co_organizers": (data.get("co_organizers") if isinstance(data, dict) else None) or program.get("co_organizers") or [],
+        "assets": (data.get("assets") if isinstance(data, dict) else None) or program.get("assets", {}),
+    }
+
+    html = tpl.render(**context)
 except Exception as e:
     print(f"Template rendering failed: {e}", file=sys.stderr)
     sys.exit(1)
+# --- end render ---
 
 # Save intermediate HTML
 html_file = OUTPUT_DIR / "program.html"
