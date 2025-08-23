@@ -160,6 +160,8 @@ env = Environment(
 )
 
 try:
+
+
     tpl = env.get_template("template.html")
 except TemplateNotFound as e:
     print("Template not found in {}: {}".format(TEMPLATE_DIR, e), file=sys.stderr)
@@ -167,7 +169,10 @@ except TemplateNotFound as e:
 
 # Render HTML directly with raw program data
 try:
-    html = tpl.render(**program_data, assets={})
+
+    render_args = dict(program_data)
+    render_args["assets"] = {}
+    html = tpl.render(**render_args)
 except UndefinedError:
     print("Template rendering failed due to missing variable:", file=sys.stderr)
     traceback.print_exc()
