@@ -15,6 +15,13 @@ Notes:
 """
 from __future__ import annotations
 
+from pathlib import Path
+import sys
+
+ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
 import argparse
 import json
 import logging
@@ -22,7 +29,6 @@ import mimetypes
 import os
 import re
 from email.message import EmailMessage
-from pathlib import Path
 from typing import Iterable, List, Dict, Any, Optional
 import smtplib
 import html as _html_mod
@@ -55,7 +61,6 @@ import tempfile
 import uuid
 # shared data utilities
 from scripts.core.data_util import (
-    BASE_DIR,
     DEFAULT_DATA_DIR,
     DEFAULT_SHARED_JSON,
     load_programs,
@@ -64,11 +69,12 @@ from scripts.core.data_util import (
     load_all_records_from_dir,
     record_matches_program,
 )
+from scripts.core.bootstrap import BASE_DIR, TEMPLATE_DIR, DATA_DIR
 # --- end import ---
 
 # -------------------- DEFAULT PATHS (adjust if needed) --------------------
-DEFAULT_TEMPLATE = BASE_DIR / "templates" / "letter_sample" / "活動參與通知.docx"
-DEFAULT_ATTACHMENTS_DIR = DEFAULT_DATA_DIR / "attachments"
+DEFAULT_TEMPLATE = TEMPLATE_DIR / "letter_sample" / "活動參與通知.docx"
+DEFAULT_ATTACHMENTS_DIR = DATA_DIR / "attachments"
 # -------------------------------------------------------------------------
 
 # -------------------- SMTP config loader ---------------------------------

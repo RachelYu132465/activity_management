@@ -4,5 +4,6 @@
   "OutputLetters": "output/letters",
   "OutputReports": "output/reports",
   "ActivitiesData": "data/activities",
-  "Data": "data"
+  "Data": "data",
+  "Output": "output"
 }

@@ -5,9 +5,9 @@ import importlib
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-# default base (adjust if your repo layout differs)
-BASE_DIR = Path(__file__).resolve().parents[2]  # points to repo root
-DEFAULT_DATA_DIR = BASE_DIR / "data"
+from .bootstrap import DATA_DIR
+
+DEFAULT_DATA_DIR = DATA_DIR
 DEFAULT_SHARED_JSON = DEFAULT_DATA_DIR / "shared" / "program_data.json"
 
 # relaxed JSON loader (supports BOM, trailing commas)

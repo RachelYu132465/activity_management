@@ -1,16 +1,19 @@
 # replace_docx_with_vars.py
 # pip install python-docx
+from pathlib import Path
+import sys
+
+ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
 import json
 import argparse
 import re
-from pathlib import Path
 from typing import Any, Dict, Iterable, Tuple
 from docx import Document
 
-# ----- config -----
-def load_paths():
-    cfg = json.loads(Path("config/paths.json").read_text(encoding="utf-8"))
-    return Path(cfg["Templates"]), Path(cfg["Data"]), Path(cfg["OutputLetters"])
+from scripts.core.bootstrap import TEMPLATE_DIR, DATA_DIR, OUTPUT_DIR
 
 # ----- JSON path helpers -----
 _path_token = re.compile(r"(?:\.?([^\.\[\]]+))(?:\[(\d+)\])?")
@@ -111,19 +114,18 @@ def main():
     ap.add_argument("--merge-runs", action="store_true", help="需要時合併段落 runs 再替換（可能失去局部粗斜體/顏色）")
     args = ap.parse_args()
 
-    templates_dir, data_dir, out_dir = load_paths()
-    out_dir.mkdir(parents=True, exist_ok=True)
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     # 找模板
-    t_matches = list(templates_dir.rglob(args.template))
+    t_matches = list(TEMPLATE_DIR.rglob(args.template))
     if not t_matches:
-        raise SystemExit(f"找不到模板：{args.template} 於 {templates_dir} 下")
+        raise SystemExit(f"找不到模板：{args.template} 於 {TEMPLATE_DIR} 下")
     input_docx = t_matches[0]
 
     # 找所有同名 JSON
-    j_matches = list(data_dir.rglob(args.json_file))
+    j_matches = list(DATA_DIR.rglob(args.json_file))
     if not j_matches:
-        raise SystemExit(f"找不到 JSON：{args.json_file} 於 {data_dir} 下")
+        raise SystemExit(f"找不到 JSON：{args.json_file} 於 {DATA_DIR} 下")
 
     # 由多個 JSON 檔合併 mapping
     mapping: Dict[str, str] = {}
@@ -174,7 +176,7 @@ def main():
     # 套用到 DOCX
     doc = Document(input_docx)
     replace_in_document(doc, mapping, merge_runs_if_needed=args.merge_runs)
-    out_path = out_dir / (input_docx.stem + "_template.docx")
+    out_path = OUTPUT_DIR / (input_docx.stem + "_template.docx")
     doc.save(out_path)
     print(f"[OK] 已輸出：{out_path}")
 
