@@ -1,7 +1,13 @@
 #!/usr/bin/env python3
 """Render HTML to PDF using headless Chrome with centralized paths (direct import style)."""
 
-from pathlib import Path
+from __future__ import print_function, unicode_literals
+
+try:  # Python 2 fallback
+    from pathlib import Path
+except ImportError:  # pragma: no cover - pathlib2 used only on legacy Python
+    from pathlib2 import Path  # type: ignore
+
 import sys
 import json
 import subprocess
@@ -13,10 +19,15 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 
-from jinja2 import Environment, FileSystemLoader, select_autoescape, Undefined
-import traceback
+# <<<<<<< HEAD
+# from jinja2 import Environment, FileSystemLoader, select_autoescape, Undefined
+# import traceback
+#
+# from jinja2.exceptions import UndefinedError
+# =======
+from jinja2 import Environment, FileSystemLoader, select_autoescape, StrictUndefined, Undefined
+from jinja2.exceptions import UndefinedError, TemplateNotFound
 
-from jinja2.exceptions import UndefinedError
 
 import traceback
 
@@ -34,15 +45,15 @@ OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 try:
     with DATA_FILE.open("r", encoding="utf-8") as fh:
         programs_raw = json.load(fh)
-except Exception as e:
-    print(f"Failed to load program data file {DATA_FILE}: {e}", file=sys.stderr)
+except (OSError, ValueError) as e:
+    print("Failed to load program data file {}: {}".format(DATA_FILE, e), file=sys.stderr)
     sys.exit(1)
 
 try:
     with INFLUENCER_FILE.open("r", encoding="utf-8") as fh:
         influencer_list = json.load(fh)
-except Exception as e:
-    print(f"Failed to load influencer data file {INFLUENCER_FILE}: {e}", file=sys.stderr)
+except (OSError, ValueError) as e:
+    print("Failed to load influencer data file {}: {}".format(INFLUENCER_FILE, e), file=sys.stderr)
     influencer_list = []
 
 # Select program entry and normalize to a dict
@@ -58,14 +69,14 @@ if isinstance(programs_raw, list):
                 if int(prog.get("id", -1)) == args.event_id:
                     program_data = prog
                     break
-            except Exception:
+            except (ValueError, TypeError):
                 continue
     if not program_data and programs_raw:
         program_data = programs_raw[0]
 elif isinstance(programs_raw, dict):
     program_data = programs_raw
 else:
-    print(f"Unexpected JSON structure in {DATA_FILE} (expected list or dict).", file=sys.stderr)
+    print("Unexpected JSON structure in {} (expected list or dict).".format(DATA_FILE), file=sys.stderr)
     sys.exit(1)
 
 # Build schedule from agenda settings
@@ -73,7 +84,7 @@ def build_schedule(event):
     cfg = event.get("agenda_settings", {}) or {}
     try:
         current = datetime.strptime(cfg.get("start_time", "00:00"), "%H:%M")
-    except Exception:
+    except (ValueError, TypeError):
         return []
     speaker_minutes = int(cfg.get("speaker_minutes") or 0)
     specials = cfg.get("special_sessions", []) or []
@@ -85,37 +96,37 @@ def build_schedule(event):
                     dur = int(s.get("duration") or 0)
                     end = start + timedelta(minutes=dur)
                     schedule.append({
-                        "time": f"{start.strftime('%H:%M')}-{end.strftime('%H:%M')}",
+                        "time": "{}-{}".format(start.strftime('%H:%M'), end.strftime('%H:%M')),
                         "topic": s.get("title", ""),
                         "speaker": "",
 
                     })
                     start = end
-            except Exception:
+            except (ValueError, TypeError):
                 continue
         return start
 
     schedule = []
     current = add_special(0, current)
-    for sp in event.get("speakers", []) or []:
+    for speaker_item in event.get("speakers", []) or []:
         end = current + timedelta(minutes=speaker_minutes)
         schedule.append({
-            "time": f"{current.strftime('%H:%M')}-{end.strftime('%H:%M')}",
-            "topic": sp.get("topic", ""),
-            "speaker": sp.get("name", ""),
+            "time": "{}-{}".format(current.strftime('%H:%M'), end.strftime('%H:%M')),
+            "topic": speaker_item.get("topic", ""),
+            "speaker": speaker_item.get("name", ""),
             "note": "",
         })
         current = end
-        current = add_special(sp.get("no", 0), current)
-    current = add_special(999, current)
+        current = add_special(speaker_item.get("no", 0), current)
+    add_special(999, current)
     return schedule
 
 # Build speaker and chair lists augmented from influencer data
 infl_by_name = {p.get("name"): p for p in influencer_list if isinstance(p, dict)}
 chairs = []
 speakers = []
-for sp in program_data.get("speakers", []) or []:
-    name = sp.get("name")
+for speaker_entry in program_data.get("speakers", []) or []:
+    name = speaker_entry.get("name")
     info = infl_by_name.get(name, {}) or {}
     enriched = {
         "name": name,
@@ -123,7 +134,7 @@ for sp in program_data.get("speakers", []) or []:
         "profile": "\n".join(info.get("experience", [])) if isinstance(info.get("experience"), list) else info.get("experience", "") or "",
         "photo_url": info.get("photo_url", ""),
     }
-    if sp.get("type") == "主持人":
+    if speaker_entry.get("type") == "主持人":
         chairs.append(enriched)
     else:
         speakers.append(enriched)
@@ -137,7 +148,7 @@ program_data["speakers"] = speakers
 class LoggingUndefined(Undefined):
     def __str__(self):
         if self._undefined_name is not None:
-            print(f"[render] Missing template variable: {self._undefined_name}", file=sys.stderr)
+            print("[render] Missing template variable: {}".format(self._undefined_name), file=sys.stderr)
         return ""
 
 
@@ -150,15 +161,14 @@ env = Environment(
 
 try:
     tpl = env.get_template("template.html")
-except Exception as e:
-    print(f"Template not found in {TEMPLATE_DIR}: {e}", file=sys.stderr)
+except TemplateNotFound as e:
+    print("Template not found in {}: {}".format(TEMPLATE_DIR, e), file=sys.stderr)
     sys.exit(1)
 
 # Render HTML directly with raw program data
 try:
     html = tpl.render(**program_data, assets={})
-
-except UndefinedError as e:
+except UndefinedError:
     print("Template rendering failed due to missing variable:", file=sys.stderr)
     traceback.print_exc()
     sys.exit(1)
@@ -168,8 +178,8 @@ html_file = OUTPUT_DIR / "program.html"
 try:
     with html_file.open("w", encoding="utf-8") as f:
         f.write(html)
-except Exception as e:
-    print(f"Failed to write HTML preview {html_file}: {e}", file=sys.stderr)
+except OSError as e:
+    print("Failed to write HTML preview {}: {}".format(html_file, e), file=sys.stderr)
     sys.exit(1)
 
 # Prepare PDF path
@@ -192,18 +202,18 @@ cmd = [
     CHROME_BIN,
     "--headless",
     "--disable-gpu",
-    f"--print-to-pdf={str(pdf_file)}",
+    "--print-to-pdf={}".format(str(pdf_file)),
     str(html_file),
 ]
 
 # Run Chrome to print PDF
 try:
     subprocess.run(cmd, check=True)
-    print(f"Saved PDF to {pdf_file}")
+    print("Saved PDF to {}".format(pdf_file))
 except FileNotFoundError:
-    print(f"Chrome binary not found at: {CHROME_BIN}. Check CHROME_BIN or config/paths.json.", file=sys.stderr)
+    print("Chrome binary not found at: {}. Check CHROME_BIN or config/paths.json.".format(CHROME_BIN), file=sys.stderr)
     sys.exit(1)
 except subprocess.CalledProcessError as e:
-    print(f"Chrome rendering failed: {e}", file=sys.stderr)
+    print("Chrome rendering failed: {}".format(e), file=sys.stderr)
     print("You can open the HTML preview to debug:", html_file, file=sys.stderr)
     sys.exit(1)

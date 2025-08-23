@@ -114,10 +114,22 @@ img { max-width: 100%; height: auto; }
     {% endif %}
     <div class="title">{{ eventNames[0] }}</div>
     <div class="meta">{{ date }} | {{ locations[0] }}</div>
-    <div style="margin-top:12px; font-size:11pt; color:#555;">
-        主辦：{{ organizers | join('、') }}<br/>
-        協辦：{{ coOrganizers | join('、') }}
+
+
+    <div name="參與單位" style="margin-top:12px; font-size:11pt; color:#555;">
+       <p>
+
+        <p>指導單位：{{ instructors | join('、') }}</p>
+        <p>主辦單位：{{ organizers | join('、') }}</p>
+        {% if variable is defined and variable|default('')|trim %}
+        <p>合辦單位：{{ jointOrganizers | join('、') }}</p>
+        {% endif %}
+        {% if variable is defined and variable|default('')|trim %}
+        <p>協辦單位：{{ coOrganizers | join('、') }}</p>
+        {% endif %}
+
     </div>
+
 </div>
 
 <!-- 目錄（整頁） -->
