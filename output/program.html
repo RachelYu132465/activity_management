@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>2025再生醫療新脈動產業商機交流會議</title>
+
+    <style>
+        /* A4 印刷基礎 */
+        @page { size: A4; margin: 18mm; }
+        html, body { margin:0; padding:0; -webkit-print-color-adjust: exact; }
+        body {
+          font-family: "Noto Sans TC", "Helvetica", "Arial", sans-serif;
+          color: #111;
+          font-size: 12pt;
+          line-height: 1.45;
+          padding: 12mm;
+          box-sizing: border-box;
+        }
+
+        /* ---------- 公用：確保一頁至少佔滿 A4（扣 margin） ---------- */
+        /* A4 height = 297mm. margins top+bottom = 18mm*2 = 36mm */
+        .page-full {
+          page-break-after: always;
+          page-break-inside: avoid;
+          min-height: calc(297mm - 36mm); /* 確保至少一頁 */
+          display: block;
+          padding-top: 10mm;
+          padding-bottom: 10mm;
+          box-sizing: border-box;
+        }
+        .page-full:last-child { page-break-after: auto; }
+
+        /* 封面 */
+        .cover {
+          text-align:center;
+          display:flex;
+          flex-direction:column;
+          justify-content:center;
+          align-items:center;
+        }
+        .cover .title { font-size:28pt; font-weight:700; margin:8px 0; }
+        .cover .meta { font-size:12pt; color:#333; }
+
+        /* 目錄 */
+        .toc h2 { font-size:16pt; margin-bottom:8px; }
+        .toc ol { padding-left:1.1em; font-size:12pt; }
+
+        /* 論壇資訊 */
+        .forum-info p { margin:6px 0; font-size:12pt; }
+
+        /* 論壇須知 */
+        .notes ul { margin:6px 0 0 18px; font-size:12pt; }
+
+        /* 議程 */
+        table.schedule { width:100%; border-collapse: collapse; margin-top:8px; }
+        table.schedule th, table.schedule td {
+          border:1px solid #ddd; padding:6px 8px; vertical-align:top; font-size:11pt;
+        }
+        table.schedule th { background:#f3f3f3; font-weight:600; text-align:left; }
+
+        /* 主持人 / 講者頁面樣式 */
+        .person-card {
+          display:flex;
+          gap:18px;
+          align-items:flex-start;
+        }
+        .person-photo { width:120px; flex: 0 0 120px; }
+        .person-info { flex:1; }
+        .person-info .name { font-size:18pt; font-weight:700; margin-bottom:6px; }
+        .person-info .title { font-size:12pt; color:#333; margin-bottom:8px; }
+        .person-info .bio { font-size:11pt; white-space:pre-wrap; }
+
+        /* 小字 footer */
+        footer.small { font-size:10pt; color:#666; margin-top:10mm; text-align:left; }
+
+        /* print tweaks */
+        @media print {
+          body { padding: 6mm; }
+        }
+
+        /* A4 trim = 210mm x 297mm; bleed 3mm => page size = 210+6 x 297+6 = 216mm x 303mm */
+@page {
+  size: 216mm 303mm;          /* 含出血的紙張尺寸：trim + bleed */
+  margin: 18mm;               /* 這邊 margin 是印內邊；實際 trim 與 crop 由印廠處理 */
+}
+
+/* 用一個 .trim-box 指定 trim（方便視覺排版參考） */
+.trim-box {
+  width: 210mm;
+  height: 297mm;
+  margin: 3mm auto;           /* 留出出血區域 */
+  box-sizing: border-box;
+  /* 可加虛線顯示 trim（僅供 preview） */
+  outline: 0.5pt dashed rgba(0,0,0,0.2);
+}
+
+/* 請確保重要內容放在 safe area（例如內縮 6~8mm） */
+.safe {
+  padding: 8mm;
+}
+
+/* 其它印刷友好設定 */
+img { max-width: 100%; height: auto; }
+
+    </style>
+</head>
+<body>
+
+<!-- 封面（整頁） -->
+<div class="page-full cover">
+    
+    <div class="title">2025再生醫療新脈動產業商機交流會議</div>
+    <div class="meta">2025-09-03 | 張榮發基金會國際會議中心602會議室</div>
+    <div style="margin-top:12px; font-size:11pt; color:#555;">
+        主辦：財團法人台灣醫界聯盟基金會、財團法人生物技術開發中心<br/>
+        協辦：
+    </div>
+</div>
+
+<!-- 目錄（整頁） -->
+<nav class="page-full toc" aria-label="目錄 Contents">
+    <h2>目錄 / Contents</h2>
+    <ol>
+        <li>論壇資訊 / Forum Info</li>
+        <li>論壇須知 / Notes</li>
+        <li>議程 / Schedule</li>
+        <li>主持人 / Chairs</li>
+        <li>講者 / Speakers</li>
+    </ol>
+</nav>
+
+<!-- 論壇資訊（整頁：若資訊過少仍保留空白讓它佔一頁） -->
+<section class="page-full forum-info" aria-label="論壇資訊 Forum Info">
+    <h2>論壇資訊 / Forum Info</h2>
+    <p><strong>名稱 / Title：</strong> 2025再生醫療新脈動產業商機交流會議</p>
+    <p><strong>日期 / Date：</strong> 2025-09-03</p>
+    <p><strong>地點 / Venue：</strong> 張榮發基金會國際會議中心602會議室</p>
+    <p><strong>地點 / Venue：</strong> 臺北市中正區中山南路11號6樓</p>
+    <p><strong>主辦單位 / Organizer：</strong> 財團法人台灣醫界聯盟基金會、財團法人生物技術開發中心</p>
+    <p><strong>協辦單位 / Co-organizer：</strong> </p>
+    
+</section>
+
+<!-- 論壇須知（整頁） -->
+<section class="page-full notes" aria-label="論壇須知 Notes">
+    <h2>論壇須知 / Notes</h2>
+    
+    <p class="small">無特別須知 / No special notes</p>
+    
+</section>
+
+<!-- 議程（此區可視情況短長；放在一頁或超過亦可） -->
+<section class="page-full">
+    <h2>議程 / Schedule</h2>
+    <table class="schedule" role="table" aria-label="議程表">
+        <thead>
+        <tr>
+            <th style="width:16%;">時間 / Time</th>
+            <th style="width:18%;">主題 / Topic</th>
+            <th style="width:26%;">講者 / Speaker</th>
+            <th>備註 / Note</th>
+        </tr>
+        </thead>
+        <tbody>
+        
+        <tr>
+            <td>10:00-10:10</td>
+            <td>致詞與大合照</td>
+            <td></td>
+            <td></td>
+        </tr>
+        
+        <tr>
+            <td>10:10-10:35</td>
+            <td>致詞與大合照</td>
+            <td>李財坤</td>
+            <td></td>
+        </tr>
+        
+        <tr>
+            <td>10:35-11:00</td>
+            <td>再生醫療製劑管理政策</td>
+            <td>林奕汝</td>
+            <td></td>
+        </tr>
+        
+        <tr>
+            <td>11:00-11:25</td>
+            <td>多元CAR-T平台推動個人化免疫治療新紀元</td>
+            <td>官建村</td>
+            <td></td>
+        </tr>
+        
+        <tr>
+            <td>11:25-11:35</td>
+            <td>休息</td>
+            <td></td>
+            <td></td>
+        </tr>
+        
+        <tr>
+            <td>11:35-12:00</td>
+            <td>再生醫療產品新進展與台灣合作新契機【英語演講】</td>
+            <td>中山功一</td>
+            <td></td>
+        </tr>
+        
+        <tr>
+            <td>12:00-12:25</td>
+            <td>綜合討論</td>
+            <td>所有講者</td>
+            <td></td>
+        </tr>
+        
+        </tbody>
+    </table>
+</section>
+
+<!-- 主持人：每位主持人各一頁 -->
+
+<section class="page-full" aria-label="主持人 Chair">
+    <h2>主持人 / Chair</h2>
+    <div class="person-card">
+        
+        <div class="person-info">
+            <div class="name">李財坤</div>
+            <div class="title"></div>
+            <div class="bio"></div>
+        </div>
+    </div>
+</section>
+
+
+<!-- 講者：每位講者各一頁 -->
+
+<section class="page-full" aria-label="講者 Speaker">
+    <h2>講者 / Speaker</h2>
+    <div class="person-card">
+        
+        <div class="person-info">
+            <div class="name">林奕汝</div>
+            <div class="title">科長</div>
+            <div class="bio"></div>
+        </div>
+    </div>
+</section>
+
+<section class="page-full" aria-label="講者 Speaker">
+    <h2>講者 / Speaker</h2>
+    <div class="person-card">
+        
+        <div class="person-info">
+            <div class="name">官建村</div>
+            <div class="title">執行長</div>
+            <div class="bio"></div>
+        </div>
+    </div>
+</section>
+
+<section class="page-full" aria-label="講者 Speaker">
+    <h2>講者 / Speaker</h2>
+    <div class="person-card">
+        
+        <div class="person-info">
+            <div class="name">中山功一</div>
+            <div class="title">董事</div>
+            <div class="bio"></div>
+        </div>
+    </div>
+</section>
+
+<section class="page-full" aria-label="講者 Speaker">
+    <h2>講者 / Speaker</h2>
+    <div class="person-card">
+        
+        <div class="person-info">
+            <div class="name">所有講者</div>
+            <div class="title"></div>
+            <div class="bio"></div>
+        </div>
+    </div>
+</section>
+
+
+<footer class="small">
+    來源：依據上傳手冊內容製作。 Generated from uploaded handbook.
+</footer>
+</body>
+</html>

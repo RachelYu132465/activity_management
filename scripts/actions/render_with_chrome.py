@@ -17,6 +17,7 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 # Direct import from bootstrap (requested "direct" style)
 from scripts.core.bootstrap import TEMPLATE_DIR, OUTPUT_DIR, DATA_DIR, CHROME_BIN
 
+
 DATA_FILE = DATA_DIR / "shared" / "program_data.json"
 INFLUENCER_FILE = DATA_DIR / "shared" / "influencer_data.json"
 
@@ -88,7 +89,7 @@ def build_schedule(event):
                         "time": f"{start.strftime('%H:%M')}-{end.strftime('%H:%M')}",
                         "topic": s.get("title", ""),
                         "speaker": "",
-                        "note": "",
+
                     })
                     start = end
             except Exception:
@@ -137,7 +138,7 @@ program_data = {
     "schedule": build_schedule(selected),
     "chairs": chairs,
     "speakers": speakers,
-    "notes": selected.get("notes", []),
+    # "notes": selected.get("notes", []),
     "contact": selected.get("contact", ""),
 }
 
