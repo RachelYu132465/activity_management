@@ -3,10 +3,10 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>{{ program.title or "論壇手冊" }}</title>
+    <title>{{ program_data.title or "論壇手冊" }}</title>
 
     <style>
-        /* 全域印刷設定 */
+        /* A4 印刷基礎 */
         @page { size: A4; margin: 18mm; }
         html, body { margin:0; padding:0; -webkit-print-color-adjust: exact; }
         body {
@@ -18,108 +18,150 @@
           box-sizing: border-box;
         }
 
+        /* ---------- 公用：確保一頁至少佔滿 A4（扣 margin） ---------- */
+        /* A4 height = 297mm. margins top+bottom = 18mm*2 = 36mm */
+        .page-full {
+          page-break-after: always;
+          page-break-inside: avoid;
+          min-height: calc(297mm - 36mm); /* 確保至少一頁 */
+          display: block;
+          padding-top: 10mm;
+          padding-bottom: 10mm;
+          box-sizing: border-box;
+        }
+        .page-full:last-child { page-break-after: auto; }
+
         /* 封面 */
-        .cover { text-align: center; margin-top: 20mm; margin-bottom: 10mm; page-break-after: always; }
-        .title { font-size: 28pt; font-weight: 700; margin-bottom: 6mm; }
-        .meta { font-size: 12pt; margin-bottom: 2mm; }
+        .cover {
+          text-align:center;
+          display:flex;
+          flex-direction:column;
+          justify-content:center;
+          align-items:center;
+        }
+        .cover .title { font-size:28pt; font-weight:700; margin:8px 0; }
+        .cover .meta { font-size:12pt; color:#333; }
 
         /* 目錄 */
-        .toc { margin-bottom: 8mm; }
-        .toc h2 { font-size: 16pt; margin-bottom: 4mm; }
-        .toc ul { padding-left: 1.2em; }
+        .toc h2 { font-size:16pt; margin-bottom:8px; }
+        .toc ol { padding-left:1.1em; font-size:12pt; }
 
-        /* 章節 */
-        section { margin-bottom: 8mm; }
-        h1, h2, h3 { margin: 6px 0; }
-        .small { font-size: 10pt; color: #555; }
+        /* 論壇資訊 */
+        .forum-info p { margin:6px 0; font-size:12pt; }
 
-        /* 議程表格 */
-        table.schedule { width: 100%; border-collapse: collapse; margin-top: 4mm; }
+        /* 論壇須知 */
+        .notes ul { margin:6px 0 0 18px; font-size:12pt; }
+
+        /* 議程 */
+        table.schedule { width:100%; border-collapse: collapse; margin-top:8px; }
         table.schedule th, table.schedule td {
-          border: 1px solid #ddd;
-          padding: 6px 8px;
-          vertical-align: top;
-          font-size: 11pt;
+          border:1px solid #ddd; padding:6px 8px; vertical-align:top; font-size:11pt;
         }
         table.schedule th { background:#f3f3f3; font-weight:600; text-align:left; }
 
-        /* 講者卡片 */
-        .speaker {
-          border: 1px solid #e6e6e6;
-          padding: 8px;
-          margin-bottom: 6mm;
-          page-break-inside: avoid;
-          display: flex;
-          gap: 10px;
+        /* 主持人 / 講者頁面樣式 */
+        .person-card {
+          display:flex;
+          gap:18px;
+          align-items:flex-start;
         }
-        .speaker .info { flex:1; }
-        .speaker .name { font-weight:700; font-size:13pt; }
-        .speaker .title { font-size:11pt; color:#333; margin-bottom:4px; }
-        .speaker .bio { font-size:10.5pt; color:#222; white-space:pre-wrap; }
+        .person-photo { width:120px; flex: 0 0 120px; }
+        .person-info { flex:1; }
+        .person-info .name { font-size:18pt; font-weight:700; margin-bottom:6px; }
+        .person-info .title { font-size:12pt; color:#333; margin-bottom:8px; }
+        .person-info .bio { font-size:11pt; white-space:pre-wrap; }
 
-        /* 分頁控制 */
-        .page-break { display:block; page-break-after: always; height:1px; }
+        /* 小字 footer */
+        footer.small { font-size:10pt; color:#666; margin-top:10mm; text-align:left; }
 
-        /* 隱藏在列印以外的元件（如編輯按鈕）*/
-        @media screen {
-          .sr-only { display:none; }
-        }
-
+        /* print tweaks */
         @media print {
           body { padding: 6mm; }
-          .no-print { display: none !important; }
         }
+
+        /* A4 trim = 210mm x 297mm; bleed 3mm => page size = 210+6 x 297+6 = 216mm x 303mm */
+@page {
+  size: 216mm 303mm;          /* 含出血的紙張尺寸：trim + bleed */
+  margin: 18mm;               /* 這邊 margin 是印內邊；實際 trim 與 crop 由印廠處理 */
+}
+
+/* 用一個 .trim-box 指定 trim（方便視覺排版參考） */
+.trim-box {
+  width: 210mm;
+  height: 297mm;
+  margin: 3mm auto;           /* 留出出血區域 */
+  box-sizing: border-box;
+  /* 可加虛線顯示 trim（僅供 preview） */
+  outline: 0.5pt dashed rgba(0,0,0,0.2);
+}
+
+/* 請確保重要內容放在 safe area（例如內縮 6~8mm） */
+.safe {
+  padding: 8mm;
+}
+
+/* 其它印刷友好設定 */
+img { max-width: 100%; height: auto; }
+
     </style>
 </head>
 <body>
 
-<!-- 封面 -->
-<div class="cover">
+<!-- 封面（整頁） -->
+<div class="page-full cover">
     {% if assets.logo_url %}
-    <img src="{{ assets.logo_url }}" alt="logo" style="max-height:80px;margin-bottom:8px;">
+    <img src="{{ assets.logo_url }}" alt="logo" style="max-height:90px; margin-bottom:8px;">
     {% endif %}
-    <div class="title">{{ program.title }}</div>
-    <div class="meta">{{ program.date }} | {{ program.location }}</div>
-    <div class="meta small">
+    <div class="title">{{ program_data.eventNames[0] }}</div>
+    <div class="meta">{{ program_data.date }} | {{ program_data.locations[0] }}</div>
+    <div style="margin-top:12px; font-size:11pt; color:#555;">
         主辦：{{ organizers | join('、') }}<br/>
         協辦：{{ co_organizers | join('、') }}
     </div>
 </div>
 
-<!-- 目錄 -->
-<nav class="toc" aria-label="目錄">
+<!-- 目錄（整頁） -->
+<nav class="page-full toc" aria-label="目錄 Contents">
     <h2>目錄 / Contents</h2>
-    <ul>
+    <ol>
         <li>論壇資訊 / Forum Info</li>
         <li>論壇須知 / Notes</li>
         <li>議程 / Schedule</li>
-        <li>主持人 / Chair</li>
+        <li>主持人 / Chairs</li>
         <li>講者 / Speakers</li>
-    </ul>
+    </ol>
 </nav>
 
-<!-- 論壇資訊 -->
-<section>
+<!-- 論壇資訊（整頁：若資訊過少仍保留空白讓它佔一頁） -->
+<section class="page-full forum-info" aria-label="論壇資訊 Forum Info">
     <h2>論壇資訊 / Forum Info</h2>
-    <p><strong>名稱：</strong> {{ program.title }}</p>
-    <p><strong>日期：</strong> {{ program.date }}</p>
-    <p><strong>地點：</strong> {{ program.location }}</p>
-    <p><strong>主辦單位：</strong> {{ organizers | join('、') }}</p>
-    <p><strong>協辦單位：</strong> {{ co_organizers | join('、') }}</p>
+    <p><strong>名稱 / Title：</strong> {{ program_data.title }}</p>
+    <p><strong>日期 / Date：</strong> {{ program_data.date }}</p>
+    <p><strong>地點 / Venue：</strong> {{ program_data.locations[0] }}</p>
+    <p><strong>地點 / Venue：</strong> {{ program_data.locations[1] }}</p>
+    <p><strong>主辦單位 / Organizer：</strong> {{ program_data.organizers | join('、') }}</p>
+    <p><strong>協辦單位 / Co-organizer：</strong> {{ program_data.co_organizers | join('、') }}</p>
+    {% if program_data.contact %}
+    <p><strong>聯絡 / Contact：</strong> {{ program_data.contact }}</p>
+    {% endif %}
 </section>
 
-<!-- 論壇須知 -->
-<section>
+<!-- 論壇須知（整頁） -->
+<section class="page-full notes" aria-label="論壇須知 Notes">
     <h2>論壇須知 / Notes</h2>
+    {% if program_data.notes %}
     <ul>
-        {% for note in program.notes %}
+        {% for note in program_data.notes %}
         <li>{{ note }}</li>
         {% endfor %}
     </ul>
+    {% else %}
+    <p class="small">無特別須知 / No special notes</p>
+    {% endif %}
 </section>
 
-<!-- 議程 -->
-<section>
+<!-- 議程（此區可視情況短長；放在一頁或超過亦可） -->
+<section class="page-full">
     <h2>議程 / Schedule</h2>
     <table class="schedule" role="table" aria-label="議程表">
         <thead>
@@ -131,7 +173,7 @@
         </tr>
         </thead>
         <tbody>
-        {% for item in program.schedule %}
+        {% for item in program_data.schedule %}
         <tr>
             <td>{{ item.time }}</td>
             <td>{{ item.topic }}</td>
@@ -143,40 +185,42 @@
     </table>
 </section>
 
-<div class="page-break"></div>
-
-<!-- 主持人 -->
-<section>
+<!-- 主持人：每位主持人各一頁 -->
+{% for chair in program_data.chairs %}
+<section class="page-full" aria-label="主持人 Chair">
     <h2>主持人 / Chair</h2>
-    {% for chair in program.chairs %}
-    <div class="speaker">
-        <div class="info">
+    <div class="person-card">
+        {% if chair.photo_url %}
+        <div class="person-photo"><img src="{{ chair.photo_url }}" style="width:100%; height:auto;"></div>
+        {% endif %}
+        <div class="person-info">
             <div class="name">{{ chair.name }}</div>
             <div class="title">{{ chair.position }}</div>
-            <div class="bio">{{ chair.bio }}</div>
+            <div class="bio">{{ chair.bio or "" }}</div>
         </div>
     </div>
-    {% endfor %}
 </section>
+{% endfor %}
 
-<!-- 講者 -->
-<section>
-    <h2>講者 / Speakers</h2>
-    {% for sp in program.speakers %}
-    <div class="speaker">
-        <div class="info">
+<!-- 講者：每位講者各一頁 -->
+{% for sp in program_data.speakers %}
+<section class="page-full" aria-label="講者 Speaker">
+    <h2>講者 / Speaker</h2>
+    <div class="person-card">
+        {% if sp.photo_url %}
+        <div class="person-photo"><img src="{{ sp.photo_url }}" style="width:100%; height:auto;"></div>
+        {% endif %}
+        <div class="person-info">
             <div class="name">{{ sp.name }}</div>
             <div class="title">{{ sp.title }}</div>
-            <div class="bio">{{ sp.profile }}</div>
+            <div class="bio">{{ sp.profile or "" }}</div>
         </div>
     </div>
-    {% endfor %}
 </section>
+{% endfor %}
 
-<footer style="margin-top:12mm; font-size:10pt; color:#666;">
-    <div>來源：依據上傳手冊內容製作（來源檔案已引用）</div>
-    <div class="small">Generated from: {{ program.title }}</div>
+<footer class="small">
+    來源：依據上傳手冊內容製作。 Generated from uploaded handbook.
 </footer>
-
 </body>
 </html>

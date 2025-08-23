@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-"""Render HTML to PDF using headless Chrome with centralized paths."""
 import json
 import subprocess
 import sys
