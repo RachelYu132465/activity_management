@@ -11,12 +11,13 @@ from pathlib import Path
 import sys
 import argparse
 import logging
-from typing import List
+from typing import List, Dict, Any
 
 # --- minimal bootstrap to allow absolute imports ---
 ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
+# --- end bootstrap
 
 # project imports
 from scripts.core.build_mapping import get_program_speaker_mappings
@@ -44,16 +45,19 @@ def main(argv: List[str] | None = None) -> None:
     if not args.send and not args.draft:
         args.draft = True
 
+    # Only load SMTP config when sending
     if args.send:
         try:
             load_smtp_config(Path("config/smtp.json"))
         except Exception as e:
             logging.error("Failed to load SMTP config: %s", e)
-            raise
+            raise SystemExit(1)
 
+    # Ensure draft output dir exists when drafting
     if args.draft:
         args.output.mkdir(parents=True, exist_ok=True)
 
+    # Locate template file
     try:
         template_path = template_utils.find_template_file(args.template)
     except Exception:
@@ -63,35 +67,56 @@ def main(argv: List[str] | None = None) -> None:
         logging.error("Template not found: %s", args.template)
         raise SystemExit(2)
 
+    # Build records and attach email using template_utils.find_email_in_record
     try:
-        records = get_program_speaker_mappings(args.program_id)
+        records = get_program_speaker_mappings(
+            args.program_id, attach_email=True, email_finder=template_utils.find_email_in_record
+        )
     except Exception as e:
-        logging.error("Failed to load program speaker mappings for id %s: %s", args.program_id, e)
+        logging.error("Failed to build speaker records for program id %s: %s", args.program_id, e)
         raise SystemExit(3)
 
     messages = []
-    for rec in records:
-        email = template_utils.find_email_in_record(rec)
-        if not email:
-            logging.warning("No email for speaker %s", rec.get("name"))
-            continue
-        rec = dict(rec)
-        rec["email"] = email
-        msg = create_message(
-            rec,
-            template_path,
-            attachments_entries=[],
-            include_pdfs=False,
-            templates_dir=None,
-        )
-        messages.append(msg)
-        if args.draft:
-            save_draft(msg, Path(args.output))
+    missing = []
+    saved = []
 
-    if args.send and messages:
+    for rec in records:
+        if not rec.get("email"):
+            missing.append(rec.get("name") or "TBD")
+            logging.warning("Skipping speaker without email: %s", rec.get("name"))
+            continue
+
+        # create_message signature may vary; use positional call for compatibility, fallback to minimal call
+        try:
+            msg = create_message(rec, template_path, [], False, None)
+        except TypeError:
+            try:
+                msg = create_message(rec, template_path)
+            except Exception as e:
+                logging.error("create_message failed for %s: %s", rec.get("name"), e)
+                continue
+
+        messages.append(msg)
+
+        if args.draft:
+            try:
+                out = save_draft(msg, str(args.output))
+                if isinstance(out, (str, Path)):
+                    saved.append(str(out))
+            except Exception as e:
+                logging.error("Failed to save draft for %s: %s", rec.get("name"), e)
+
+    if args.send:
+        if not messages:
+            logging.error("No messages prepared to send; aborting.")
+            raise SystemExit(4)
         send_all_messages(messages)
 
-    logging.info("Prepared %d message(s)", len(messages))
+    logging.info("Prepared %d message(s). Missing emails: %d. Drafts saved: %d", len(messages), len(missing), len(saved))
+    if missing:
+        logging.info("Missing emails for: %s", ", ".join(missing))
+    if saved:
+        logging.info("Saved drafts: %s", ", ".join(saved))
 
 
 if __name__ == "__main__":
