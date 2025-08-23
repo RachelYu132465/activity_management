@@ -131,7 +131,7 @@ def find_template_file(template_filename: str, template_dir: Optional[Path] = No
     matches = list(Path(template_dir).rglob(template_filename))
     if matches:
         return matches[0]
-    raise FileNotFoundError(f"找不到模板：{template_filename}（已搜尋 {template_dir} 及子資料夾）")
+    raise FileNotFoundError("找不到模板：{}（已搜尋 {} 及子資料夾）".format(template_filename, template_dir))
 
 
 # -------------------- helpers: date formatting & highlight wrapper --------------------
@@ -155,9 +155,9 @@ def format_chinese_date(value: Any) -> str:
         except Exception:
             # try common formats
             fmts = ["%Y-%m-%d", "%Y/%m/%d", "%Y%m%d", "%Y.%m.%d", "%Y %m %d"]
-            for f in fmts:
+            for fmt in fmts:
                 try:
-                    dt = datetime.strptime(s, f).date()
+                    dt = datetime.strptime(s, fmt).date()
                     break
                 except Exception:
                     continue
@@ -167,12 +167,12 @@ def format_chinese_date(value: Any) -> str:
     # weekday: Monday=0 -> 一 ... Sunday=6 -> 日
     wmap = ["一", "二", "三", "四", "五", "六", "日"]
     weekday_char = wmap[dt.weekday()] if 0 <= dt.weekday() <= 6 else ""
-    return f"{dt.year}年{dt.month}月{dt.day}日(星期{weekday_char})"
+    return "{}年{}月{}日(星期{})".format(dt.year, dt.month, dt.day, weekday_char)
 
 
 def _wrap_highlight(s: str) -> str:
     """Wrap s with internal highlight markers."""
-    return f"{_HL_START}{s}{_HL_END}"
+    return "{}{}{}".format(_HL_START, s, _HL_END)
 
 
 # -------------------- core: render docx template / body --------------------
@@ -213,10 +213,10 @@ def render_docx_template(template_path: Path, out_path: Path, mapping: Dict[str,
                 val = mapping.get(key_expr)
             s = "" if val is None else str(val)
             # apply filters
-            for f in parts[1:]:
-                if f in ("cn_date", "cnDate", "format_date"):
+            for flt in parts[1:]:
+                if flt in ("cn_date", "cnDate", "format_date"):
                     s = format_chinese_date(s)
-                elif f in ("hl", "highlight"):
+                elif flt in ("hl", "highlight"):
                     s = _wrap_highlight(s)
                 else:
                     # unknown filter: ignore
@@ -321,10 +321,10 @@ def _resolve_path(mapping: Any, expr: str) -> Optional[Any]:
 
 def _apply_filters_to_value(value: Any, filters: List[str]) -> str:
     s = "" if value is None else str(value)
-    for f in filters:
-        if f in ("cn_date", "cnDate", "format_date"):
+    for fltr in filters:
+        if fltr in ("cn_date", "cnDate", "format_date"):
             s = format_chinese_date(s)
-        elif f in ("hl", "highlight"):
+        elif fltr in ("hl", "highlight"):
             s = _wrap_highlight(s)
         else:
             # unknown filter: ignore

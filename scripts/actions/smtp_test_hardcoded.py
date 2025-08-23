@@ -24,7 +24,7 @@ def main():
     msg["Subject"] = SUBJECT
     msg.set_content(BODY)
 
-    print(f"Using SMTP server: {SMTP_SERVER}:{SMTP_PORT}, username: {SMTP_USER}")
+    print("Using SMTP server: {}:{}, username: {}".format(SMTP_SERVER, SMTP_PORT, SMTP_USER))
     try:
         with smtplib.SMTP(SMTP_SERVER, SMTP_PORT, timeout=30) as s:
             s.set_debuglevel(1)   # prints SMTP dialog for debugging

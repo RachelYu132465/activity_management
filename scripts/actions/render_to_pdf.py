@@ -31,8 +31,8 @@ html = tpl.render(**data)
 # save html for preview
 with open(OUT_HTML, "w", encoding="utf8") as f:
     f.write(html)
-print(f"Saved HTML preview to {OUT_HTML}")
+print("Saved HTML preview to {}".format(OUT_HTML))
 
 # render PDF with WeasyPrint
 HTML(string=html, base_url=TEMPLATES_DIR).write_pdf(OUT_PDF)
-print(f"Saved PDF to {OUT_PDF}")
+print("Saved PDF to {}".format(OUT_PDF))

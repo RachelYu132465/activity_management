@@ -127,10 +127,10 @@ def _fallback_render_body_from_template(template_path: Path, context: Dict[str, 
     def _flatten(prefix: str, val: Any, out: Dict[str, str]):
         if isinstance(val, dict):
             for k, v in val.items():
-                _flatten(f"{prefix}.{k}" if prefix else str(k), v, out)
+                _flatten("{}.{}".format(prefix, k) if prefix else str(k), v, out)
         elif isinstance(val, (list, tuple)):
             for i, item in enumerate(val):
-                _flatten(f"{prefix}[{i}]" if prefix else f"[{i}]", item, out)
+                _flatten("{}[{}]".format(prefix, i) if prefix else "[{}]".format(i), item, out)
         else:
             out[prefix] = "" if val is None else str(val)
 
@@ -158,7 +158,7 @@ def _fallback_render_body_from_template(template_path: Path, context: Dict[str, 
             except Exception:
                 return str(value)
         wmap = ["一", "二", "三", "四", "五", "六", "日"]
-        return f"{dt.year}年{dt.month}月{dt.day}日(星期{wmap[dt.weekday()]})"
+        return "{}年{}月{}日(星期{})".format(dt.year, dt.month, dt.day, wmap[dt.weekday()])
 
     def _wrap_highlight(s: str) -> str:
         """No-op highlight wrapper for fallback rendering."""
@@ -166,16 +166,16 @@ def _fallback_render_body_from_template(template_path: Path, context: Dict[str, 
 
     def _apply_filters(val: Any, filters: List[str]) -> str:
         s = "" if val is None else str(val)
-        for f in filters:
+        for flt in filters:
             if tu is None:
-                if f in ("cn_date", "cnDate", "format_date"):
+                if flt in ("cn_date", "cnDate", "format_date"):
                     s = format_chinese_date(s)
-                elif f in ("hl", "highlight"):
+                elif flt in ("hl", "highlight"):
                     s = _wrap_highlight(s)
             else:
-                if f in ("cn_date", "cnDate", "format_date") and hasattr(tu, "format_chinese_date"):
+                if flt in ("cn_date", "cnDate", "format_date") and hasattr(tu, "format_chinese_date"):
                     s = tu.format_chinese_date(s)
-                elif f in ("hl", "highlight") and hasattr(tu, "_wrap_highlight"):
+                elif flt in ("hl", "highlight") and hasattr(tu, "_wrap_highlight"):
                     s = tu._wrap_highlight(s)
         return s
 
@@ -270,12 +270,12 @@ def attach_entries_from_list(msg: EmailMessage, entries: List[str], include_pdfs
         if not p.is_absolute():
             p = (BASE_DIR / e).resolve()
         if p.is_dir():
-            for f in sorted(p.glob("*")):
-                if not f.is_file():
+            for file_path in sorted(p.glob("*")):
+                if not file_path.is_file():
                     continue
-                if not include_pdfs and f.suffix.lower() == ".pdf":
+                if not include_pdfs and file_path.suffix.lower() == ".pdf":
                     continue
-                attach_file_to_msg(msg, f)
+                attach_file_to_msg(msg, file_path)
         else:
             attach_file_to_msg(msg, p)
 
@@ -398,9 +398,9 @@ def create_message(record: Dict[str, Any], template_path: Optional[Path], attach
     if templates_dir:
         td = Path(templates_dir)
         if td.exists():
-            for f in sorted(td.glob("*")):
-                if f.suffix.lower() in {".docx", ".doc"}:
-                    attach_file_to_msg(msg, f)
+            for file_path in sorted(td.glob("*")):
+                if file_path.suffix.lower() in {".docx", ".doc"}:
+                    attach_file_to_msg(msg, file_path)
     return msg
 
 
@@ -433,11 +433,11 @@ def save_draft(msg: EmailMessage, directory: Path) -> None:
     directory.mkdir(parents=True, exist_ok=True)
     to_safe = sanitize_filename(msg.get("To", "unknown"))
     subj_safe = sanitize_filename(msg.get("Subject", "no-subject"))
-    filename = f"{subj_safe}.eml"
+    filename = "{}.eml".format(subj_safe)
     path = directory / filename
     i = 1
     while path.exists():
-        path = directory / f"{subj_safe}-{i}.eml"
+        path = directory / "{}-{}.eml".format(subj_safe, i)
         i += 1
     with path.open("wb") as fh:
         fh.write(msg.as_bytes())

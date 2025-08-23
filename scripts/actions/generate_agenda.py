@@ -34,7 +34,7 @@ def pick_event(programs: List[Dict[str, Any]], event_name: str) -> Dict[str, Any
         names = prog.get("eventNames") or []
         if any(event_name == n for n in names):
             return prog
-    raise SystemExit(f"找不到 event：{event_name}")
+    raise SystemExit("找不到 event：{}".format(event_name))
 
 # ---------- time helpers ----------
 def distribute_empty_durations(cfg: Dict[str, Any], speaker_count: int) -> Dict[str, Any]:
@@ -54,14 +54,14 @@ def distribute_empty_durations(cfg: Dict[str, Any], speaker_count: int) -> Dict[
 
     remaining = total_minutes - total_known
     if remaining < 0:
-        print(f"[警告] 總時數不足，缺 {-remaining} 分鐘（請調整 speaker_minutes 或 special_sessions）")
+        print("[警告] 總時數不足，缺 {} 分鐘（請調整 speaker_minutes 或 special_sessions）".format(-remaining))
         remaining = 0
 
     if empty_items:
         avg = round(remaining / len(empty_items)) if len(empty_items) else 0
         for s in empty_items:
             s["duration"] = max(0, avg)
-        print(f"[INFO] 自動分配空白時段：總剩餘 {remaining} 分鐘，平均每段 {avg} 分鐘")
+        print("[INFO] 自動分配空白時段：總剩餘 {} 分鐘，平均每段 {} 分鐘".format(remaining, avg))
     return cfg
 
 def gen_agenda_rows(event: Dict[str, Any]) -> List[Dict[str, str]]:
@@ -79,7 +79,7 @@ def gen_agenda_rows(event: Dict[str, Any]) -> List[Dict[str, str]]:
             end = add_minutes(current, s["duration"])
             rows.append({
                 "kind": "special",
-                "time": f"{current.strftime('%H:%M')}-{end.strftime('%H:%M')}",
+                "time": "{}-{}".format(current.strftime('%H:%M'), end.strftime('%H:%M')),
                 "title": s["title"],
                 "speaker": ""
             })
@@ -92,7 +92,7 @@ def gen_agenda_rows(event: Dict[str, Any]) -> List[Dict[str, str]]:
         end_str = end.strftime('%H:%M')
         rows.append({
             "kind": "talk",
-            "time": f"{start_str}-{end_str}",
+            "time": "{}-{}".format(start_str, end_str),
             "title": sp["topic"],
             "speaker": sp.get("name", "")
         })
@@ -106,7 +106,7 @@ def gen_agenda_rows(event: Dict[str, Any]) -> List[Dict[str, str]]:
                 end2 = add_minutes(current, s["duration"])
                 rows.append({
                     "kind": "special",
-                    "time": f"{current.strftime('%H:%M')}-{end2.strftime('%H:%M')}",
+                "time": "{}-{}".format(current.strftime('%H:%M'), end2.strftime('%H:%M')),
                     "title": s["title"],
                     "speaker": ""
                 })
@@ -118,7 +118,7 @@ def gen_agenda_rows(event: Dict[str, Any]) -> List[Dict[str, str]]:
             end = add_minutes(current, s["duration"])
             rows.append({
                 "kind": "special",
-                "time": f"{current.strftime('%H:%M')}-{end.strftime('%H:%M')}",
+                "time": "{}-{}".format(current.strftime('%H:%M'), end.strftime('%H:%M')),
                 "title": s["title"],
                 "speaker": ""
             })
@@ -144,7 +144,7 @@ def ensure_page_setup(doc: Document):
 def set_cell_shading(cell, fill_rgb_tuple: Tuple[int, int, int]):
     """設定表格儲存格底色（用 6 碼 hex）"""
     r, g, b = fill_rgb_tuple
-    hexcolor = f"{r:02X}{g:02X}{b:02X}"
+    hexcolor = "{:02X}{:02X}{:02X}".format(r, g, b)
     tc_pr = cell._tc.get_or_add_tcPr()
     shd = OxmlElement('w:shd')
     shd.set(qn('w:val'), 'clear')
@@ -202,14 +202,14 @@ def add_agenda_table(doc: Document, rows: List[Dict[str, str]], title: str | Non
             # 內容：主題 + 換行 + 講者
             topic = r["title"].strip()
             name  = r["speaker"].strip()
-            content = topic if not name else f"{topic}\n{name}"
+            content = topic if not name else "{}\n{}".format(topic, name)
             set_cell_text(tr[1], content, align=WD_ALIGN_PARAGRAPH.LEFT)
 
     # 邊框（細線）
     tbl_pr = table._tbl.get_or_add_tblPr()
     tbl_borders = OxmlElement('w:tblBorders')
     for tag in ('top', 'left', 'bottom', 'right', 'insideH', 'insideV'):
-        el = OxmlElement(f'w:{tag}')
+        el = OxmlElement('w:{}'.format(tag))
         el.set(qn('w:val'), 'single')
         el.set(qn('w:sz'), '6')       # 0.5pt
         el.set(qn('w:space'), '0')
@@ -228,7 +228,7 @@ def export_agenda_docx(event: Dict[str, Any], out_path: Path):
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
     doc.save(out_path)
-    print(f"[OK] 已輸出：{out_path}")
+    print("[OK] 已輸出：{}".format(out_path))
 
 # ---------- main ----------
 if __name__ == "__main__":

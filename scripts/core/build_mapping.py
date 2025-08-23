@@ -73,7 +73,7 @@ def load_json(name: str) -> Any:
         seen.add(cand)
         if cand.exists():
             return read_json_relaxed(cand)
-    raise FileNotFoundError(f"找不到 {name}")
+    raise FileNotFoundError("找不到 {}".format(name))
 
 
 def compute_times(
@@ -114,7 +114,7 @@ def get_event_speaker_mappings(event_name: str) -> List[Dict[str, Any]]:
 
     program = next((p for p in programs if event_name in (p.get("eventNames") or [])), None)
     if not program:
-        raise ValueError(f"找不到 program: {event_name}")
+        raise ValueError("找不到 program: {}".format(event_name))
 
     infl_map: Dict[str, Dict[str, Any]] = {i.get("name"): i for i in influencers if i.get("name")}
     # fallback: use organization as key
@@ -210,11 +210,11 @@ def get_program_speaker_mappings(
         program = next((p for p in programs if key in (p.get("eventNames") or [])), None)
 
     if not program:
-        raise ValueError(f"找不到 program: {program_id_or_eventname}")
+        raise ValueError("找不到 program: {}".format(program_id_or_eventname))
 
     event_names = program.get("eventNames") or []
     if not event_names:
-        raise ValueError(f"program {program.get('id')} 缺少 eventNames")
+        raise ValueError("program {} 缺少 eventNames".format(program.get('id')))
 
     merged: List[Dict[str, Any]] = []
     seen = set()
@@ -227,7 +227,7 @@ def get_program_speaker_mappings(
         for m in ev_maps:
             key = _norm_key(m.get("name") or m.get("safe_filename") or "")
             if not key:
-                key = _norm_key(f"{m.get('topic')}-{m.get('no')}")
+                key = _norm_key("{}-{}".format(m.get('topic'), m.get('no')))
             if key in seen:
                 continue
             seen.add(key)

@@ -150,7 +150,7 @@ def load_records(path: Path, sheet_name: Optional[str] = None) -> List[Dict[str,
             wb = openpyxl.load_workbook(path, data_only=True)
             if sheet_name:
                 if sheet_name not in wb.sheetnames:
-                    raise ValueError(f"Sheet '{sheet_name}' not found in {path} (available: {wb.sheetnames})")
+                    raise ValueError("Sheet '{}' not found in {} (available: {})".format(sheet_name, path, wb.sheetnames))
                 ws = wb[sheet_name]
             else:
                 ws = wb.active
@@ -162,7 +162,7 @@ def load_records(path: Path, sheet_name: Optional[str] = None) -> List[Dict[str,
             for row in rows[1:]:
                 r = {}
                 for i, val in enumerate(row):
-                    header = headers[i] if i < len(headers) else f"col_{i}"
+                    header = headers[i] if i < len(headers) else "col_{}".format(i)
                     r[header] = val
                 recs.append(r)
             return recs
@@ -171,7 +171,7 @@ def load_records(path: Path, sheet_name: Optional[str] = None) -> List[Dict[str,
             book = xlrd.open_workbook(str(path))
             if sheet_name:
                 if sheet_name not in book.sheet_names():
-                    raise ValueError(f"Sheet '{sheet_name}' not found in {path} (available: {book.sheet_names()})")
+                    raise ValueError("Sheet '{}' not found in {} (available: {})".format(sheet_name, path, book.sheet_names()))
                 sh = book.sheet_by_name(sheet_name)
             else:
                 sh = book.sheet_by_index(0)
@@ -183,11 +183,11 @@ def load_records(path: Path, sheet_name: Optional[str] = None) -> List[Dict[str,
                 rowvals = [sh.cell_value(r, c) for c in range(sh.ncols)]
                 rec = {}
                 for i, val in enumerate(rowvals):
-                    header = headers[i] if i < len(headers) else f"col_{i}"
+                    header = headers[i] if i < len(headers) else "col_{}".format(i)
                     rec[header] = val
                 recs.append(rec)
             return recs
-    raise ValueError(f"Unsupported file extension: {ext}")
+    raise ValueError("Unsupported file extension: {}".format(ext))
 
 
 def load_all_records_from_dir(data_dir: Path, sheet_name: Optional[str] = None) -> List[Dict[str, Any]]:

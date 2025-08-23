@@ -36,23 +36,23 @@ def iter_json_records(payload: Any):
     if isinstance(payload, list):
         for i, v in enumerate(payload):
             if isinstance(v, dict):
-                yield (f"[{i}]", v)
+                yield ("[{}]".format(i), v)
     elif isinstance(payload, dict):
         yield ("", payload)
         for k, v in payload.items():
             if isinstance(v, list):
                 for i, item in enumerate(v):
                     if isinstance(item, dict):
-                        yield (f"{k}[{i}]", item)
+                        yield ("{}[{}]".format(k, i), item)
 
 def iter_json_paths(node: Any, base: str = ""):
     if isinstance(node, dict):
         for k, v in node.items():
-            key = f"{base}.{k}" if base else k
+            key = "{}.{}".format(base, k) if base else k
             yield from iter_json_paths(v, key)
     elif isinstance(node, list):
         for i, v in enumerate(node):
-            key = f"{base}[{i}]"
+            key = "{}[{}]".format(base, i)
             yield from iter_json_paths(v, key)
     else:
         yield (base, node)
@@ -119,13 +119,13 @@ def main():
     # 找模板
     t_matches = list(TEMPLATE_DIR.rglob(args.template))
     if not t_matches:
-        raise SystemExit(f"找不到模板：{args.template} 於 {TEMPLATE_DIR} 下")
+        raise SystemExit("找不到模板：{} 於 {} 下".format(args.template, TEMPLATE_DIR))
     input_docx = t_matches[0]
 
     # 找所有同名 JSON
     j_matches = list(DATA_DIR.rglob(args.json_file))
     if not j_matches:
-        raise SystemExit(f"找不到 JSON：{args.json_file} 於 {DATA_DIR} 下")
+        raise SystemExit("找不到 JSON：{} 於 {} 下".format(args.json_file, DATA_DIR))
 
     # 由多個 JSON 檔合併 mapping
     mapping: Dict[str, str] = {}
@@ -134,7 +134,7 @@ def main():
         try:
             payload = json.loads(jf.read_text(encoding="utf-8"))
         except Exception as e:
-            print(f"[WARN] 讀取失敗 {jf}: {e}")
+            print("[WARN] 讀取失敗 {}: {}".format(jf, e))
             continue
 
         # 依使用者條件在檔內挑選一筆（或多筆）record
@@ -178,7 +178,7 @@ def main():
     replace_in_document(doc, mapping, merge_runs_if_needed=args.merge_runs)
     out_path = OUTPUT_DIR / (input_docx.stem + "_template.docx")
     doc.save(out_path)
-    print(f"[OK] 已輸出：{out_path}")
+    print("[OK] 已輸出：{}".format(out_path))
 
 if __name__ == "__main__":
     main()
