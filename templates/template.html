@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>{{ program_data.title or "論壇手冊" }}</title>
+    <title>{{ (eventNames[0] if eventNames) or "論壇手冊" }}</title>
 
     <style>
         /* A4 印刷基礎 */
@@ -112,11 +112,11 @@ img { max-width: 100%; height: auto; }
     {% if assets.logo_url %}
     <img src="{{ assets.logo_url }}" alt="logo" style="max-height:90px; margin-bottom:8px;">
     {% endif %}
-    <div class="title">{{ program_data.title }}</div>
-    <div class="meta">{{ program_data.date }} | {{ program_data.locations[0] }}</div>
+    <div class="title">{{ eventNames[0] }}</div>
+    <div class="meta">{{ date }} | {{ locations[0] }}</div>
     <div style="margin-top:12px; font-size:11pt; color:#555;">
         主辦：{{ organizers | join('、') }}<br/>
-        協辦：{{ co_organizers | join('、') }}
+        協辦：{{ coOrganizers | join('、') }}
     </div>
 </div>
 
@@ -135,23 +135,25 @@ img { max-width: 100%; height: auto; }
 <!-- 論壇資訊（整頁：若資訊過少仍保留空白讓它佔一頁） -->
 <section class="page-full forum-info" aria-label="論壇資訊 Forum Info">
     <h2>論壇資訊 / Forum Info</h2>
-    <p><strong>名稱 / Title：</strong> {{ program_data.title }}</p>
-    <p><strong>日期 / Date：</strong> {{ program_data.date }}</p>
-    <p><strong>地點 / Venue：</strong> {{ program_data.locations[0] }}</p>
-    <p><strong>地點 / Venue：</strong> {{ program_data.locations[1] }}</p>
-    <p><strong>主辦單位 / Organizer：</strong> {{ program_data.organizers | join('、') }}</p>
-    <p><strong>協辦單位 / Co-organizer：</strong> {{ program_data.co_organizers | join('、') }}</p>
-    {% if program_data.contact %}
-    <p><strong>聯絡 / Contact：</strong> {{ program_data.contact }}</p>
+    <p><strong>名稱 / Title：</strong> {{ eventNames[0] }}</p>
+    <p><strong>日期 / Date：</strong> {{ date }}</p>
+    <p><strong>地點 / Venue：</strong> {{ locations[0] }}</p>
+    {% if locations|length > 1 %}
+    <p><strong>地點 / Venue：</strong> {{ locations[1] }}</p>
+    {% endif %}
+    <p><strong>主辦單位 / Organizer：</strong> {{ organizers | join('、') }}</p>
+    <p><strong>協辦單位 / Co-organizer：</strong> {{ coOrganizers | join('、') }}</p>
+    {% if activities_contacts is defined and activities_contacts %}
+    <p><strong>聯絡 / Contact：</strong> {{ activities_contacts | join('、') }}</p>
     {% endif %}
 </section>
 
 <!-- 論壇須知（整頁） -->
 <section class="page-full notes" aria-label="論壇須知 Notes">
     <h2>論壇須知 / Notes</h2>
-    {% if program_data.notes %}
+    {% if notes is defined and notes %}
     <ul>
-        {% for note in program_data.notes %}
+        {% for note in notes %}
         <li>{{ note }}</li>
         {% endfor %}
     </ul>
@@ -173,7 +175,7 @@ img { max-width: 100%; height: auto; }
         </tr>
         </thead>
         <tbody>
-        {% for item in program_data.schedule %}
+        {% for item in schedule %}
         <tr>
             <td>{{ item.time }}</td>
             <td>{{ item.topic }}</td>
@@ -186,7 +188,7 @@ img { max-width: 100%; height: auto; }
 </section>
 
 <!-- 主持人：每位主持人各一頁 -->
-{% for chair in program_data.chairs %}
+{% for chair in chairs %}
 <section class="page-full" aria-label="主持人 Chair">
     <h2>主持人 / Chair</h2>
     <div class="person-card">
@@ -195,15 +197,15 @@ img { max-width: 100%; height: auto; }
         {% endif %}
         <div class="person-info">
             <div class="name">{{ chair.name }}</div>
-            <div class="title">{{ chair.position }}</div>
-            <div class="bio">{{ chair.bio or "" }}</div>
+            <div class="title">{{ chair.title }}</div>
+            <div class="bio">{{ chair.profile or "" }}</div>
         </div>
     </div>
 </section>
 {% endfor %}
 
 <!-- 講者：每位講者各一頁 -->
-{% for sp in program_data.speakers %}
+{% for sp in speakers %}
 <section class="page-full" aria-label="講者 Speaker">
     <h2>講者 / Speaker</h2>
     <div class="person-card">

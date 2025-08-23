@@ -12,7 +12,9 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from jinja2 import Environment, FileSystemLoader, select_autoescape
+from jinja2 import Environment, FileSystemLoader, select_autoescape, StrictUndefined
+from jinja2.exceptions import UndefinedError
+import traceback
 
 # Direct import from bootstrap (requested "direct" style)
 from scripts.core.bootstrap import TEMPLATE_DIR, OUTPUT_DIR, DATA_DIR, CHROME_BIN
@@ -24,7 +26,7 @@ INFLUENCER_FILE = DATA_DIR / "shared" / "influencer_data.json"
 # Ensure output directory exists
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-# Load program and influencer data (be tolerant of dict vs list)
+# Load program and influencer data (expect list or dict)
 try:
     with DATA_FILE.open("r", encoding="utf-8") as fh:
         programs_raw = json.load(fh)
@@ -39,35 +41,28 @@ except Exception as e:
     print(f"Failed to load influencer data file {INFLUENCER_FILE}: {e}", file=sys.stderr)
     influencer_list = []
 
-# Normalize programs into a list of program dicts
-if isinstance(programs_raw, dict):
-    if "programs" in programs_raw and isinstance(programs_raw["programs"], list):
-        program_list = programs_raw["programs"]
-    else:
-        program_list = [programs_raw]
-elif isinstance(programs_raw, list):
-    program_list = programs_raw
-else:
-    print(f"Unexpected JSON structure in {DATA_FILE} (expected list or dict).", file=sys.stderr)
-    sys.exit(1)
-
-# Select program entry
+# Select program entry and normalize to a dict
 parser = argparse.ArgumentParser(description="Render program handbook")
 parser.add_argument("--event-id", type=int, default=None, help="Program id to render")
 args = parser.parse_args()
 
-selected = None
-if args.event_id is not None:
-    for prog in program_list:
-        try:
-            if int(prog.get("id", -1)) == args.event_id:
-                selected = prog
-                break
-        except Exception:
-            continue
-
-if selected is None:
-    selected = program_list[0] if program_list else {}
+program_data = {}
+if isinstance(programs_raw, list):
+    if args.event_id is not None:
+        for prog in programs_raw:
+            try:
+                if int(prog.get("id", -1)) == args.event_id:
+                    program_data = prog
+                    break
+            except Exception:
+                continue
+    if not program_data and programs_raw:
+        program_data = programs_raw[0]
+elif isinstance(programs_raw, dict):
+    program_data = programs_raw
+else:
+    print(f"Unexpected JSON structure in {DATA_FILE} (expected list or dict).", file=sys.stderr)
+    sys.exit(1)
 
 # Build schedule from agenda settings
 def build_schedule(event):
@@ -115,7 +110,7 @@ def build_schedule(event):
 infl_by_name = {p.get("name"): p for p in influencer_list if isinstance(p, dict)}
 chairs = []
 speakers = []
-for sp in selected.get("speakers", []) or []:
+for sp in program_data.get("speakers", []) or []:
     name = sp.get("name")
     info = infl_by_name.get(name, {}) or {}
     enriched = {
@@ -129,23 +124,15 @@ for sp in selected.get("speakers", []) or []:
     else:
         speakers.append(enriched)
 
-program_data = {
-    "title": (selected.get("eventNames") or [""])[0] if selected.get("eventNames") else selected.get("title", ""),
-    "date": selected.get("date", ""),
-    "locations": selected.get("locations", []),
-    "organizers": selected.get("organizers", []),
-    "co_organizers": selected.get("coOrganizers", []),
-    "schedule": build_schedule(selected),
-    "chairs": chairs,
-    "speakers": speakers,
-    # "notes": selected.get("notes", []),
-    "contact": selected.get("contact", ""),
-}
+program_data["schedule"] = build_schedule(program_data)
+program_data["chairs"] = chairs
+program_data["speakers"] = speakers
 
 # Prepare Jinja2 environment
 env = Environment(
     loader=FileSystemLoader(str(TEMPLATE_DIR)),
     autoescape=select_autoescape(["html", "xml"]),
+    undefined=StrictUndefined,
 )
 
 try:
@@ -154,15 +141,13 @@ except Exception as e:
     print(f"Template not found in {TEMPLATE_DIR}: {e}", file=sys.stderr)
     sys.exit(1)
 
-# Render HTML with consistent context variable name: program_data
+# Render HTML directly with raw program data
 try:
-    context = {
-        "program_data": program_data,
-        "organizers": program_data.get("organizers", []),
-        "co_organizers": program_data.get("co_organizers", []),
-        "assets": {},
-    }
-    html = tpl.render(**context)
+    html = tpl.render(**program_data, assets={})
+except UndefinedError as e:
+    print("Template rendering failed due to missing variable:", file=sys.stderr)
+    traceback.print_exc()
+    sys.exit(1)
 except Exception as e:
     print(f"Template rendering failed: {e}", file=sys.stderr)
     sys.exit(1)
