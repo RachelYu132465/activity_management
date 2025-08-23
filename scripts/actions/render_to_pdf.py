@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python3
 # render_to_pdf.py — 修正版
 from pathlib import Path
@@ -15,44 +16,23 @@ from scripts.core.bootstrap import TEMPLATE_DIR, OUTPUT_DIR, PROGRAM_JSON
 
 DATA_FILE = PROGRAM_JSON
 
-# 確保 output 目錄存在
-OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-# 讀 JSON
-try:
-    with DATA_FILE.open("r", encoding="utf-8") as fh:
-        data = json.load(fh)
-except Exception as e:
-    print(f"Failed to load {DATA_FILE}: {e}", file=sys.stderr)
-    sys.exit(1)
 
-# 建立 Jinja2 環境（autoescape for html/xml）
+OUTPUT_DIR.makedirs("output", exist_ok=True)
+
+
 env = Environment(
-    loader=FileSystemLoader(str(TEMPLATE_DIR)),
+    loader=FileSystemLoader(TEMPLATES_DIR),
     autoescape=select_autoescape(["html", "xml"])
 )
+tpl = env.get_template("template.html")
+html = tpl.render(**data)
 
-try:
-    tpl = env.get_template("template.html")
-except Exception as e:
-    print(f"Template not found in {TEMPLATE_DIR}: {e}", file=sys.stderr)
-    sys.exit(1)
-
-# 根據 JSON 結構選擇渲染方式：
-# - 如果 JSON 頂層是 dict，tpl.render(**data) 會把每個 key 當成 template 變數
-# - 否則用 tpl.render(data=data)
-try:
-    if isinstance(data, dict):
-        html = tpl.render(**data)
-    else:
-        html = tpl.render(data=data)
-except Exception as e:
-    print(f"Template rendering failed: {e}", file=sys.stderr)
-    sys.exit(1)
-
-# 儲存 HTML（方便 debug / preview）
-html_file = OUTPUT_DIR / "program.html"
-with html_file.open("w", encoding="utf-8") as f:
+# save html for preview
+with open(OUT_HTML, "w", encoding="utf8") as f:
     f.write(html)
+print(f"Saved HTML preview to {OUT_HTML}")
 
-# 產生 PDF（WeasyPr
+# render PDF with WeasyPrint
+HTML(string=html, base_url=TEMPLATES_DIR).write_pdf(OUT_PDF)
+print(f"Saved PDF to {OUT_PDF}")

@@ -10,6 +10,7 @@ if str(ROOT) not in sys.path:
 import json
 import subprocess
 
+
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from scripts.core.bootstrap import TEMPLATE_DIR, OUTPUT_DIR, PROGRAM_JSON
