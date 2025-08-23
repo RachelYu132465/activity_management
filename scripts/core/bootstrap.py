@@ -4,7 +4,11 @@ import csv
 import os
 import shutil
 import platform
-from pathlib import Path
+
+try:  # Python 2 fallback
+    from pathlib import Path
+except ImportError:  # pragma: no cover - fallback for legacy Python
+    from pathlib2 import Path  # type: ignore
 from typing import Optional
 
 # Project root
