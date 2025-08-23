@@ -9,16 +9,19 @@ If --send is omitted, emails are saved as .eml drafts under output/speaker_draft
 from __future__ import annotations
 from pathlib import Path
 import sys
+
+
+from scripts.core.bootstrap import OUTPUT_DIR
+
+ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
 import argparse
 import logging
 from typing import List, Dict, Any
 
 from scripts.core.bootstrap import OUTPUT_DIR
-
-# --- minimal bootstrap to allow absolute imports ---
-ROOT = Path(__file__).resolve().parents[2]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
 
 # project imports
 from scripts.core.build_mapping import get_event_speaker_mappings

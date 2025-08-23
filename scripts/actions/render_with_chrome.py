@@ -1,6 +1,15 @@
+#!/usr/bin/env python3
+"""Render HTML to PDF using headless Chrome with centralized paths."""
+from pathlib import Path
+import sys
+
+ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
 import json
 import subprocess
-import sys
+
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 

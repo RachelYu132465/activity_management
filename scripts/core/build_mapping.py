@@ -1,9 +1,15 @@
 from __future__ import annotations
+from pathlib import Path
+import sys
+
+ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
 import re
 import unicodedata
 import logging
 from datetime import datetime, timedelta
-from pathlib import Path
 from typing import Any, Dict, Iterable, List, Tuple, Callable, Optional
 
 from scripts.core.data_util import read_json_relaxed
@@ -17,7 +23,7 @@ root_str = str(ROOT)
 import sys
 if root_str not in sys.path:
     sys.path.insert(0, root_str)
-# --- end bootstrap
+
 
 INVALID_WIN = r'[<>:"/\\|?*\x00-\x1F]'
 

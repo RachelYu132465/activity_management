@@ -15,6 +15,13 @@ Notes:
 """
 from __future__ import annotations
 
+from pathlib import Path
+import sys
+
+ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
 import argparse
 import json
 import logging
@@ -22,7 +29,6 @@ import mimetypes
 import os
 import re
 from email.message import EmailMessage
-from pathlib import Path
 from typing import Iterable, List, Dict, Any, Optional
 import smtplib
 import html as _html_mod

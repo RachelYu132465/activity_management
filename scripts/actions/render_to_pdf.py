@@ -1,9 +1,16 @@
-# render_to_pdf.py
+
+#!/usr/bin/env python3
+# render_to_pdf.py — 修正版
+from pathlib import Path
+import sys
+
+ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from weasyprint import HTML
 import json
-import sys
-
 
 from scripts.core.bootstrap import TEMPLATE_DIR, OUTPUT_DIR, PROGRAM_JSON
 
