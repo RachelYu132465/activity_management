@@ -2,13 +2,11 @@
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from weasyprint import HTML
 import json
-import os
 
-# paths
-TEMPLATES_DIR = "templates"
-DATA_FILE = "data/program.json"
-OUT_HTML = "output/program.html"
-OUT_PDF = "output/program.pdf"
+from scripts.core.bootstrap import TEMPLATE_DIR, OUTPUT_DIR, PROGRAM_JSON
+
+DATA_FILE = PROGRAM_JSON
+
 
 os.makedirs("output", exist_ok=True)
 
