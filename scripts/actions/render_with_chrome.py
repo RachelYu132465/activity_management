@@ -13,7 +13,9 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 
-from jinja2 import Environment, FileSystemLoader, select_autoescape, StrictUndefined
+from jinja2 import Environment, FileSystemLoader, select_autoescape, Undefined
+import traceback
+
 from jinja2.exceptions import UndefinedError
 
 import traceback
