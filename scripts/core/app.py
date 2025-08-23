@@ -1,4 +1,8 @@
 from flask import Flask, render_template
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parents[2]  # 專案根目錄
+app = Flask(__name__, template_folder=BASE_DIR / "templates")
 
 app = Flask(__name__)
 
