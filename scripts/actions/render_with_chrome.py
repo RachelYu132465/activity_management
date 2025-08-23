@@ -12,8 +12,10 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+
 from jinja2 import Environment, FileSystemLoader, select_autoescape, StrictUndefined
 from jinja2.exceptions import UndefinedError
+
 import traceback
 
 # Direct import from bootstrap (requested "direct" style)
@@ -129,10 +131,19 @@ program_data["chairs"] = chairs
 program_data["speakers"] = speakers
 
 # Prepare Jinja2 environment
+# Custom undefined that logs missing variables instead of raising errors
+class LoggingUndefined(Undefined):
+    def __str__(self):
+        if self._undefined_name is not None:
+            print(f"[render] Missing template variable: {self._undefined_name}", file=sys.stderr)
+        return ""
+
+
 env = Environment(
     loader=FileSystemLoader(str(TEMPLATE_DIR)),
     autoescape=select_autoescape(["html", "xml"]),
-    undefined=StrictUndefined,
+    undefined=LoggingUndefined,
+
 )
 
 try:
@@ -144,12 +155,10 @@ except Exception as e:
 # Render HTML directly with raw program data
 try:
     html = tpl.render(**program_data, assets={})
+
 except UndefinedError as e:
     print("Template rendering failed due to missing variable:", file=sys.stderr)
     traceback.print_exc()
-    sys.exit(1)
-except Exception as e:
-    print(f"Template rendering failed: {e}", file=sys.stderr)
     sys.exit(1)
 
 # Save intermediate HTML
