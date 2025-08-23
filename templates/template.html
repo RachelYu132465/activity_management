@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{{ program.title or "論壇手冊" }}</title>
+
+    <style>
+        /* 全域印刷設定 */
+        @page { size: A4; margin: 18mm; }
+        html, body { margin:0; padding:0; -webkit-print-color-adjust: exact; }
+        body {
+          font-family: "Noto Sans TC", "Helvetica", "Arial", sans-serif;
+          color: #111;
+          font-size: 12pt;
+          line-height: 1.45;
+          padding: 12mm;
+          box-sizing: border-box;
+        }
+
+        /* 封面 */
+        .cover { text-align: center; margin-top: 20mm; margin-bottom: 10mm; page-break-after: always; }
+        .title { font-size: 28pt; font-weight: 700; margin-bottom: 6mm; }
+        .meta { font-size: 12pt; margin-bottom: 2mm; }
+
+        /* 目錄 */
+        .toc { margin-bottom: 8mm; }
+        .toc h2 { font-size: 16pt; margin-bottom: 4mm; }
+        .toc ul { padding-left: 1.2em; }
+
+        /* 章節 */
+        section { margin-bottom: 8mm; }
+        h1, h2, h3 { margin: 6px 0; }
+        .small { font-size: 10pt; color: #555; }
+
+        /* 議程表格 */
+        table.schedule { width: 100%; border-collapse: collapse; margin-top: 4mm; }
+        table.schedule th, table.schedule td {
+          border: 1px solid #ddd;
+          padding: 6px 8px;
+          vertical-align: top;
+          font-size: 11pt;
+        }
+        table.schedule th { background:#f3f3f3; font-weight:600; text-align:left; }
+
+        /* 講者卡片 */
+        .speaker {
+          border: 1px solid #e6e6e6;
+          padding: 8px;
+          margin-bottom: 6mm;
+          page-break-inside: avoid;
+          display: flex;
+          gap: 10px;
+        }
+        .speaker .info { flex:1; }
+        .speaker .name { font-weight:700; font-size:13pt; }
+        .speaker .title { font-size:11pt; color:#333; margin-bottom:4px; }
+        .speaker .bio { font-size:10.5pt; color:#222; white-space:pre-wrap; }
+
+        /* 分頁控制 */
+        .page-break { display:block; page-break-after: always; height:1px; }
+
+        /* 隱藏在列印以外的元件（如編輯按鈕）*/
+        @media screen {
+          .sr-only { display:none; }
+        }
+
+        @media print {
+          body { padding: 6mm; }
+          .no-print { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- 封面 -->
+<div class="cover">
+    {% if assets.logo_url %}
+    <img src="{{ assets.logo_url }}" alt="logo" style="max-height:80px;margin-bottom:8px;">
+    {% endif %}
+    <div class="title">{{ program.title }}</div>
+    <div class="meta">{{ program.date }} | {{ program.location }}</div>
+    <div class="meta small">
+        主辦：{{ organizers | join('、') }}<br/>
+        協辦：{{ co_organizers | join('、') }}
+    </div>
+</div>
+
+<!-- 目錄 -->
+<nav class="toc" aria-label="目錄">
+    <h2>目錄 / Contents</h2>
+    <ul>
+        <li>論壇資訊 / Forum Info</li>
+        <li>論壇須知 / Notes</li>
+        <li>議程 / Schedule</li>
+        <li>主持人 / Chair</li>
+        <li>講者 / Speakers</li>
+    </ul>
+</nav>
+
+<!-- 論壇資訊 -->
+<section>
+    <h2>論壇資訊 / Forum Info</h2>
+    <p><strong>名稱：</strong> {{ program.title }}</p>
+    <p><strong>日期：</strong> {{ program.date }}</p>
+    <p><strong>地點：</strong> {{ program.location }}</p>
+    <p><strong>主辦單位：</strong> {{ organizers | join('、') }}</p>
+    <p><strong>協辦單位：</strong> {{ co_organizers | join('、') }}</p>
+</section>
+
+<!-- 論壇須知 -->
+<section>
+    <h2>論壇須知 / Notes</h2>
+    <ul>
+        {% for note in program.notes %}
+        <li>{{ note }}</li>
+        {% endfor %}
+    </ul>
+</section>
+
+<!-- 議程 -->
+<section>
+    <h2>議程 / Schedule</h2>
+    <table class="schedule" role="table" aria-label="議程表">
+        <thead>
+        <tr>
+            <th style="width:16%;">時間 / Time</th>
+            <th style="width:18%;">主題 / Topic</th>
+            <th style="width:26%;">講者 / Speaker</th>
+            <th>備註 / Note</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in program.schedule %}
+        <tr>
+            <td>{{ item.time }}</td>
+            <td>{{ item.topic }}</td>
+            <td>{{ item.speaker }}</td>
+            <td>{{ item.note or "" }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</section>
+
+<div class="page-break"></div>
+
+<!-- 主持人 -->
+<section>
+    <h2>主持人 / Chair</h2>
+    {% for chair in program.chairs %}
+    <div class="speaker">
+        <div class="info">
+            <div class="name">{{ chair.name }}</div>
+            <div class="title">{{ chair.position }}</div>
+            <div class="bio">{{ chair.bio }}</div>
+        </div>
+    </div>
+    {% endfor %}
+</section>
+
+<!-- 講者 -->
+<section>
+    <h2>講者 / Speakers</h2>
+    {% for sp in program.speakers %}
+    <div class="speaker">
+        <div class="info">
+            <div class="name">{{ sp.name }}</div>
+            <div class="title">{{ sp.title }}</div>
+            <div class="bio">{{ sp.profile }}</div>
+        </div>
+    </div>
+    {% endfor %}
+</section>
+
+<footer style="margin-top:12mm; font-size:10pt; color:#666;">
+    <div>來源：依據上傳手冊內容製作（來源檔案已引用）</div>
+    <div class="small">Generated from: {{ program.title }}</div>
+</footer>
+
+</body>
+</html>
