@@ -16,7 +16,6 @@ Notes:
 from __future__ import annotations
 
 import argparse
-import importlib
 import json
 import logging
 import mimetypes
@@ -54,12 +53,20 @@ except Exception:
 
 import tempfile
 import uuid
+# shared data utilities
+from scripts.data_utils import (
+    BASE_DIR,
+    DEFAULT_DATA_DIR,
+    DEFAULT_SHARED_JSON,
+    load_programs,
+    find_data_file_by_id,
+    load_records,
+    load_all_records_from_dir,
+    record_matches_program,
+)
 # --- end import ---
 
 # -------------------- DEFAULT PATHS (adjust if needed) --------------------
-BASE_DIR = Path(r"C:\Users\User\activity_management")
-DEFAULT_DATA_DIR = BASE_DIR / "data"
-DEFAULT_SHARED_JSON = DEFAULT_DATA_DIR / "shared" / "program_data.json"
 DEFAULT_TEMPLATE = BASE_DIR / "templates" / "letter_sample" / "活動參與通知.docx"
 DEFAULT_ATTACHMENTS_DIR = DEFAULT_DATA_DIR / "attachments"
 # -------------------------------------------------------------------------
@@ -84,23 +91,6 @@ def load_smtp_config(path: Path) -> None:
         logging.warning("Failed to load smtp config %s: %s", path, e)
 
 
-# -------------------- program_data loader & matcher -----------------------
-def load_programs(path: Path) -> List[Dict[str, Any]]:
-    if not path.exists():
-        return []
-    try:
-        with path.open("r", encoding="utf-8") as fh:
-            data = json.load(fh)
-    except Exception:
-        logging.warning("Failed to load program data from %s", path)
-        return []
-    if isinstance(data, dict):
-        return [data]
-    if isinstance(data, list):
-        return data
-    return []
-
-
 def find_program_by_id(programs: List[Dict[str, Any]], pid: str) -> Optional[Dict[str, Any]]:
     if not programs:
         return None
@@ -114,194 +104,6 @@ def find_program_by_id(programs: List[Dict[str, Any]], pid: str) -> Optional[Dic
         if str(prog.get("plan_name", "")).strip().lower() == pid_s:
             return prog
     return None
-
-
-# -------------------- data file discovery & loading -----------------------
-def find_data_file_by_id(data_dir: Path, target_id: str) -> Optional[Path]:
-    """Search data_dir (recursive) for JSON or Excel that contains target_id."""
-    target = str(target_id).strip()
-    # JSON first
-    for p in sorted(data_dir.rglob("*.json")):
-        try:
-            # skip shared program_data file
-            if p.resolve() == DEFAULT_SHARED_JSON.resolve():
-                continue
-            with p.open("r", encoding="utf-8") as fh:
-                data = json.load(fh)
-        except Exception:
-            continue
-        if isinstance(data, dict):
-            if any(str(k).strip() == target for k in data.keys()):
-                return p
-            if str(data.get("id", "")).strip() == target:
-                return p
-            for v in data.values():
-                if isinstance(v, list):
-                    for item in v:
-                        try:
-                            if str(item.get("id", "")).strip() == target:
-                                return p
-                        except Exception:
-                            continue
-        elif isinstance(data, list):
-            for item in data:
-                try:
-                    if str(item.get("id", "")).strip() == target:
-                        return p
-                except Exception:
-                    continue
-    # Excel
-    try:
-        openpyxl = importlib.import_module("openpyxl")
-    except ModuleNotFoundError:
-        openpyxl = None
-    try:
-        xlrd = importlib.import_module("xlrd")
-    except ModuleNotFoundError:
-        xlrd = None
-
-    for p in sorted(data_dir.rglob("*.xls")) + sorted(data_dir.rglob("*.xlsx")):
-        if p.resolve() == DEFAULT_SHARED_JSON.resolve():
-            continue
-        ext = p.suffix.lower()
-        if ext == ".xlsx" and openpyxl:
-            try:
-                wb = openpyxl.load_workbook(p, data_only=True, read_only=True)
-            except Exception:
-                continue
-            for sname in wb.sheetnames:
-                ws = wb[sname]
-                rows = list(ws.iter_rows(values_only=True))
-                if not rows:
-                    continue
-                headers = [str(h).strip().lower() if h is not None else "" for h in rows[0]]
-                id_idx = [i for i, h in enumerate(headers) if "id" in h and h != ""]
-                if not id_idx:
-                    continue
-                for row in rows[1:]:
-                    for idx in id_idx:
-                        if idx >= len(row):
-                            continue
-                        val = row[idx]
-                        if val is None:
-                            continue
-                        if str(val).strip() == target:
-                            wb.close()
-                            return p
-            wb.close()
-        elif ext == ".xls" and xlrd:
-            try:
-                book = xlrd.open_workbook(str(p))
-            except Exception:
-                continue
-            for sname in book.sheet_names():
-                sh = book.sheet_by_name(sname)
-                if sh.nrows == 0:
-                    continue
-                headers = [str(sh.cell_value(0, c)).strip().lower() for c in range(sh.ncols)]
-                id_idx = [i for i, h in enumerate(headers) if "id" in h and h != ""]
-                if not id_idx:
-                    continue
-                for r in range(1, sh.nrows):
-                    for idx in id_idx:
-                        try:
-                            val = sh.cell_value(r, idx)
-                        except Exception:
-                            continue
-                        if val is None or str(val).strip() == "":
-                            continue
-                        if str(val).strip() == target:
-                            return p
-    return None
-
-
-def load_records(path: Path, sheet_name: Optional[str] = None) -> List[Dict[str, Any]]:
-    """Load records from JSON, .xlsx, or .xls. Return list of dicts (keys lowercased)."""
-    ext = path.suffix.lower()
-    if ext == ".json":
-        with path.open("r", encoding="utf-8") as fh:
-            data = json.load(fh)
-        if isinstance(data, dict):
-            # dict of objects
-            if all(isinstance(v, dict) for v in data.values()):
-                out = []
-                for k, v in data.items():
-                    rec = {str(kk).strip().lower(): vv for kk, vv in v.items()}
-                    if "id" not in rec:
-                        rec["id"] = str(k)
-                    out.append(rec)
-                return out
-            data = [data]
-        return [{str(k).strip().lower(): v for k, v in r.items()} for r in data]
-
-    if ext in {".xlsx", ".xls"}:
-        # prefer openpyxl for xlsx, xlrd for xls
-        if ext == ".xlsx":
-            openpyxl = importlib.import_module("openpyxl")
-            wb = openpyxl.load_workbook(path, data_only=True)
-            if sheet_name:
-                if sheet_name not in wb.sheetnames:
-                    raise ValueError(f"Sheet '{sheet_name}' not found in {path} (available: {wb.sheetnames})")
-                ws = wb[sheet_name]
-            else:
-                ws = wb.active
-            rows = list(ws.iter_rows(values_only=True))
-            if not rows:
-                return []
-            headers = [str(h).strip().lower() if h is not None else "" for h in rows[0]]
-            recs: List[Dict[str, Any]] = []
-            for row in rows[1:]:
-                r = {}
-                for i, val in enumerate(row):
-                    header = headers[i] if i < len(headers) else f"col_{i}"
-                    r[header] = val
-                recs.append(r)
-            return recs
-        else:
-            # .xls using xlrd
-            xlrd = importlib.import_module("xlrd")
-            book = xlrd.open_workbook(str(path))
-            if sheet_name:
-                if sheet_name not in book.sheet_names():
-                    raise ValueError(f"Sheet '{sheet_name}' not found in {path} (available: {book.sheet_names()})")
-                sh = book.sheet_by_name(sheet_name)
-            else:
-                sh = book.sheet_by_index(0)
-            if sh.nrows == 0:
-                return []
-            headers = [str(sh.cell_value(0, c)).strip().lower() for c in range(sh.ncols)]
-            recs = []
-            for r in range(1, sh.nrows):
-                rowvals = [sh.cell_value(r, c) for c in range(sh.ncols)]
-                rec = {}
-                for i, val in enumerate(rowvals):
-                    header = headers[i] if i < len(headers) else f"col_{i}"
-                    rec[header] = val
-                recs.append(rec)
-            return recs
-
-    raise ValueError(f"Unsupported file extension: {ext}")
-
-
-def load_all_records_from_dir(data_dir: Path, sheet_name: Optional[str] = None) -> List[Dict[str, Any]]:
-    """Load all records from JSON/xlsx/xls files under data_dir except files in shared/."""
-    out: List[Dict[str, Any]] = []
-    for p in sorted(data_dir.rglob("*")):
-        if not p.is_file():
-            continue
-        if p.resolve() == DEFAULT_SHARED_JSON.resolve():
-            continue
-        if "shared" in p.parts:
-            # skip shared folder files (except if you want to include)
-            continue
-        if p.suffix.lower() in {".json", ".xlsx", ".xls"}:
-            try:
-                recs = load_records(p, sheet_name=sheet_name)
-                out.extend(recs)
-            except Exception:
-                logging.debug("Failed to load %s, skipping.", p)
-                continue
-    return out
 
 
 # -------------------- template rendering -----------------------------------
@@ -634,34 +436,6 @@ def save_draft(msg: EmailMessage, directory: Path) -> None:
     with path.open("wb") as fh:
         fh.write(msg.as_bytes())
     logging.info("Saved draft: %s", path)
-
-
-# -------------------- helper: determine if record belongs to program ---------
-def record_matches_program(record: Dict[str, Any], program: Dict[str, Any]) -> bool:
-    """Return True if record references the given program (by id or name)."""
-    if not program:
-        return False
-    pid = str(program.get("id", "")).strip().lower()
-    pname = str(program.get("planName", "") or program.get("plan_name", "")).strip().lower()
-    # check common fields in record
-    candidate_keys = ("planid", "plan_id", "activity_id", "activityid", "program_id", "programid", "id", "planname", "plan_name", "program", "plan")
-    for k in candidate_keys:
-        v = record.get(k)
-        if v is None:
-            continue
-        vs = str(v).strip().lower()
-        if vs == pid or vs == pname or (pname and pname in vs):
-            return True
-        # if record field is a list or comma separated values, check items
-        if isinstance(v, (list, tuple)):
-            for it in v:
-                if str(it).strip().lower() in (pid, pname):
-                    return True
-        if isinstance(v, str) and "," in v:
-            for it in [x.strip().lower() for x in v.split(",") if x.strip()]:
-                if it in (pid, pname):
-                    return True
-    return False
 
 
 # -------------------- main --------------------------------------------------

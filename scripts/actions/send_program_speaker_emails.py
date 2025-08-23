@@ -23,13 +23,12 @@ from scripts.core.build_mapping import get_event_speaker_mappings
 from scripts.actions import mail_template_utils
 from scripts.actions.send_email_with_attachments import (
     load_smtp_config,
-    load_programs,
     find_program_by_id,
     create_message,
     send_all_messages,
     save_draft,
-    DEFAULT_SHARED_JSON,
 )
+from scripts.data_utils import load_programs, DEFAULT_SHARED_JSON
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
