@@ -13,6 +13,8 @@ import argparse
 import logging
 from typing import List, Dict, Any
 
+from scripts.core.bootstrap import OUTPUT_DIR
+
 # --- minimal bootstrap to allow absolute imports ---
 ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
@@ -64,7 +66,7 @@ def main(argv: List[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--program-id", required=True, help="Program id to send emails for")
     parser.add_argument("--template", required=True, help="Template filename under templates/")
-    parser.add_argument("--output", type=Path, default=Path("output/speaker_drafts"), help="Draft output directory")
+    parser.add_argument("--output", type=Path, default=OUTPUT_DIR / "speaker_drafts", help="Draft output directory")
     group = parser.add_mutually_exclusive_group()
     group.add_argument("--send", action="store_true", help="Send emails via SMTP")
     group.add_argument("--draft", action="store_true", help="Save drafts only (default)")

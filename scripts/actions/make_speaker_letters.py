@@ -9,14 +9,7 @@ if str(ROOT) not in sys.path:
 import argparse
 from typing import List, Dict, Any, Optional
 
-# try project bootstrap
-try:
-    from scripts.core.bootstrap import initialize, OUTPUT_DIR, TEMPLATE_DIR
-except Exception:
-    BASE_DIR = Path(__file__).resolve().parents[2]
-    OUTPUT_DIR = BASE_DIR / "output"
-    TEMPLATE_DIR = BASE_DIR / "templates"
-    def initialize(): OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+from scripts.core.bootstrap import initialize, BASE_DIR, OUTPUT_DIR, TEMPLATE_DIR
 
 from scripts.core.build_mapping import get_event_speaker_mappings
 from scripts.actions import mail_template_utils
@@ -102,6 +95,6 @@ if __name__ == "__main__":
     print("=== DONE ===")
     for p in files:
         try:
-            print("-", p.relative_to(Path(__file__).resolve().parents[2]))
+            print("-", p.relative_to(BASE_DIR))
         except Exception:
             print("-", p)

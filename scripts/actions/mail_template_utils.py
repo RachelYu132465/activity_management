@@ -7,6 +7,8 @@ from datetime import datetime, date
 from pathlib import Path
 from typing import Dict, Any, List, Tuple, Optional
 
+from scripts.core.bootstrap import TEMPLATE_DIR
+
 # Highlight 目前使用 WD_COLOR_INDEX.YELLOW（python-docx 的內建螢光黃）。如果要改色，可以改那裡的常數（但 python-docx 提供的顏色選項有限）。
 #
 # Jinja2 的 filter 最靈活；建議在環境有安裝 jinja2 時使用 {{ ... | cn_date | highlight }}。若沒有 jinja2，fallback 也支援 |。
@@ -122,8 +124,7 @@ def find_template_file(template_filename: str, template_dir: Optional[Path] = No
     Find template file under template_dir (or default templates/).
     """
     if template_dir is None:
-        BASE_DIR = Path(__file__).resolve().parents[2]
-        template_dir = BASE_DIR / "templates"
+        template_dir = TEMPLATE_DIR
     p = Path(template_dir) / template_filename
     if p.exists():
         return p

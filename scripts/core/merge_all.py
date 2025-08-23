@@ -6,11 +6,11 @@ from pathlib import Path
 from datetime import datetime
 from typing import Any
 
-BASE_DIR = Path(__file__).resolve().parents[2]
+from scripts.core.bootstrap import BASE_DIR, DATA_DIR, OUTPUT_DIR as BASE_OUTPUT_DIR
+
 CONFIG_SCHEMA_DIR = BASE_DIR / "config" / "schema"
-DATA_DIR = BASE_DIR / "data"
-OUTPUT_DIR = BASE_DIR / "output" / "merged"
-BACKUP_ROOT = BASE_DIR / "output" / "backups"
+OUTPUT_DIR = BASE_OUTPUT_DIR / "merged"
+BACKUP_ROOT = BASE_OUTPUT_DIR / "backups"
 
 def initialize() -> None:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
