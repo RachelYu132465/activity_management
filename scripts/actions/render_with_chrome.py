@@ -19,17 +19,35 @@ from scripts.core.bootstrap import TEMPLATE_DIR, OUTPUT_DIR, DATA_DIR, CHROME_BI
 
 DATA_FILE = DATA_DIR / "shared" / "program_data.json"
 INFLUENCER_FILE = DATA_DIR / "shared" / "influencer_data.json"
+
 # Ensure output directory exists
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-# Load program and influencer data
+# Load program and influencer data (be tolerant of dict vs list)
 try:
     with DATA_FILE.open("r", encoding="utf-8") as fh:
-        program_list = json.load(fh)
+        programs_raw = json.load(fh)
+except Exception as e:
+    print(f"Failed to load program data file {DATA_FILE}: {e}", file=sys.stderr)
+    sys.exit(1)
+
+try:
     with INFLUENCER_FILE.open("r", encoding="utf-8") as fh:
         influencer_list = json.load(fh)
 except Exception as e:
-    print(f"Failed to load data files: {e}", file=sys.stderr)
+    print(f"Failed to load influencer data file {INFLUENCER_FILE}: {e}", file=sys.stderr)
+    influencer_list = []
+
+# Normalize programs into a list of program dicts
+if isinstance(programs_raw, dict):
+    if "programs" in programs_raw and isinstance(programs_raw["programs"], list):
+        program_list = programs_raw["programs"]
+    else:
+        program_list = [programs_raw]
+elif isinstance(programs_raw, list):
+    program_list = programs_raw
+else:
+    print(f"Unexpected JSON structure in {DATA_FILE} (expected list or dict).", file=sys.stderr)
     sys.exit(1)
 
 # Select program entry
@@ -40,39 +58,46 @@ args = parser.parse_args()
 selected = None
 if args.event_id is not None:
     for prog in program_list:
-        if int(prog.get("id", -1)) == args.event_id:
-            selected = prog
-            break
+        try:
+            if int(prog.get("id", -1)) == args.event_id:
+                selected = prog
+                break
+        except Exception:
+            continue
+
 if selected is None:
     selected = program_list[0] if program_list else {}
 
 # Build schedule from agenda settings
 def build_schedule(event):
-    cfg = event.get("agenda_settings", {})
+    cfg = event.get("agenda_settings", {}) or {}
     try:
         current = datetime.strptime(cfg.get("start_time", "00:00"), "%H:%M")
-    except ValueError:
+    except Exception:
         return []
     speaker_minutes = int(cfg.get("speaker_minutes") or 0)
-    specials = cfg.get("special_sessions", [])
+    specials = cfg.get("special_sessions", []) or []
 
     def add_special(after_no, start):
         for s in specials:
-            if int(s.get("after_speaker", -1)) == after_no:
-                dur = int(s.get("duration") or 0)
-                end = start + timedelta(minutes=dur)
-                schedule.append({
-                    "time": f"{start.strftime('%H:%M')}-{end.strftime('%H:%M')}",
-                    "topic": s.get("title", ""),
-                    "speaker": "",
-                    "note": "",
-                })
-                start = end
+            try:
+                if int(s.get("after_speaker", -1)) == int(after_no):
+                    dur = int(s.get("duration") or 0)
+                    end = start + timedelta(minutes=dur)
+                    schedule.append({
+                        "time": f"{start.strftime('%H:%M')}-{end.strftime('%H:%M')}",
+                        "topic": s.get("title", ""),
+                        "speaker": "",
+                        "note": "",
+                    })
+                    start = end
+            except Exception:
+                continue
         return start
 
     schedule = []
     current = add_special(0, current)
-    for sp in event.get("speakers", []):
+    for sp in event.get("speakers", []) or []:
         end = current + timedelta(minutes=speaker_minutes)
         schedule.append({
             "time": f"{current.strftime('%H:%M')}-{end.strftime('%H:%M')}",
@@ -81,21 +106,21 @@ def build_schedule(event):
             "note": "",
         })
         current = end
-        current = add_special(sp.get("no"), current)
-    add_special(999, current)
+        current = add_special(sp.get("no", 0), current)
+    current = add_special(999, current)
     return schedule
 
 # Build speaker and chair lists augmented from influencer data
-infl_by_name = {p.get("name"): p for p in influencer_list}
+infl_by_name = {p.get("name"): p for p in influencer_list if isinstance(p, dict)}
 chairs = []
 speakers = []
-for sp in selected.get("speakers", []):
+for sp in selected.get("speakers", []) or []:
     name = sp.get("name")
-    info = infl_by_name.get(name, {})
+    info = infl_by_name.get(name, {}) or {}
     enriched = {
         "name": name,
-        "title": info.get("current_position", {}).get("title", ""),
-        "profile": "\n".join(info.get("experience", [])),
+        "title": info.get("current_position", {}).get("title", "") if isinstance(info.get("current_position"), dict) else "",
+        "profile": "\n".join(info.get("experience", [])) if isinstance(info.get("experience"), list) else info.get("experience", "") or "",
         "photo_url": info.get("photo_url", ""),
     }
     if sp.get("type") == "主持人":
@@ -104,7 +129,7 @@ for sp in selected.get("speakers", []):
         speakers.append(enriched)
 
 program_data = {
-    "title": selected.get("eventNames", [""])[0],
+    "title": (selected.get("eventNames") or [""])[0] if selected.get("eventNames") else selected.get("title", ""),
     "date": selected.get("date", ""),
     "locations": selected.get("locations", []),
     "organizers": selected.get("organizers", []),
@@ -128,14 +153,14 @@ except Exception as e:
     print(f"Template not found in {TEMPLATE_DIR}: {e}", file=sys.stderr)
     sys.exit(1)
 
-# Render HTML
-context = {
-    "program_data": program_data,
-    "organizers": program_data.get("organizers", []),
-    "co_organizers": program_data.get("co_organizers", []),
-    "assets": {},
-}
+# Render HTML with consistent context variable name: program_data
 try:
+    context = {
+        "program_data": program_data,
+        "organizers": program_data.get("organizers", []),
+        "co_organizers": program_data.get("co_organizers", []),
+        "assets": {},
+    }
     html = tpl.render(**context)
 except Exception as e:
     print(f"Template rendering failed: {e}", file=sys.stderr)
