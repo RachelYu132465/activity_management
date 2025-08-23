@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, List, Tuple, Callable, Optional
 
 from scripts.core.data_util import read_json_relaxed
+from scripts.core.bootstrap import BASE_DIR, DATA_DIR
 
 # --- minimal, safe bootstrap ---
 _THIS = Path(__file__).resolve()
@@ -16,9 +17,6 @@ root_str = str(ROOT)
 import sys
 if root_str not in sys.path:
     sys.path.insert(0, root_str)
-
-BASE_DIR = ROOT
-DATA_DIR = BASE_DIR / "data"
 # --- end bootstrap
 
 INVALID_WIN = r'[<>:"/\\|?*\x00-\x1F]'

@@ -3,13 +3,11 @@
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from weasyprint import HTML
 import json
-from pathlib import Path
 import sys
 
-BASE_DIR = Path(__file__).resolve().parent
-DATA_FILE = BASE_DIR / "data" / "program.json"
-TEMPLATE_DIR = BASE_DIR / "templates"
-OUTPUT_DIR = BASE_DIR / "output"
+from scripts.core.bootstrap import TEMPLATE_DIR, OUTPUT_DIR, PROGRAM_JSON
+
+DATA_FILE = PROGRAM_JSON
 
 # 確保 output 目錄存在
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
