@@ -44,7 +44,7 @@ logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
 # --- Try to import project template_utils; fall back to None if unavailable ---
 try:
-    from scripts.actions import template_utils as tu
+    from scripts.actions import mail_template_utils as tu
     tu_render_body = getattr(tu, "render_body_from_template", None)
     tu_render_docx = getattr(tu, "render_docx_template", None)
 except Exception:
@@ -533,15 +533,9 @@ def create_message(record: Dict[str, Any], template_path: Optional[Path], attach
             from datetime import datetime
             date_str = datetime.now().strftime("%Y-%m-%d")
 
-        parts = []
-        if tpl_name:
-            parts.append(f"【{tpl_name}】")
+        parts = [p for p in (tpl_name, plan_name, event0) if p]
         if date_str:
             parts.append(date_str)
-        if plan_name:
-            parts.append(plan_name)
-        if event0:
-            parts.append(event0)
         subject = " - ".join(parts) if parts else "活動通知"
 
     from_addr = os.environ.get("SMTP_USERNAME", "noreply@example.com")

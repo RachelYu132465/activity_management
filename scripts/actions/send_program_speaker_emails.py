@@ -20,7 +20,7 @@ if str(ROOT) not in sys.path:
 
 # project imports
 from scripts.core.build_mapping import get_event_speaker_mappings
-from scripts.actions import template_utils
+from scripts.actions import mail_template_utils
 from scripts.actions.send_email_with_attachments import (
     load_smtp_config,
     load_programs,
@@ -38,6 +38,7 @@ def build_speaker_records(program_id: str) -> List[Dict[str, Any]]:
     """Return list of speaker records merged with program info."""
     programs = load_programs(DEFAULT_SHARED_JSON)
     program = find_program_by_id(programs, program_id)
+
     if not program:
         raise ValueError(f"Program id {program_id} not found")
 
@@ -49,7 +50,7 @@ def build_speaker_records(program_id: str) -> List[Dict[str, Any]]:
     mappings = get_event_speaker_mappings(event_name)
     records: List[Dict[str, Any]] = []
     for m in mappings:
-        email = template_utils.find_email_in_record(m)
+        email = mail_template_utils.find_email_in_record(m)
         if not email:
             logging.warning("No email for speaker %s", m.get("name"))
             continue
@@ -75,7 +76,7 @@ def main(argv: List[str] | None = None) -> None:
 
     load_smtp_config(Path("config/smtp.json"))
 
-    template_path = template_utils.find_template_file(args.template)
+    template_path = mail_template_utils.find_template_file(args.template)
     records = build_speaker_records(args.program_id)
 
     messages = []

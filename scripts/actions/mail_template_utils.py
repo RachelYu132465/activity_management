@@ -1,4 +1,4 @@
-# scripts/actions/template_utils.py
+# scripts/actions/mail_template_utils.py
 from __future__ import annotations
 import re
 import unicodedata

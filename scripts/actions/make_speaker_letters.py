@@ -19,7 +19,7 @@ except Exception:
     def initialize(): OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 from scripts.core.build_mapping import get_event_speaker_mappings
-from scripts.actions import template_utils
+from scripts.actions import mail_template_utils
 
 # compatibility replacers (preserve your original substitutions)
 REPLACERS = [
@@ -44,7 +44,7 @@ REPLACERS = [
 
 
 def find_template_file(template_filename: str) -> Path:
-    return template_utils.find_template_file(template_filename, template_dir=TEMPLATE_DIR)
+    return mail_template_utils.find_template_file(template_filename, template_dir=TEMPLATE_DIR)
 
 
 def make_letters(event_name: str, template_filename: str,
@@ -82,7 +82,7 @@ def make_letters(event_name: str, template_filename: str,
         safe_name = m.get("safe_filename") or (m.get("name") or "TBD")
         out_name = f"{no:02d}_{safe_name}_敬請協助提供CV與簡報.docx"
         out_path = out_base / out_name
-        template_utils.render_docx_template(template_path, out_path, mapping, replacers=REPLACERS)
+        mail_template_utils.render_docx_template(template_path, out_path, mapping, replacers=REPLACERS)
         results.append(out_path)
 
     return results
