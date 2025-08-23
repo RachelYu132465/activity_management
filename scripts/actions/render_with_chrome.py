@@ -13,17 +13,18 @@ if str(ROOT) not in sys.path:
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 # Direct import from bootstrap (requested "direct" style)
-from scripts.core.bootstrap import TEMPLATE_DIR, OUTPUT_DIR, PROGRAM_JSON, CHROME_BIN
+from scripts.core.bootstrap import TEMPLATE_DIR, OUTPUT_DIR, DATA_DIR, CHROME_BIN
 
+DATA_FILE = DATA_DIR / "shared" / "program_data.json"
 # Ensure output directory exists
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 # Load program data
 try:
-    with PROGRAM_JSON.open("r", encoding="utf-8") as fh:
+    with DATA_FILE.open("r", encoding="utf-8") as fh:
         data = json.load(fh)
 except Exception as e:
-    print(f"Failed to load {PROGRAM_JSON}: {e}", file=sys.stderr)
+    print(f"Failed to load {DATA_FILE}: {e}", file=sys.stderr)
     sys.exit(1)
 
 # Prepare Jinja2 environment
