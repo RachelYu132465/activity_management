@@ -54,7 +54,7 @@ except Exception:
 import tempfile
 import uuid
 # shared data utilities
-from scripts.data_utils import (
+from scripts.core.data_util import (
     BASE_DIR,
     DEFAULT_DATA_DIR,
     DEFAULT_SHARED_JSON,

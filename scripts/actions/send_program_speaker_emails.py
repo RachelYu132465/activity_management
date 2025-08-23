@@ -28,7 +28,7 @@ from scripts.actions.send_email_with_attachments import (
     send_all_messages,
     save_draft,
 )
-from scripts.data_utils import load_programs, DEFAULT_SHARED_JSON
+from scripts.core.data_util import load_programs, DEFAULT_SHARED_JSON
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 

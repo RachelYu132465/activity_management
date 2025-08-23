@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Tuple, Callable, Optional
 
-from scripts.data_utils import read_json_relaxed
+from scripts.core.data_util import read_json_relaxed
 
 # --- minimal, safe bootstrap ---
 _THIS = Path(__file__).resolve()
