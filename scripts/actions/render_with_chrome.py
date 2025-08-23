@@ -5,6 +5,8 @@ from pathlib import Path
 import sys
 import json
 import subprocess
+import argparse
+from datetime import datetime, timedelta
 
 ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
@@ -15,24 +17,129 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 # Direct import from bootstrap (requested "direct" style)
 from scripts.core.bootstrap import TEMPLATE_DIR, OUTPUT_DIR, DATA_DIR, CHROME_BIN
 
-# -------------------------
-# === 可改常數 / Single place to change ===
-# 改這裡就可以：要改 JSON 檔名/路徑或是模板裡想要的 key（例如 "program_data"）
-# Change these two constants if your JSON filename or template variable name changes.
-PROGRAM_JSON_FILENAME = DATA_DIR / "shared" / "program_data.json"
-PROGRAM_DATA_KEY = "program_data"
-# -------------------------
+DATA_FILE = DATA_DIR / "shared" / "program_data.json"
+INFLUENCER_FILE = DATA_DIR / "shared" / "influencer_data.json"
 
 # Ensure output directory exists
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-# Load program data
+# Load program and influencer data (be tolerant of dict vs list)
 try:
-    with PROGRAM_JSON_FILENAME.open("r", encoding="utf-8") as fh:
-        data = json.load(fh)
+    with DATA_FILE.open("r", encoding="utf-8") as fh:
+        programs_raw = json.load(fh)
 except Exception as e:
-    print(f"Failed to load {PROGRAM_JSON_FILENAME}: {e}", file=sys.stderr)
+    print(f"Failed to load program data file {DATA_FILE}: {e}", file=sys.stderr)
     sys.exit(1)
+
+try:
+    with INFLUENCER_FILE.open("r", encoding="utf-8") as fh:
+        influencer_list = json.load(fh)
+except Exception as e:
+    print(f"Failed to load influencer data file {INFLUENCER_FILE}: {e}", file=sys.stderr)
+    influencer_list = []
+
+# Normalize programs into a list of program dicts
+if isinstance(programs_raw, dict):
+    if "programs" in programs_raw and isinstance(programs_raw["programs"], list):
+        program_list = programs_raw["programs"]
+    else:
+        program_list = [programs_raw]
+elif isinstance(programs_raw, list):
+    program_list = programs_raw
+else:
+    print(f"Unexpected JSON structure in {DATA_FILE} (expected list or dict).", file=sys.stderr)
+    sys.exit(1)
+
+# Select program entry
+parser = argparse.ArgumentParser(description="Render program handbook")
+parser.add_argument("--event-id", type=int, default=None, help="Program id to render")
+args = parser.parse_args()
+
+selected = None
+if args.event_id is not None:
+    for prog in program_list:
+        try:
+            if int(prog.get("id", -1)) == args.event_id:
+                selected = prog
+                break
+        except Exception:
+            continue
+
+if selected is None:
+    selected = program_list[0] if program_list else {}
+
+# Build schedule from agenda settings
+def build_schedule(event):
+    cfg = event.get("agenda_settings", {}) or {}
+    try:
+        current = datetime.strptime(cfg.get("start_time", "00:00"), "%H:%M")
+    except Exception:
+        return []
+    speaker_minutes = int(cfg.get("speaker_minutes") or 0)
+    specials = cfg.get("special_sessions", []) or []
+
+    def add_special(after_no, start):
+        for s in specials:
+            try:
+                if int(s.get("after_speaker", -1)) == int(after_no):
+                    dur = int(s.get("duration") or 0)
+                    end = start + timedelta(minutes=dur)
+                    schedule.append({
+                        "time": f"{start.strftime('%H:%M')}-{end.strftime('%H:%M')}",
+                        "topic": s.get("title", ""),
+                        "speaker": "",
+                        "note": "",
+                    })
+                    start = end
+            except Exception:
+                continue
+        return start
+
+    schedule = []
+    current = add_special(0, current)
+    for sp in event.get("speakers", []) or []:
+        end = current + timedelta(minutes=speaker_minutes)
+        schedule.append({
+            "time": f"{current.strftime('%H:%M')}-{end.strftime('%H:%M')}",
+            "topic": sp.get("topic", ""),
+            "speaker": sp.get("name", ""),
+            "note": "",
+        })
+        current = end
+        current = add_special(sp.get("no", 0), current)
+    current = add_special(999, current)
+    return schedule
+
+# Build speaker and chair lists augmented from influencer data
+infl_by_name = {p.get("name"): p for p in influencer_list if isinstance(p, dict)}
+chairs = []
+speakers = []
+for sp in selected.get("speakers", []) or []:
+    name = sp.get("name")
+    info = infl_by_name.get(name, {}) or {}
+    enriched = {
+        "name": name,
+        "title": info.get("current_position", {}).get("title", "") if isinstance(info.get("current_position"), dict) else "",
+        "profile": "\n".join(info.get("experience", [])) if isinstance(info.get("experience"), list) else info.get("experience", "") or "",
+        "photo_url": info.get("photo_url", ""),
+    }
+    if sp.get("type") == "主持人":
+        chairs.append(enriched)
+    else:
+        speakers.append(enriched)
+
+program_data = {
+    "title": (selected.get("eventNames") or [""])[0] if selected.get("eventNames") else selected.get("title", ""),
+    "date": selected.get("date", ""),
+    "locations": selected.get("locations", []),
+    "organizers": selected.get("organizers", []),
+    "co_organizers": selected.get("coOrganizers", []),
+    "schedule": build_schedule(selected),
+    "chairs": chairs,
+    "speakers": speakers,
+    "notes": selected.get("notes", []),
+    "contact": selected.get("contact", ""),
+}
 
 # Prepare Jinja2 environment
 env = Environment(
@@ -46,39 +153,18 @@ except Exception as e:
     print(f"Template not found in {TEMPLATE_DIR}: {e}", file=sys.stderr)
     sys.exit(1)
 
-# --- Render HTML (use PROGRAM_DATA_KEY to control template variable name) ---
+# Render HTML with consistent context variable name: program_data
 try:
-    # program_candidate: prefer top-level key matching PROGRAM_DATA_KEY, otherwise treat entire JSON as program_data
-    if isinstance(data, dict) and PROGRAM_DATA_KEY in data:
-        program = data[PROGRAM_DATA_KEY]
-    else:
-        # if your JSON is already the program object, use it directly
-        program = data if isinstance(data, dict) else {"title": "論壇手冊"}
-
-    # Ensure safe defaults so template for-loops / accesses won't crash
-    if isinstance(program, dict):
-        program.setdefault("schedule", [])
-        program.setdefault("chairs", [])
-        program.setdefault("speakers", [])
-        program.setdefault("eventNames", [program.get("title", "論壇手冊")])
-        program.setdefault("locations", program.get("locations") or [""])
-        program.setdefault("date", program.get("date", ""))
-
-    # Build a top-level context exposing the chosen PROGRAM_DATA_KEY var
-    # so the template can reference {{ program_data }} (or whatever PROGRAM_DATA_KEY is)
     context = {
-        PROGRAM_DATA_KEY: program,
-        # also expose some convenient top-level fallbacks for template variables
-        "organizers": (data.get("organizers") if isinstance(data, dict) else None) or program.get("organizers") or [],
-        "co_organizers": (data.get("co_organizers") if isinstance(data, dict) else None) or program.get("co_organizers") or [],
-        "assets": (data.get("assets") if isinstance(data, dict) else None) or program.get("assets", {}),
+        "program_data": program_data,
+        "organizers": program_data.get("organizers", []),
+        "co_organizers": program_data.get("co_organizers", []),
+        "assets": {},
     }
-
     html = tpl.render(**context)
 except Exception as e:
     print(f"Template rendering failed: {e}", file=sys.stderr)
     sys.exit(1)
-# --- end render ---
 
 # Save intermediate HTML
 html_file = OUTPUT_DIR / "program.html"

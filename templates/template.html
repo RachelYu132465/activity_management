@@ -112,7 +112,7 @@ img { max-width: 100%; height: auto; }
     {% if assets.logo_url %}
     <img src="{{ assets.logo_url }}" alt="logo" style="max-height:90px; margin-bottom:8px;">
     {% endif %}
-    <div class="title">{{ program_data.eventNames[0] }}</div>
+    <div class="title">{{ program_data.title }}</div>
     <div class="meta">{{ program_data.date }} | {{ program_data.locations[0] }}</div>
     <div style="margin-top:12px; font-size:11pt; color:#555;">
         主辦：{{ organizers | join('、') }}<br/>
