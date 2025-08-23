@@ -5,6 +5,8 @@ from pathlib import Path
 import sys
 import json
 import subprocess
+import argparse
+from datetime import datetime, timedelta
 
 ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
@@ -16,16 +18,103 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 from scripts.core.bootstrap import TEMPLATE_DIR, OUTPUT_DIR, DATA_DIR, CHROME_BIN
 
 DATA_FILE = DATA_DIR / "shared" / "program_data.json"
+INFLUENCER_FILE = DATA_DIR / "shared" / "influencer_data.json"
 # Ensure output directory exists
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-# Load program data
+# Load program and influencer data
 try:
     with DATA_FILE.open("r", encoding="utf-8") as fh:
-        data = json.load(fh)
+        program_list = json.load(fh)
+    with INFLUENCER_FILE.open("r", encoding="utf-8") as fh:
+        influencer_list = json.load(fh)
 except Exception as e:
-    print(f"Failed to load {DATA_FILE}: {e}", file=sys.stderr)
+    print(f"Failed to load data files: {e}", file=sys.stderr)
     sys.exit(1)
+
+# Select program entry
+parser = argparse.ArgumentParser(description="Render program handbook")
+parser.add_argument("--event-id", type=int, default=None, help="Program id to render")
+args = parser.parse_args()
+
+selected = None
+if args.event_id is not None:
+    for prog in program_list:
+        if int(prog.get("id", -1)) == args.event_id:
+            selected = prog
+            break
+if selected is None:
+    selected = program_list[0] if program_list else {}
+
+# Build schedule from agenda settings
+def build_schedule(event):
+    cfg = event.get("agenda_settings", {})
+    try:
+        current = datetime.strptime(cfg.get("start_time", "00:00"), "%H:%M")
+    except ValueError:
+        return []
+    speaker_minutes = int(cfg.get("speaker_minutes") or 0)
+    specials = cfg.get("special_sessions", [])
+
+    def add_special(after_no, start):
+        for s in specials:
+            if int(s.get("after_speaker", -1)) == after_no:
+                dur = int(s.get("duration") or 0)
+                end = start + timedelta(minutes=dur)
+                schedule.append({
+                    "time": f"{start.strftime('%H:%M')}-{end.strftime('%H:%M')}",
+                    "topic": s.get("title", ""),
+                    "speaker": "",
+                    "note": "",
+                })
+                start = end
+        return start
+
+    schedule = []
+    current = add_special(0, current)
+    for sp in event.get("speakers", []):
+        end = current + timedelta(minutes=speaker_minutes)
+        schedule.append({
+            "time": f"{current.strftime('%H:%M')}-{end.strftime('%H:%M')}",
+            "topic": sp.get("topic", ""),
+            "speaker": sp.get("name", ""),
+            "note": "",
+        })
+        current = end
+        current = add_special(sp.get("no"), current)
+    add_special(999, current)
+    return schedule
+
+# Build speaker and chair lists augmented from influencer data
+infl_by_name = {p.get("name"): p for p in influencer_list}
+chairs = []
+speakers = []
+for sp in selected.get("speakers", []):
+    name = sp.get("name")
+    info = infl_by_name.get(name, {})
+    enriched = {
+        "name": name,
+        "title": info.get("current_position", {}).get("title", ""),
+        "profile": "\n".join(info.get("experience", [])),
+        "photo_url": info.get("photo_url", ""),
+    }
+    if sp.get("type") == "主持人":
+        chairs.append(enriched)
+    else:
+        speakers.append(enriched)
+
+program_data = {
+    "title": selected.get("eventNames", [""])[0],
+    "date": selected.get("date", ""),
+    "locations": selected.get("locations", []),
+    "organizers": selected.get("organizers", []),
+    "co_organizers": selected.get("coOrganizers", []),
+    "schedule": build_schedule(selected),
+    "chairs": chairs,
+    "speakers": speakers,
+    "notes": selected.get("notes", []),
+    "contact": selected.get("contact", ""),
+}
 
 # Prepare Jinja2 environment
 env = Environment(
@@ -40,11 +129,14 @@ except Exception as e:
     sys.exit(1)
 
 # Render HTML
+context = {
+    "program_data": program_data,
+    "organizers": program_data.get("organizers", []),
+    "co_organizers": program_data.get("co_organizers", []),
+    "assets": {},
+}
 try:
-    if isinstance(data, dict):
-        html = tpl.render(**data)
-    else:
-        html = tpl.render(data=data)
+    html = tpl.render(**context)
 except Exception as e:
     print(f"Template rendering failed: {e}", file=sys.stderr)
     sys.exit(1)
