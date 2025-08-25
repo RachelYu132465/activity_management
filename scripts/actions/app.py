@@ -99,7 +99,7 @@ def _normalize_event_names(program):
 def _schedule_from_speakers(program, influencers=None):
     """Build a schedule with merged-column rules.
 
-    - If topic is "主持", merge time/topic/speaker into one cell.
+    - Entries with topic "主持" render as a centered row spanning all columns.
     - If topic is "休息", merge topic and speaker columns.
     - Otherwise keep the three-column layout.
     - Time column includes duration in minutes on a new line.
@@ -144,9 +144,8 @@ def _schedule_from_speakers(program, influencers=None):
             speaker = f"{speaker}\n{org}"
 
         if topic == "主持":
-            # Host information is rendered separately in the schedule table
-            # as a dedicated column, so skip adding a standalone row here.
-            continue
+            content = f"{topic} {speaker}".strip()
+            schedule.append({"type": "host", "content": content})
         elif topic == "休息":
             content = topic if not name or name == topic else f"{topic} {speaker}"
             schedule.append({"type": "break", "time": time, "content": content})

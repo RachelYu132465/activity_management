@@ -129,11 +129,6 @@ div[name="參與單位"] { align-self: flex-start; text-align: left; width:100%;
           border:1px solid #ddd; padding:6px 8px; vertical-align:top; font-size:11pt;
         }
         table.schedule th { background:#f3f3f3; font-weight:600; text-align:left; }
-        table.schedule td.host-cell {
-          background:#fbe5d5;
-          text-align:center;
-          vertical-align:middle;
-        }
 
         .person-list { list-style:none; padding:0; margin:0; }
         .person-list li { margin-bottom:6px; }
@@ -298,13 +293,11 @@ img { max-width: 100%; height: auto; }
     <table class="schedule" role="table" aria-label="議程表" style="width:17.4cm;">
         <colgroup>
             <col style="width:3.0cm;">
-            <col style="width:3.0cm;">
-            <col style="width:7.8cm;">
+            <col style="width:10.8cm;">
             <col style="width:3.6cm;">
         </colgroup>
         <thead>
         <tr>
-            <th>主持人 / Host</th>
             <th>時間 / Time</th>
             <th>主題 / Topic</th>
             <th>講者 / Speaker</th>
@@ -313,18 +306,11 @@ img { max-width: 100%; height: auto; }
         <tbody>
         {% for row in schedule %}
         <tr>
-            {% if loop.first %}
-            <td rowspan="{{ schedule|length }}" class="host-cell">
-                {% for chair in chairs %}
-                    {{ chair.name }}{% if chair.title %} {{ chair.title }}{% endif %}
-                    {% if chair.organization %}<br>{{ chair.organization }}{% endif %}
-                    {% if not loop.last %}<br><br>{% endif %}
-                {% endfor %}
-            </td>
-            {% endif %}
             {% if row.type == 'break' %}
             <td>{{ row.time }}</td>
             <td colspan="2">{{ row.content }}</td>
+            {% elif row.type == 'host' %}
+            <td colspan="3" style="text-align:center;">{{ row.content }}</td>
             {% else %}
             <td>{{ row.time }}</td>
             <td>{{ row.topic }}</td>
