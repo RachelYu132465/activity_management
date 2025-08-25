@@ -93,9 +93,8 @@
         "type": "休息",
         "topic": "休息",
         "name": "休息",
-        "start_time": null,
-        "end_time": null,
-        "duration_minutes": 10
+        "start_time": "11:00",
+        "end_time": "11:10"
       },
       {
         "no": 5,
