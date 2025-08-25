@@ -130,12 +130,16 @@ div[name="參與單位"] { align-self: flex-start; text-align: left; width:100%;
 
         /* 主持人 / 講者頁面樣式 */
         .person-card {
-          display:flex;
-          gap:18px;
-          align-items:flex-start;
+          overflow: auto;
         }
-        .person-photo { width:120px; flex: 0 0 120px; }
-        .person-info { flex:1; }
+        .person-photo {
+          float: right;
+          width:120px;
+          margin-left:18px;
+        }
+        .person-info {
+          /* text will wrap around the floated photo */
+        }
         .person-info .name-title { font-size:18pt; font-weight:700; margin-bottom:4px; }
         .person-info .organization { font-size:14pt; margin-bottom:8px; }
         .person-info h3 { font-size:16pt; margin:8px 0 4px; }
@@ -322,8 +326,9 @@ img { max-width: 100%; height: auto; }
 <section class="page-full" aria-label="主持人 Chair">
     <h2>主持人 / Chair</h2>
     <div class="person-card">
-        {% if chair.photo_url %}
-        <div class="person-photo"><img src="{{ chair.photo_url }}" style="width:100%; height:auto;"></div>
+        {% set chair_photo = chair.photo_url or url_for('static', filename=chair.name ~ '.png') %}
+        {% if chair_photo %}
+        <div class="person-photo"><img src="{{ chair_photo }}" style="width:100%; height:auto;"></div>
         {% endif %}
         <div class="person-info">
             <div class="name-title">{{ chair.name }}{% if chair.title %} {{ chair.title }}{% endif %}</div>
@@ -354,8 +359,9 @@ img { max-width: 100%; height: auto; }
 <section class="page-full" aria-label="講者 Speaker">
     <h2>講者 / Speaker</h2>
     <div class="person-card">
-        {% if sp.photo_url %}
-        <div class="person-photo"><img src="{{ sp.photo_url }}" style="width:100%; height:auto;"></div>
+        {% set sp_photo = sp.photo_url or url_for('static', filename=sp.name ~ '.png') %}
+        {% if sp_photo %}
+        <div class="person-photo"><img src="{{ sp_photo }}" style="width:100%; height:auto;"></div>
         {% endif %}
         <div class="person-info">
             <div class="name-title">{{ sp.name }}{% if sp.title %} {{ sp.title }}{% endif %}</div>
