@@ -5,7 +5,7 @@ import traceback
 from datetime import datetime
 from pathlib import Path
 
-from flask import Flask, render_template, request, Response
+from flask import Flask, render_template, request, Response, url_for
 from jinja2 import Undefined
 from jinja2.exceptions import TemplateNotFound
 
@@ -177,6 +177,16 @@ def _merge_person(name, influencer_map):
     """Combine base name with influencer details."""
     inf = influencer_map.get(name, {}) if isinstance(influencer_map, dict) else {}
     current = inf.get("current_position") or {}
+    photo_url = ""
+    # Look for a local static image named after the person
+    for ext in [".png", ".jpg", ".jpeg", ".gif", ".webp"]:
+        candidate = STATIC_DIR / f"{name}{ext}"
+        if candidate.exists():
+            photo_url = url_for("static", filename=f"{name}{ext}")
+            break
+    if not photo_url:
+        photo_url = inf.get("photo_url", "")
+
     return {
         "name": name,
         "title": current.get("title", ""),
@@ -184,6 +194,7 @@ def _merge_person(name, influencer_map):
         "highest_education": _format_highest_education(inf.get("highest_education")),
         "experience": inf.get("experience", []) or [],
         "achievements": inf.get("achievements", []) or [],
+        "photo_url": photo_url,
     }
 
 def build_safe_context(program, influencer_map=None):
@@ -223,9 +234,11 @@ def build_safe_context(program, influencer_map=None):
             continue
         name = sp.get("name", "")
         person = _merge_person(name, influencer_map)
-        if sp.get("type") == "主持人" or sp.get("topic") == "主持":
+        topic = sp.get("topic", "") or ""
+        sp_type = sp.get("type", "") or ""
+        if sp_type == "主持人" or topic == "主持":
             chairs.append(person)
-        else:
+        elif ("致詞" not in topic) and ("休息" not in topic) and sp_type not in ("致詞人", "休息"):
             speakers_list.append(person)
 
     context["speakers"] = speakers_list
