@@ -39,7 +39,7 @@
           "after_speaker": 0,
           "title": "主持人",
           "duration": null,
-          "speaker": "主持人：林世嘉 執行長 財團法人台灣醫界聯盟基金會"
+          "speaker": "林世嘉 執行長 財團法人台灣醫界聯盟基金會"
         },
         {
           "after_speaker": 2,
@@ -55,6 +55,7 @@
         }
       ]
     },
+
     "speakers": [
 
       {

@@ -100,7 +100,7 @@ def build_schedule(event):
             "time": r.get("time", ""),
             "topic": r.get("title", ""),
             "speaker": r.get("speaker", ""),
-            "note": "",
+
         })
     return schedule
 

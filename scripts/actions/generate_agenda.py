@@ -106,7 +106,7 @@ def gen_agenda_rows(event: Dict[str, Any]) -> List[Dict[str, str]]:
                 end2 = add_minutes(current, s["duration"])
                 rows.append({
                     "kind": "special",
-                "time": "{}-{}".format(current.strftime('%H:%M'), end2.strftime('%H:%M')),
+                    "time": "{}-{}".format(current.strftime('%H:%M'), end2.strftime('%H:%M')),
                     "title": s["title"],
                     "speaker": ""
                 })
