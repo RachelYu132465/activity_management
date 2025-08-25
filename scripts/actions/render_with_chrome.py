@@ -95,12 +95,25 @@ def build_schedule(event):
 
     rows = gen_agenda_rows(event)
     schedule = []
+
+    # Host row from program data (no time; merge across columns later)
+    for sp in event.get("speakers", []) or []:
+        if sp.get("type") == "主持人":
+            host_text = "{} {}".format(sp.get("topic", ""), sp.get("name", "")).strip()
+            schedule.append({
+                "kind": "host",
+                "time": "",
+                "topic": "",
+                "speaker": host_text,
+            })
+            break
+
     for r in rows:
         schedule.append({
+            "kind": r.get("kind", ""),
             "time": r.get("time", ""),
             "topic": r.get("title", ""),
             "speaker": r.get("speaker", ""),
-
         })
     return schedule
 
