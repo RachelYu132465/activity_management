@@ -79,46 +79,29 @@ else:
     print("Unexpected JSON structure in {} (expected list or dict).".format(DATA_FILE), file=sys.stderr)
     sys.exit(1)
 
-# Build schedule from agenda settings
+# Build schedule by leveraging generate_agenda helper
 def build_schedule(event):
-    cfg = event.get("agenda_settings", {}) or {}
+    """Build schedule rows using generate_agenda's logic.
+
+    This delegates the heavy lifting to ``gen_agenda_rows`` from
+    ``scripts.actions.generate_agenda`` and adapts the returned rows into
+    the structure expected by the rendering pipeline.
+    """
     try:
-        current = datetime.strptime(cfg.get("start_time", "00:00"), "%H:%M")
-    except (ValueError, TypeError):
+        from scripts.actions.generate_agenda import gen_agenda_rows
+    except Exception:
+        # Fallback to an empty schedule if the helper can't be imported
         return []
-    speaker_minutes = int(cfg.get("speaker_minutes") or 0)
-    specials = cfg.get("special_sessions", []) or []
 
-    def add_special(after_no, start):
-        for s in specials:
-            try:
-                if int(s.get("after_speaker", -1)) == int(after_no):
-                    dur = int(s.get("duration") or 0)
-                    end = start + timedelta(minutes=dur)
-                    schedule.append({
-                        "time": "{}-{}".format(start.strftime('%H:%M'), end.strftime('%H:%M')),
-                        "topic": s.get("title", ""),
-                        "speaker": "",
-
-                    })
-                    start = end
-            except (ValueError, TypeError):
-                continue
-        return start
-
+    rows = gen_agenda_rows(event)
     schedule = []
-    current = add_special(0, current)
-    for speaker_item in event.get("speakers", []) or []:
-        end = current + timedelta(minutes=speaker_minutes)
+    for r in rows:
         schedule.append({
-            "time": "{}-{}".format(current.strftime('%H:%M'), end.strftime('%H:%M')),
-            "topic": speaker_item.get("topic", ""),
-            "speaker": speaker_item.get("name", ""),
+            "time": r.get("time", ""),
+            "topic": r.get("title", ""),
+            "speaker": r.get("speaker", ""),
             "note": "",
         })
-        current = end
-        current = add_special(speaker_item.get("no", 0), current)
-    add_special(999, current)
     return schedule
 
 # Build speaker and chair lists augmented from influencer data
