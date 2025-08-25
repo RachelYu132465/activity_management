@@ -9,6 +9,12 @@ from flask import Flask, render_template, request, Response, url_for
 from jinja2 import Undefined
 from jinja2.exceptions import TemplateNotFound
 
+# pdf rendering is optional; import lazily so the app still runs without it
+try:  # pragma: no cover - optional dependency
+    import pdfkit  # type: ignore
+except Exception:  # pragma: no cover - if pdfkit not installed
+    pdfkit = None
+
 # Project layout: this file is scripts/core/app.py
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 TEMPLATE_DIR = PROJECT_ROOT / "templates"
@@ -292,6 +298,37 @@ def event_route(event_id):
     except Exception as e:
         traceback.print_exc()
         return f"Rendering error: {e}", 500
+
+
+@app.route("/pdf")
+def pdf_route():
+    """Render template as PDF with table of contents using wkhtmltopdf."""
+    event_id = request.args.get("event_id", None)
+    try:
+        event_id = int(event_id) if event_id is not None else None
+    except Exception:
+        event_id = None
+
+    ctx = get_context_for_event(event_id)
+    try:
+        html = render_template("template.html", **ctx)
+    except TemplateNotFound:
+        return f"Template template.html not found in {TEMPLATE_DIR}", 404
+    except Exception as e:
+        traceback.print_exc()
+        return f"Rendering error: {e}", 500
+
+    if pdfkit is None:
+        return "pdfkit or wkhtmltopdf not installed", 500
+
+    try:
+        options = {"encoding": "utf-8", "toc": ""}
+        pdf_bytes = pdfkit.from_string(html, False, options=options)
+    except Exception as e:  # pragma: no cover - runtime error
+        return f"PDF generation failed: {e}", 500
+
+    headers = {"Content-Disposition": "attachment; filename=report.pdf"}
+    return Response(pdf_bytes, mimetype="application/pdf", headers=headers)
 
 
 # Optional: a debug endpoint that returns the context as JSON (handy while developing)
