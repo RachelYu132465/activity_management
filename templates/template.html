@@ -122,7 +122,7 @@ div[name="參與單位"] { align-self: flex-start; text-align: left; width:100%;
 
         /* 議程 */
 
-        table.schedule { width:100%; border-collapse: collapse; margin-top:8px; }
+        table.schedule { border-collapse: collapse; margin-top:8px; }
         table.schedule th, table.schedule td {
           border:1px solid #ddd; padding:6px 8px; vertical-align:top; font-size:11pt;
         }
@@ -277,23 +277,37 @@ img { max-width: 100%; height: auto; }
 <!-- 議程（此區可視情況短長；放在一頁或超過亦可） -->
 <section class="page-full">
     <h2>議程 / Schedule</h2>
-    <table class="schedule" role="table" aria-label="議程表">
+    <table class="schedule" role="table" aria-label="議程表" style="width:17.4cm;">
+        <colgroup>
+            <col style="width:3.0cm;">
+            <col style="width:9.6cm;">
+            <col style="width:4.8cm;">
+        </colgroup>
         <thead>
         <tr>
-            <th style="width:16%;">時間 / Time</th>
-            <th style="width:18%;">主題 / Topic</th>
-            <th style="width:26%;">講者 / Speaker</th>
-            <th>備註 / Note</th>
+            <th>時間 / Time</th>
+            <th>主題 / Topic</th>
+            <th>講者 / Speaker</th>
         </tr>
         </thead>
         <tbody>
         {% for item in schedule %}
+            {% if item.kind == 'host' %}
+        <tr>
+            <td colspan="3">{{ item.text }}</td>
+        </tr>
+            {% elif item.kind == 'break' or item.kind == 'special' %}
+        <tr>
+            <td>{{ item.time }}</td>
+            <td colspan="2">{{ item.topic }}{% if item.speaker %}<br>{{ item.speaker }}{% endif %}</td>
+        </tr>
+            {% else %}
         <tr>
             <td>{{ item.time }}</td>
             <td>{{ item.topic }}</td>
             <td>{{ item.speaker }}</td>
-            <td>{{ item.note or "" }}</td>
         </tr>
+            {% endif %}
         {% endfor %}
         </tbody>
     </table>

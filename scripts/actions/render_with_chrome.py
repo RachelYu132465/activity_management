@@ -79,29 +79,69 @@ else:
     print("Unexpected JSON structure in {} (expected list or dict).".format(DATA_FILE), file=sys.stderr)
     sys.exit(1)
 
-# Build schedule by leveraging generate_agenda helper
+# Build schedule directly from program data
 def build_schedule(event):
-    """Build schedule rows using generate_agenda's logic.
+    """Build schedule rows based on ``event['speakers']`` and any
+    special sessions defined in ``agenda_settings``.
 
-    This delegates the heavy lifting to ``gen_agenda_rows`` from
-    ``scripts.actions.generate_agenda`` and adapts the returned rows into
-    the structure expected by the rendering pipeline.
-    """
-    try:
-        from scripts.actions.generate_agenda import gen_agenda_rows
-    except Exception:
-        # Fallback to an empty schedule if the helper can't be imported
-        return []
+    All time ranges are derived from the speakers' ``start_time`` and
+    ``end_time`` values to ensure accuracy."""
 
-    rows = gen_agenda_rows(event)
-    schedule = []
-    for r in rows:
+    def time_range(start: str | None, end: str | None) -> str:
+        if start and end:
+            return f"{start}-{end}"
+        return start or end or ""
+
+    speakers = event.get("speakers", []) or []
+    specials = (event.get("agenda_settings", {}) or {}).get("special_sessions", []) or []
+
+    # Map speaker "no" for quick lookup
+    by_no = {int(sp.get("no", idx)): sp for idx, sp in enumerate(speakers)}
+
+    schedule: list[dict[str, str]] = []
+
+    # Host row (merged later in template)
+    host = next((sp for sp in speakers if sp.get("type") == "主持人"), None)
+    if host:
+        text_parts = [time_range(host.get("start_time"), host.get("end_time")), host.get("topic"), host.get("name")]
         schedule.append({
-            "time": r.get("time", ""),
-            "topic": r.get("title", ""),
-            "speaker": r.get("speaker", ""),
-
+            "kind": "host",
+            "text": " ".join(filter(None, text_parts)),
         })
+
+    specials_by_after: dict[int, list[dict[str, str]]] = {}
+    for s in specials:
+        after = int(s.get("after_speaker", -1))
+        specials_by_after.setdefault(after, []).append(s)
+
+    for sp in speakers:
+        if sp.get("type") == "主持人":
+            continue
+
+        start = sp.get("start_time")
+        end = sp.get("end_time")
+        if start and end:
+            schedule.append({
+                "kind": "talk",
+                "time": time_range(start, end),
+                "topic": sp.get("topic", ""),
+                "speaker": sp.get("name", ""),
+            })
+
+        after_no = int(sp.get("no", -1))
+        for s in specials_by_after.get(after_no, []):
+            title = s.get("title", "")
+            next_sp = by_no.get(after_no + 1)
+            start_time = end
+            end_time = next_sp.get("start_time") if next_sp else None
+            kind = "break" if not s.get("speaker") or "休息" in title or "休息" in s.get("speaker", "") else "special"
+            schedule.append({
+                "kind": kind,
+                "time": time_range(start_time, end_time),
+                "topic": title,
+                "speaker": s.get("speaker", ""),
+            })
+
     return schedule
 
 # Build speaker and chair lists augmented from influencer data
