@@ -52,7 +52,10 @@
 .page-full.cover {
   position: relative; /* 用於讓 .title 的 absolute 以此為參考 */
 }
-
+.title {
+font-size: 28pt;
+text-align:center;
+}
 /* 讓 title 在整頁中心（水平 + 垂直） */
 .page-full.cover .title {
   position: absolute;
@@ -66,7 +69,7 @@
   box-sizing: border-box;
   padding: 0 6mm;   /* 內側安全距離，可調小或拿掉 */
   text-align: center;
-  font-size: 28pt;
+<!--  font-size: 28pt;-->
   font-weight: 700;
   z-index: 10;
   word-wrap: break-word;
@@ -108,16 +111,17 @@ div[name="參與單位"] { align-self: flex-start; text-align: left; width:100%;
 <!--       div[name="參與單位"] .spacer { flex: 3 1 auto; } /* 數字可調：1→原始，3→更靠底，5→更靠底 */-->
 
         /* 目錄 */
-        .toc h2 { font-size:16pt; margin-bottom:8px; }
-        .toc ol { padding-left:1.1em; font-size:12pt; }
+        .toc h2 { margin-bottom:8px; }
+        .toc ol { padding-left:1.1em;  }
 
         /* 論壇資訊 */
-        .forum-info p { margin:6px 0; font-size:12pt; }
+        .forum-info p { margin:6px 0;  }
 
         /* 論壇須知 */
-        .notes ul { margin:6px 0 0 18px; font-size:12pt; }
+        .notes ul { margin:6px 0 0 18px;}
 
         /* 議程 */
+
         table.schedule { width:100%; border-collapse: collapse; margin-top:8px; }
         table.schedule th, table.schedule td {
           border:1px solid #ddd; padding:6px 8px; vertical-align:top; font-size:11pt;
@@ -215,10 +219,10 @@ img { max-width: 100%; height: auto; }
 </div>
 
 <!-- 目錄（整頁） -->
-<nav class="page-full toc" aria-label="目錄 Contents">
+<nav class="page-full title" aria-label="目錄 Contents">
     <h2>目錄 / Contents</h2>
-    <ol>
-        <li>論壇資訊 / Forum Info</li>
+    <ol class="inner text">
+<!--        <li>論壇資訊 / Forum Info</li>-->
         <li>論壇須知 / Notes</li>
         <li>議程 / Schedule</li>
         <li>主持人 / Chairs</li>
@@ -227,25 +231,37 @@ img { max-width: 100%; height: auto; }
 </nav>
 
 <!-- 論壇資訊（整頁：若資訊過少仍保留空白讓它佔一頁） -->
-<section class="page-full forum-info" aria-label="論壇資訊 Forum Info">
-    <h2>論壇資訊 / Forum Info</h2>
-    <p><strong>名稱 / Title：</strong> 2025再生醫療新脈動產業商機交流會議</p>
-    <p><strong>日期 / Date：</strong> 2025-09-03</p>
-    <p><strong>地點 / Venue：</strong> 張榮發基金會國際會議中心602會議室</p>
-    
-    <p><strong>地點 / Venue：</strong> 臺北市中正區中山南路11號6樓</p>
-    
-    <p><strong>主辦單位 / Organizer：</strong> 財團法人台灣醫界聯盟基金會、財團法人生物技術開發中心</p>
-    <p><strong>協辦單位 / Co-organizer：</strong> </p>
-    
-</section>
+<!--<section class="page-full title forum-info" aria-label="論壇資訊 Forum Info">-->
+<!--    <h2>論壇資訊 / Forum Info</h2>-->
+<!--    <p><strong>名稱 / Title：</strong> 2025再生醫療新脈動產業商機交流會議</p>-->
+<!--    <p><strong>日期 / Date：</strong> 2025-09-03</p>-->
+<!--    <p><strong>地點 / Venue：</strong> 張榮發基金會國際會議中心602會議室</p>-->
+<!--    -->
+<!--    <p><strong>地點 / Venue：</strong> 臺北市中正區中山南路11號6樓</p>-->
+<!--    -->
+<!--    <p><strong>主辦單位 / Organizer：</strong> 財團法人台灣醫界聯盟基金會、財團法人生物技術開發中心</p>-->
+<!--    <p><strong>協辦單位 / Co-organizer：</strong> </p>-->
+<!--    -->
+<!--</section>-->
 
 <!-- 論壇須知（整頁） -->
 <section class="page-full notes" aria-label="論壇須知 Notes">
     <h2>論壇須知 / Notes</h2>
-    
-    <p class="small">無特別須知 / No special notes</p>
-    
+
+    <ul>
+        <li>本次活動報到時間為上午09:30-10:00。</li>
+        <li>本次活動將申請公務人員終身學習時數，請於休息時間簽到。</li>
+        <li>為尊重智慧財產權，本論壇禁止側錄主講人簡報。</li>
+        <li>本次課程場地配置圖請參考下圖。</li>
+<!--        <li><img src="802.png" alt="Girl in a jacket" width="500" height="600"> </li>-->
+        <li>
+            <img src="C:\Users\User\activity_management\templates\static\802.png"
+                 alt="Girl in a jacket" width="500" height="600">
+        </li>
+        <li>滿意度問卷</li>
+        <li><img src="frame.png" alt="Girl in a jacket" width="500" height="600"> </li>
+    </ul>
+
 </section>
 
 <!-- 議程（此區可視情況短長；放在一頁或超過亦可） -->
@@ -264,50 +280,85 @@ img { max-width: 100%; height: auto; }
         
         <tr>
             <td>10:00-10:10</td>
-            <td>致詞與大合照</td>
+            <td>大合照</td>
+            <td></td>
+            <td></td>
+        </tr>
+        
+        <tr>
+            <td>10:10-10:10</td>
+            <td>主持人</td>
             <td></td>
             <td></td>
         </tr>
         
         <tr>
             <td>10:10-10:35</td>
+            <td>主持</td>
+            <td>林世嘉</td>
+            <td></td>
+        </tr>
+        
+        <tr>
+            <td>10:35-10:45</td>
+            <td>大合照</td>
+            <td></td>
+            <td></td>
+        </tr>
+        
+        <tr>
+            <td>10:45-10:45</td>
+            <td>主持人</td>
+            <td></td>
+            <td></td>
+        </tr>
+        
+        <tr>
+            <td>10:45-11:10</td>
             <td>致詞與大合照</td>
             <td>李財坤</td>
             <td></td>
         </tr>
         
         <tr>
-            <td>10:35-11:00</td>
+            <td>11:10-11:35</td>
             <td>再生醫療製劑管理政策</td>
             <td>林奕汝</td>
             <td></td>
         </tr>
         
         <tr>
-            <td>11:00-11:25</td>
+            <td>11:35-11:45</td>
+            <td>課間休息</td>
+            <td></td>
+            <td></td>
+        </tr>
+        
+        <tr>
+            <td>11:45-12:10</td>
             <td>多元CAR-T平台推動個人化免疫治療新紀元</td>
             <td>官建村</td>
             <td></td>
         </tr>
         
         <tr>
-            <td>11:25-11:35</td>
-            <td>休息</td>
-            <td></td>
-            <td></td>
-        </tr>
-        
-        <tr>
-            <td>11:35-12:00</td>
+            <td>12:10-12:35</td>
             <td>再生醫療產品新進展與台灣合作新契機【英語演講】</td>
             <td>中山功一</td>
             <td></td>
         </tr>
         
         <tr>
-            <td>12:00-12:25</td>
+            <td>12:35-13:00</td>
             <td>綜合討論</td>
             <td>所有講者</td>
+            <td></td>
+        </tr>
+        
+        <tr>
+            <td>13:00-13:25</td>
+            <td>綜合討論</td>
+            <td></td>
             <td></td>
         </tr>
         
@@ -322,7 +373,7 @@ img { max-width: 100%; height: auto; }
     <div class="person-card">
         
         <div class="person-info">
-            <div class="name">李財坤</div>
+            <div class="name">林世嘉</div>
             <div class="title">執行長</div>
             <div class="bio"></div>
         </div>
@@ -331,6 +382,18 @@ img { max-width: 100%; height: auto; }
 
 
 <!-- 講者：每位講者各一頁 -->
+
+<section class="page-full" aria-label="講者 Speaker">
+    <h2>講者 / Speaker</h2>
+    <div class="person-card">
+        
+        <div class="person-info">
+            <div class="name">李財坤</div>
+            <div class="title">執行長</div>
+            <div class="bio"></div>
+        </div>
+    </div>
+</section>
 
 <section class="page-full" aria-label="講者 Speaker">
     <h2>講者 / Speaker</h2>
@@ -387,40 +450,45 @@ img { max-width: 100%; height: auto; }
 </body>
 
 <script>
-    (function(){
-      // 使用 Intl 產生本地化（zh-TW）年月日(兩位) + 星期（長格式）
-      const formatter = new Intl.DateTimeFormat('zh-TW', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        weekday: 'long'
-      });
 
-      function parseDateAvoidTZ(s){
-        if(!s) return null;
-        s = String(s).trim();
-        // YYYY-MM-DD or YYYY/MM/DD -> construct local date (avoid UTC shift)
-        let m = s.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})$/);
-        if(m){
-          return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
-        }
-        // YYYYMMDD
-        m = s.match(/^(\d{4})(\d{2})(\d{2})$/);
-        if(m){
-          return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
-        }
-        // fallback to Date constructor (handles ISO with time)
-        const d = new Date(s);
-        return isNaN(d) ? null : d;
-      }
 
-      document.querySelectorAll('.js-date').forEach(el=>{
-        const raw = el.dataset.iso || el.textContent || '';
-        const d = parseDateAvoidTZ(raw);
-        if(!d) return;
-        // format -> e.g. "2025年09月03日 星期四"
-        el.textContent = formatter.format(d);
-      });
-    })();
+
+
+
+           (function(){
+             // 使用 Intl 產生本地化（zh-TW）年月日(兩位) + 星期（長格式）
+             const formatter = new Intl.DateTimeFormat('zh-TW', {
+               year: 'numeric',
+               month: '2-digit',
+               day: '2-digit',
+               weekday: 'long'
+             });
+
+             function parseDateAvoidTZ(s){
+               if(!s) return null;
+               s = String(s).trim();
+               // YYYY-MM-DD or YYYY/MM/DD -> construct local date (avoid UTC shift)
+               let m = s.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})$/);
+               if(m){
+                 return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+               }
+               // YYYYMMDD
+               m = s.match(/^(\d{4})(\d{2})(\d{2})$/);
+               if(m){
+                 return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+               }
+               // fallback to Date constructor (handles ISO with time)
+               const d = new Date(s);
+               return isNaN(d) ? null : d;
+             }
+
+             document.querySelectorAll('.js-date').forEach(el=>{
+               const raw = el.dataset.iso || el.textContent || '';
+               const d = parseDateAvoidTZ(raw);
+               if(!d) return;
+               // format -> e.g. "2025年09月03日 星期四"
+               el.textContent = formatter.format(d);
+             });
+           })();
 </script>
 </html>

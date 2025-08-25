@@ -159,6 +159,25 @@ env = Environment(
 
 )
 
+import os
+from pathlib import Path
+
+def _url_for(endpoint, filename=None):
+    """
+    Minimal url_for replacement for static files.
+    Usage in template: {{ url_for('static', filename='802.png') }}
+    Returns a file:// URI so Chrome can load local images.
+    """
+    if endpoint == "static" and filename:
+        p = Path(TEMPLATE_DIR) / "static" / filename
+        # 如果檔案存在就回傳 file:// URI，否則回傳預期路徑（方便 debug）
+        if p.exists():
+            return p.resolve().as_uri()
+        return str(p)  # will show path in HTML (useful to debug missing file)
+    raise RuntimeError("url_for: unknown endpoint '{}'".format(endpoint))
+
+# expose into jinja globals
+env.globals["url_for"] = _url_for
 try:
 
 

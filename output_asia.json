@@ -1,0 +1,127 @@
+{
+  "eventNames": [
+    "2025再生醫療新脈動產業商機交流會議"
+  ],
+  "agenda_settings": {
+    "start_time": "10:00",
+    "end_time": "12:00",
+    "speaker_minutes": 25,
+    "special_sessions": [
+      {
+        "after_speaker": 0,
+        "title": "大合照",
+        "duration": 10,
+        "speaker": "李財坤 執行長\n財團法人生物技術開發中心（DCB）",
+        "start_time": "10:00",
+        "end_time": "10:10"
+      },
+      {
+        "after_speaker": 0,
+        "title": "主持人",
+        "duration": null,
+        "speaker": "主持人：林世嘉 執行長 財團法人台灣醫界聯盟基金會",
+        "start_time": null,
+        "end_time": null
+      },
+      {
+        "after_speaker": 2,
+        "title": "課間休息",
+        "duration": 10,
+        "speaker": "休息",
+        "start_time": "11:00",
+        "end_time": "11:10"
+      },
+      {
+        "after_speaker": 999,
+        "title": "綜合討論",
+        "duration": 25,
+        "speaker": "所有講者",
+        "start_time": "11:35",
+        "end_time": "12:00"
+      }
+    ]
+  },
+  "speakers": [
+    {
+      "no": 0,
+      "type": "主持人",
+      "topic": "主持人",
+      "name": "主持人：林世嘉 執行長 財團法人台灣醫界聯盟基金會",
+      "start_time": null,
+      "end_time": null
+    },
+    {
+      "no": 1,
+      "type": "大合照",
+      "topic": "大合照",
+      "name": "李財坤 執行長",
+      "start_time": "10:00",
+      "end_time": "10:10"
+    },
+    {
+      "no": 2,
+      "type": "休息",
+      "topic": "課間休息",
+      "name": "休息",
+      "start_time": "11:00",
+      "end_time": "11:10"
+    },
+    {
+      "no": 3,
+      "type": "講者",
+      "topic": "再生醫療製劑管理政策",
+      "name": "林奕汝 科長",
+      "start_time": "10:10",
+      "end_time": "10:35"
+    },
+    {
+      "no": 4,
+      "type": "講者",
+      "topic": "多元CAR-T平台推動個人化免疫治療新紀元",
+      "name": "官建村 執行長",
+      "start_time": "10:35",
+      "end_time": "11:00"
+    },
+    {
+      "no": 5,
+      "type": "講者",
+      "topic": "再生醫療產品新進展與台灣合作新契機【英語演講】",
+      "name": "中山功一 董事",
+      "start_time": "11:10",
+      "end_time": "11:35"
+    },
+    {
+      "no": 6,
+      "type": "綜合討論",
+      "topic": "綜合討論",
+      "name": "所有講者",
+      "start_time": "11:35",
+      "end_time": "12:00"
+    }
+  ],
+  "activities_contacts": [
+    {
+      "ID": "",
+      "id_number": "",
+      "name": "",
+      "gender": "",
+      "title": "",
+      "unity": [],
+      "email": "",
+      "contact_person": {
+        "name": "",
+        "email": ""
+      },
+      "group_by_program": [],
+      "name_mail_use": ""
+    }
+  ],
+  "attachments": [],
+  "registration_urls": [],
+  "planName": [],
+  "instructors": [],
+  "organizers": [],
+  "coOrganizers": [],
+  "jointOrganizers": [],
+  "max_capacity": []
+}

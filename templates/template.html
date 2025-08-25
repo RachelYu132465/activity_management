@@ -263,7 +263,11 @@ img { max-width: 100%; height: auto; }
         <li>本次活動將申請公務人員終身學習時數，請於休息時間簽到。</li>
         <li>為尊重智慧財產權，本論壇禁止側錄主講人簡報。</li>
         <li>本次課程場地配置圖請參考下圖。</li>
-        <li><img src="802.png" alt="Girl in a jacket" width="500" height="600"> </li>
+<!--        <li><img src="802.png" alt="Girl in a jacket" width="500" height="600"> </li>-->
+        <li>
+            <img src="{{ url_for('static', filename='802.png') }}"
+                 alt="Girl in a jacket" width="500" height="600">
+        </li>
         <li>滿意度問卷</li>
         <li><img src="frame.png" alt="Girl in a jacket" width="500" height="600"> </li>
     </ul>
