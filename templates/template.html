@@ -286,9 +286,10 @@ img { max-width: 100%; height: auto; }
         <thead>
         <tr>
 
-            <th style="width:17.2%;">時間 / Time</th>
-            <th style="width:55.2%;">主題 / Topic</th>
-            <th style="width:27.6%;">講者 / Speaker</th>
+            <th>時間 / Time</th>
+            <th>主題 / Topic</th>
+            <th>講者 / Speaker</th>
+
         </tr>
         </thead>
         <tbody>
@@ -296,20 +297,15 @@ img { max-width: 100%; height: auto; }
 
             {% if item.kind == 'host' %}
         <tr>
-            <td colspan="3">{{ item.speaker }}</td>
+            <td colspan="3">{{ item.text }}</td>
         </tr>
-            {% elif item.kind == 'special' %}
+            {% elif item.kind == 'break' or item.kind == 'special' %}
+
         <tr>
             <td>{{ item.time }}</td>
             <td colspan="2">{{ item.topic }}{% if item.speaker %}<br>{{ item.speaker }}{% endif %}</td>
         </tr>
             {% else %}
-
-        <tr>
-            <td>{{ item.time }}</td>
-            <td>{{ item.topic }}</td>
-            <td>{{ item.speaker }}</td>
-        </tr>
 
             {% endif %}
 
