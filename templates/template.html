@@ -136,9 +136,11 @@ div[name="參與單位"] { align-self: flex-start; text-align: left; width:100%;
         }
         .person-photo { width:120px; flex: 0 0 120px; }
         .person-info { flex:1; }
-        .person-info .name { font-size:18pt; font-weight:700; margin-bottom:6px; }
-        .person-info .title { font-size:12pt; color:#333; margin-bottom:8px; }
-        .person-info .bio { font-size:11pt; white-space:pre-wrap; }
+        .person-info .name-title { font-size:18pt; font-weight:700; margin-bottom:4px; }
+        .person-info .organization { font-size:14pt; margin-bottom:8px; }
+        .person-info h3 { font-size:16pt; margin:8px 0 4px; }
+        .person-info .section-content { font-size:14pt; }
+        .person-info ul.section-content { margin:0 0 0 20px; padding-left:0; }
 
         /* 小字 footer */
         footer.small { font-size:10pt; color:#666; margin-top:10mm; text-align:left; }
@@ -324,9 +326,24 @@ img { max-width: 100%; height: auto; }
         <div class="person-photo"><img src="{{ chair.photo_url }}" style="width:100%; height:auto;"></div>
         {% endif %}
         <div class="person-info">
-            <div class="name">{{ chair.name }}</div>
-            <div class="title">{{ chair.title }}</div>
-            <div class="bio">{{ chair.profile or "" }}</div>
+            <div class="name-title">{{ chair.name }}{% if chair.title %} {{ chair.title }}{% endif %}</div>
+            {% if chair.organization %}<div class="organization">{{ chair.organization }}</div>{% endif %}
+            {% if chair.highest_education %}
+            <h3>學歷</h3>
+            <div class="section-content">{{ chair.highest_education }}</div>
+            {% endif %}
+            {% if chair.experience %}
+            <h3>經歷</h3>
+            <ul class="section-content">
+            {% for item in chair.experience %}<li>{{ item }}</li>{% endfor %}
+            </ul>
+            {% endif %}
+            {% if chair.achievements %}
+            <h3>成就</h3>
+            <ul class="section-content">
+            {% for item in chair.achievements %}<li>{{ item }}</li>{% endfor %}
+            </ul>
+            {% endif %}
         </div>
     </div>
 </section>
@@ -341,9 +358,24 @@ img { max-width: 100%; height: auto; }
         <div class="person-photo"><img src="{{ sp.photo_url }}" style="width:100%; height:auto;"></div>
         {% endif %}
         <div class="person-info">
-            <div class="name">{{ sp.name }}</div>
-            <div class="title">{{ sp.title }}</div>
-            <div class="bio">{{ sp.profile or "" }}</div>
+            <div class="name-title">{{ sp.name }}{% if sp.title %} {{ sp.title }}{% endif %}</div>
+            {% if sp.organization %}<div class="organization">{{ sp.organization }}</div>{% endif %}
+            {% if sp.highest_education %}
+            <h3>學歷</h3>
+            <div class="section-content">{{ sp.highest_education }}</div>
+            {% endif %}
+            {% if sp.experience %}
+            <h3>經歷</h3>
+            <ul class="section-content">
+            {% for item in sp.experience %}<li>{{ item }}</li>{% endfor %}
+            </ul>
+            {% endif %}
+            {% if sp.achievements %}
+            <h3>成就</h3>
+            <ul class="section-content">
+            {% for item in sp.achievements %}<li>{{ item }}</li>{% endfor %}
+            </ul>
+            {% endif %}
         </div>
     </div>
 </section>
