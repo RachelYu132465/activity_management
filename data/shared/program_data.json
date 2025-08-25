@@ -55,24 +55,22 @@
         }
       ]
     },
-
     "speakers": [
-
       {
         "no": 0,
-        "type": "主持人",
-        "topic": "主持",
-        "name": "林世嘉",
-        "start_time": null,
-        "end_time": null
-      },
-      {
-        "no": 1,
         "type": "致詞人",
         "topic": "致詞與大合照",
         "name": "李財坤",
         "start_time": "10:00",
         "end_time": "10:10"
+      },
+      {
+        "no": 1,
+        "type": "主持人",
+        "topic": "主持",
+        "name": "林世嘉",
+        "start_time": null,
+        "end_time": null
       },
       {
         "no": 2,
@@ -92,6 +90,15 @@
       },
       {
         "no": 4,
+        "type": "休息",
+        "topic": "課間休息",
+        "name": "休息",
+        "start_time": null,
+        "end_time": null,
+        "duration_minutes": 10
+      },
+      {
+        "no": 5,
         "type": "講者",
         "topic": "再生醫療產品新進展與台灣合作新契機【英語演講】",
         "name": "中山功一",
@@ -99,14 +106,16 @@
         "end_time": "11:35"
       },
       {
-        "no": 5,
+        "no": 6,
         "type": "綜合討論",
         "topic": "綜合討論",
         "name": "所有講者",
         "start_time": "11:35",
         "end_time": "12:00"
       }
-    ],
+    ]
+  
+  ,
     "activities_contacts": []
   },
   {
