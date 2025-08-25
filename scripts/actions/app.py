@@ -144,8 +144,9 @@ def _schedule_from_speakers(program, influencers=None):
             speaker = f"{speaker}\n{org}"
 
         if topic == "主持":
-            content = " ".join(filter(None, [time.replace("\n", " "), topic, speaker]))
-            schedule.append({"type": "host", "content": content})
+            # Host information is rendered separately in the schedule table
+            # as a dedicated column, so skip adding a standalone row here.
+            continue
         elif topic == "休息":
             content = topic if not name or name == topic else f"{topic} {speaker}"
             schedule.append({"type": "break", "time": time, "content": content})
