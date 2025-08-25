@@ -285,29 +285,30 @@ img { max-width: 100%; height: auto; }
         </colgroup>
         <thead>
         <tr>
+
             <th>時間 / Time</th>
             <th>主題 / Topic</th>
             <th>講者 / Speaker</th>
+
         </tr>
         </thead>
         <tbody>
         {% for item in schedule %}
+
             {% if item.kind == 'host' %}
         <tr>
             <td colspan="3">{{ item.text }}</td>
         </tr>
             {% elif item.kind == 'break' or item.kind == 'special' %}
+
         <tr>
             <td>{{ item.time }}</td>
             <td colspan="2">{{ item.topic }}{% if item.speaker %}<br>{{ item.speaker }}{% endif %}</td>
         </tr>
             {% else %}
-        <tr>
-            <td>{{ item.time }}</td>
-            <td>{{ item.topic }}</td>
-            <td>{{ item.speaker }}</td>
-        </tr>
+
             {% endif %}
+
         {% endfor %}
         </tbody>
     </table>
