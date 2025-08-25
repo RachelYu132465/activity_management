@@ -9,10 +9,16 @@
         /* A4 印刷基礎 */
         @page { size: A4; margin: 18mm; }
         html, body { margin:0; padding:0; -webkit-print-color-adjust: exact; }
+
+  /* 如需在 screen 與 print 分別處理 */
+  @media print {
+    /* 強制列印背景與色彩精確度 */
+    html, body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
         body {
           font-family: "Noto Sans TC", "Helvetica", "Arial", sans-serif;
           color: #111;
-          font-size: 12pt;
+<!--          font-size: 12pt;-->
           line-height: 1.45;
           padding: 12mm;
           box-sizing: border-box;
@@ -31,16 +37,75 @@
         }
         .page-full:last-child { page-break-after: auto; }
 
-        /* 封面 */
-        .cover {
-          text-align:center;
-          display:flex;
-          flex-direction:column;
-          justify-content:center;
-          align-items:center;
-        }
-        .cover .title { font-size:28pt; font-weight:700; margin:8px 0; }
-        .cover .meta { font-size:12pt; color:#333; }
+
+  /* 封面：由上往下堆（logo/title/meta 在上方），再用 spacer 推底部區塊 */
+  .cover {
+    text-align:center;
+    display:flex;
+    flex-direction:column;
+
+    justify-content:flex-start; /* 改成從上方開始堆疊（不是垂直置中） */
+    box-sizing: border-box;
+  }
+
+  /* 讓 page-full.cover 成為定位參考 */
+.page-full.cover {
+  position: relative; /* 用於讓 .title 的 absolute 以此為參考 */
+}
+
+/* 讓 title 在整頁中心（水平 + 垂直） */
+.page-full.cover .title {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+
+  /* 外觀可自訂 */
+  width: calc(210mm - 36mm);  /* = 174mm */
+  max-width: calc(210mm - 36mm);
+  box-sizing: border-box;
+  padding: 0 6mm;   /* 內側安全距離，可調小或拿掉 */
+  text-align: center;
+  font-size: 28pt;
+  font-weight: 700;
+  z-index: 10;
+  word-wrap: break-word;
+}
+
+  .inner-text
+  {
+  font-size:14pt; font-weight:700
+  }
+
+
+  /* spacer：把參與單位推到底（數字越大越靠底） */
+  .cover .spacer { flex: 1 1 auto; }            /* 預設 */
+  /* 若要更靠底可改成： .cover .spacer { flex: 3 1 auto; } */
+
+.participation {
+  margin-top:12px;
+  align-self: flex-start;  /* 在父 flex 中靠左 */
+  text-align: left;        /* 文字靠左 */
+  width:100%;              /* 佔滿可用寬度 */
+  box-sizing: border-box;
+  padding-left: 6mm;      /* 可選：與頁邊距對齊 */
+  padding-right: 12mm;
+}
+.participation p { margin:0px 0; }
+
+div[name="參與單位"] { align-self: flex-start; text-align: left; width:100%; }
+
+        <!--        /* 封面 */-->
+<!--        .cover {-->
+<!--          text-align:center;-->
+<!--          display:flex;-->
+<!--          flex-direction:column;-->
+<!--          justify-content:center;-->
+<!--          align-items:center;-->
+<!--        }-->
+<!--        .cover .title { font-size:28pt; font-weight:700; margin:8px 0; }-->
+<!--        .cover .meta { font-size:12pt; color:#333; }-->
+<!--       div[name="參與單位"] .spacer { flex: 3 1 auto; } /* 數字可調：1→原始，3→更靠底，5→更靠底 */-->
 
         /* 目錄 */
         .toc h2 { font-size:16pt; margin-bottom:8px; }
@@ -104,18 +169,49 @@
 img { max-width: 100%; height: auto; }
 
     </style>
+
+
+
+
 </head>
 <body>
 
-<!-- 封面（整頁） -->
+
+<!--&lt;!&ndash; 封面（整頁） &ndash;&gt;-->
+<!--<div class="page-full cover">-->
+<!--    -->
+<!--    <div class="title">2025再生醫療新脈動產業商機交流會議</div>-->
+<!--    <div class="meta">2025-09-03 | 張榮發基金會國際會議中心602會議室</div>-->
+<!--    -->
 <div class="page-full cover">
     
+
     <div class="title">2025再生醫療新脈動產業商機交流會議</div>
-    <div class="meta">2025-09-03 | 張榮發基金會國際會議中心602會議室</div>
-    <div style="margin-top:12px; font-size:11pt; color:#555;">
-        主辦：財團法人台灣醫界聯盟基金會、財團法人生物技術開發中心<br/>
-        協辦：
+
+
+    
+    <div class="spacer"></div>
+
+    
+
+
+    <div  class="participation inner-text" aria-label="參與單位" >
+       <p>
+
+        <p>指導單位：經濟部產業發展署</p>
+        <p>主辦單位：財團法人台灣醫界聯盟基金會、財團法人生物技術開發中心</p>
+        
+        
+
+        <!-- 改用 span 來做內聯，並用 class 控制字級與顏色 -->
+        <span class="inner-text">日期：</span>
+        <span class="inner-text js-date" data-iso="2025-09-03">2025-09-03</span>
+
+<!--        <p style=" display:inline" >日期：</p><p class="meta js-date " data-iso="2025-09-03" style="display:inline">日期：2025-09-03</p>-->
+        <p  >地點：張榮發基金會國際會議中心602會議室<br> &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp (  臺北市中正區中山南路11號6樓 )</p>
+
     </div>
+
 </div>
 
 <!-- 目錄（整頁） -->
@@ -289,4 +385,42 @@ img { max-width: 100%; height: auto; }
     來源：依據上傳手冊內容製作。 Generated from uploaded handbook.
 </footer>
 </body>
+
+<script>
+    (function(){
+      // 使用 Intl 產生本地化（zh-TW）年月日(兩位) + 星期（長格式）
+      const formatter = new Intl.DateTimeFormat('zh-TW', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        weekday: 'long'
+      });
+
+      function parseDateAvoidTZ(s){
+        if(!s) return null;
+        s = String(s).trim();
+        // YYYY-MM-DD or YYYY/MM/DD -> construct local date (avoid UTC shift)
+        let m = s.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})$/);
+        if(m){
+          return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+        }
+        // YYYYMMDD
+        m = s.match(/^(\d{4})(\d{2})(\d{2})$/);
+        if(m){
+          return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+        }
+        // fallback to Date constructor (handles ISO with time)
+        const d = new Date(s);
+        return isNaN(d) ? null : d;
+      }
+
+      document.querySelectorAll('.js-date').forEach(el=>{
+        const raw = el.dataset.iso || el.textContent || '';
+        const d = parseDateAvoidTZ(raw);
+        if(!d) return;
+        // format -> e.g. "2025年09月03日 星期四"
+        el.textContent = formatter.format(d);
+      });
+    })();
+</script>
 </html>

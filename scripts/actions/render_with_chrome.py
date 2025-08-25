@@ -202,12 +202,31 @@ if not CHROME_BIN:
     )
     sys.exit(1)
 
-# Build chrome command
+# # Build chrome command
+# cmd = [
+#     CHROME_BIN,
+#     "--headless",
+#     "--disable-gpu",
+#     "--print-to-pdf={}".format(str(pdf_file)),
+#     str(html_file),
+# ]
+# Replace your cmd with this block
 cmd = [
     CHROME_BIN,
-    "--headless",
+    "--headless=new",                       # 新版 headless 模式
+    "--no-sandbox",
     "--disable-gpu",
+    "--disable-dev-shm-usage",
+    "--hide-scrollbars",
+    "--enable-logging",
+    "--v=1",
     "--print-to-pdf={}".format(str(pdf_file)),
+    "--print-to-pdf-no-header",             # optional: 去掉 header
+    "--run-all-compositor-stages-before-draw",
+    # 給予 virtual time budget 等待 JS/字型下載（ms）
+    "--virtual-time-budget=10000",
+    # remote debug 方便檢查（debug 用，可註解）
+    "--remote-debugging-port=9222",
     str(html_file),
 ]
 
