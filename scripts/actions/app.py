@@ -80,21 +80,41 @@ def _normalize_event_names(program):
 
 
 def _schedule_from_speakers(program):
-    """Build a schedule directly from speaker start/end times."""
+    """Build a schedule with merged-column rules.
+
+    - If topic is "主持", merge time/topic/speaker into one cell.
+    - If topic is "休息", merge topic and speaker columns.
+    - Otherwise keep the three-column layout.
+    """
+
     schedule = []
     for sp in program.get("speakers", []) or []:
         if not isinstance(sp, dict):
             continue
+
         start = sp.get("start_time") or ""
         end = sp.get("end_time") or ""
         time = ""
         if start or end:
             time = f"{start}-{end}" if end else start
-        schedule.append({
-            "time": time,
-            "topic": sp.get("topic", ""),
-            "speaker": sp.get("name", ""),
-        })
+
+        topic = sp.get("topic", "")
+        speaker = sp.get("name", "")
+
+        if topic == "主持":
+            content = " ".join(filter(None, [time, topic, speaker]))
+            schedule.append({"type": "host", "content": content})
+        elif topic == "休息":
+            content = topic if not speaker or speaker == topic else f"{topic} {speaker}"
+            schedule.append({"type": "break", "time": time, "content": content})
+        else:
+            schedule.append({
+                "type": "talk",
+                "time": time,
+                "topic": topic,
+                "speaker": speaker,
+            })
+
     return schedule
 
 
