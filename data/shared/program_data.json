@@ -43,9 +43,9 @@
         },
         {
           "after_speaker": 2,
-          "title": "課間休息",
+          "title": "休息",
           "duration": 10,
-          "speaker": "休息"
+          "speaker": null
         },
         {
           "after_speaker": 999,
@@ -91,7 +91,7 @@
       {
         "no": 4,
         "type": "休息",
-        "topic": "課間休息",
+        "topic": "休息",
         "name": "休息",
         "start_time": null,
         "end_time": null,
@@ -114,7 +114,7 @@
         "end_time": "12:00"
       }
     ]
-  
+
   ,
     "activities_contacts": []
   },
