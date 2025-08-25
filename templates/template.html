@@ -30,7 +30,9 @@
           page-break-after: always;
           page-break-inside: avoid;
           min-height: calc(297mm - 36mm); /* 確保至少一頁 */
-          display: block;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-evenly; /* 若不足一頁，內容均勻分布 */
           padding-top: 10mm;
           padding-bottom: 10mm;
           box-sizing: border-box;
@@ -127,6 +129,14 @@ div[name="參與單位"] { align-self: flex-start; text-align: left; width:100%;
           border:1px solid #ddd; padding:6px 8px; vertical-align:top; font-size:11pt;
         }
         table.schedule th { background:#f3f3f3; font-weight:600; text-align:left; }
+        table.schedule td.host-cell {
+          background:#fbe5d5;
+          text-align:center;
+          vertical-align:middle;
+        }
+
+        .person-list { list-style:none; padding:0; margin:0; }
+        .person-list li { margin-bottom:6px; }
 
         /* 主持人 / 講者頁面樣式 */
         .person-card {
@@ -288,40 +298,71 @@ img { max-width: 100%; height: auto; }
     <table class="schedule" role="table" aria-label="議程表" style="width:17.4cm;">
         <colgroup>
             <col style="width:3.0cm;">
-            <col style="width:9.6cm;">
-            <col style="width:4.8cm;">
+            <col style="width:3.0cm;">
+            <col style="width:7.8cm;">
+            <col style="width:3.6cm;">
         </colgroup>
         <thead>
         <tr>
-
+            <th>主持人 / Host</th>
             <th>時間 / Time</th>
             <th>主題 / Topic</th>
             <th>講者 / Speaker</th>
-
         </tr>
         </thead>
         <tbody>
         {% for row in schedule %}
-        {% if row.type == 'host' %}
         <tr>
-            <td colspan="3" style="text-align:center">{{ row.content }}</td>
-        </tr>
-        {% elif row.type == 'break' %}
-        <tr>
+            {% if loop.first %}
+            <td rowspan="{{ schedule|length }}" class="host-cell">
+                {% for chair in chairs %}
+                    {{ chair.name }}{% if chair.title %} {{ chair.title }}{% endif %}
+                    {% if chair.organization %}<br>{{ chair.organization }}{% endif %}
+                    {% if not loop.last %}<br><br>{% endif %}
+                {% endfor %}
+            </td>
+            {% endif %}
+            {% if row.type == 'break' %}
             <td>{{ row.time }}</td>
             <td colspan="2">{{ row.content }}</td>
-        </tr>
-        {% else %}
-        <tr>
+            {% else %}
             <td>{{ row.time }}</td>
             <td>{{ row.topic }}</td>
             <td>{{ row.speaker }}</td>
+            {% endif %}
         </tr>
-        {% endif %}
         {% endfor %}
         </tbody>
     </table>
 </section>
+
+{% if chairs %}
+<section class="page-full">
+    <h2>主持人 / Chairs</h2>
+    <ul class="person-list">
+    {% for chair in chairs %}
+        <li>
+            {{ chair.name }}{% if chair.title %} {{ chair.title }}{% endif %}
+            {% if chair.organization %}<br>{{ chair.organization }}{% endif %}
+        </li>
+    {% endfor %}
+    </ul>
+</section>
+{% endif %}
+
+{% if speakers %}
+<section class="page-full">
+    <h2>講者 / Speakers</h2>
+    <ul class="person-list">
+    {% for sp in speakers %}
+        <li>
+            {{ sp.name }}{% if sp.title %} {{ sp.title }}{% endif %}
+            {% if sp.organization %}<br>{{ sp.organization }}{% endif %}
+        </li>
+    {% endfor %}
+    </ul>
+</section>
+{% endif %}
 
 <!-- 主持人：每位主持人各一頁 -->
 {% for chair in chairs %}
