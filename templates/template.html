@@ -293,22 +293,16 @@ img { max-width: 100%; height: auto; }
         </tr>
         </thead>
         <tbody>
-        {% for item in schedule %}
-
-            {% if item.kind == 'host' %}
+        {% for sp in speakers %}
         <tr>
-            <td colspan="3">{{ item.text }}</td>
+            <td>
+                {% if sp.start_time or sp.end_time %}
+                    {{ sp.start_time or '' }}{% if sp.end_time %}-{{ sp.end_time }}{% endif %}
+                {% endif %}
+            </td>
+            <td>{{ sp.topic }}</td>
+            <td>{{ sp.name }}</td>
         </tr>
-            {% elif item.kind == 'break' or item.kind == 'special' %}
-
-        <tr>
-            <td>{{ item.time }}</td>
-            <td colspan="2">{{ item.topic }}{% if item.speaker %}<br>{{ item.speaker }}{% endif %}</td>
-        </tr>
-            {% else %}
-
-            {% endif %}
-
         {% endfor %}
         </tbody>
     </table>
