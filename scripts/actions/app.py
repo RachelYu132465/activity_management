@@ -1,4 +1,3 @@
-from datetime import datetime, timedelta
 import argparse
 import json
 import sys
@@ -80,65 +79,28 @@ def _normalize_event_names(program):
     return ev
 
 
-def _build_schedule_from_agenda(program):
-    """Attempt to build a simple schedule from agenda_settings and speakers."""
+def _schedule_from_speakers(program):
+    """Build a schedule directly from speaker start/end times."""
     schedule = []
-    try:
-        cfg = (program.get("agenda_settings") or {}) or {}
-        start = cfg.get("start_time")
-        minutes = int(cfg.get("speaker_minutes") or 0) if cfg else 0
-        if start and minutes and isinstance(program.get("speakers"), list):
-            cur = datetime.strptime(start, "%H:%M")
-            for sp in program.get("speakers", []) or []:
-                end = cur + timedelta(minutes=minutes)
-                schedule.append({
-                    "time": f"{cur.strftime('%H:%M')}-{end.strftime('%H:%M')}",
-                    "topic": sp.get("topic", "") if isinstance(sp, dict) else "",
-                    "speaker": sp.get("name", "") if isinstance(sp, dict) else "",
-                })
-                cur = end
-    except Exception:
-        schedule = []
+    for sp in program.get("speakers", []) or []:
+        if not isinstance(sp, dict):
+            continue
+        start = sp.get("start_time") or ""
+        end = sp.get("end_time") or ""
+        time = ""
+        if start or end:
+            time = f"{start}-{end}" if end else start
+        schedule.append({
+            "time": time,
+            "topic": sp.get("topic", ""),
+            "speaker": sp.get("name", ""),
+        })
     return schedule
 
 
-def _enrich_speakers_and_chairs(program, influencer_list=None):
-    """Return (speakers_list, chairs_list) with some enrichment if influencer data is available."""
-    influencer_list = influencer_list or []
-    infl_by_name = {p.get("name"): p for p in (influencer_list or []) if isinstance(p, dict)}
-    chairs = []
-    speakers = []
-    for s in (program.get("speakers") or []) or []:
-        if isinstance(s, dict):
-            name = s.get("name", "") or ""
-            info = infl_by_name.get(name, {}) or {}
-            enriched = {
-                "name": name,
-                "topic": s.get("topic", "") or "",
-                "type": s.get("type", "") or "",
-                "no": s.get("no", None),
-                "title": (info.get("current_position") or {}).get("title", "") if isinstance(info.get("current_position"), dict) else info.get("current_position", "") or "",
-                "profile": "\n".join(info.get("experience", [])) if isinstance(info.get("experience"), list) else (info.get("experience", "") or ""),
-                "photo_url": info.get("photo_url", "") or "",
-            }
-        else:
-            # speaker entry not dict, coerce to minimal form
-            enriched = {"name": str(s), "topic": "", "type": "", "no": None, "title": "", "profile": "", "photo_url": ""}
-        if enriched.get("type") == "主持人":
-            chairs.append(enriched)
-        else:
-            speakers.append(enriched)
-    return speakers, chairs
-
-
 def build_safe_context(program, influencer_list=None):
-    """
-    Build a template context that:
-      - includes ALL top-level fields from the selected program (if it's a dict)
-      - provides normalized, convenient fields (eventNames, title, date, locations, organizers, speakers, chairs, schedule, contact)
-    """
+    """Build a simple template context focused on speakers."""
     if not program or not isinstance(program, dict):
-        # return safe empty context with expected keys
         return {
             "eventNames": [],
             "assets": {},
@@ -153,17 +115,13 @@ def build_safe_context(program, influencer_list=None):
             "contact": "",
         }
 
-    # Start by copying all top-level keys so templates can access anything in JSON
     context = {}
-    # shallow copy program's top-level keys
     for k, v in program.items():
         context[k] = v
 
-    # normalized conveniences / overrides (ensures presence and safer shapes)
     ev = _normalize_event_names(program)
     context["eventNames"] = ev
     context["assets"] = program.get("assets", {}) or {}
-    # keep original program nested if present, else set to program itself
     context["program"] = program.get("program", program) or program
     context["title"] = program.get("title", "") or (ev[0] if ev else "")
     context["date"] = program.get("date", "") or ""
@@ -171,23 +129,10 @@ def build_safe_context(program, influencer_list=None):
     context["organizers"] = program.get("organizers", []) or []
     context["contact"] = program.get("contact", "") or ""
 
-    # enrich speakers and chairs (these will override any raw 'speakers'/'chairs' keys
-    # but we still keep the original raw speakers under 'raw_speakers' for full access)
-    context["raw_speakers"] = program.get("speakers", []) or []
-    speakers, chairs = _enrich_speakers_and_chairs(program)
-    context["speakers"] = speakers
-    context["chairs"] = chairs
-
-    # schedule: if agenda_settings present try to compute; otherwise keep raw schedule if present
-    computed_schedule = _build_schedule_from_agenda(program)
-    if computed_schedule:
-        context["schedule"] = computed_schedule
-    else:
-        context["schedule"] = program.get("schedule", []) or []
-
-    # Provide a small helper: a flat 'all_keys' list for debugging/templates if needed
+    context["speakers"] = program.get("speakers", []) or []
+    context["chairs"] = []
+    context["schedule"] = _schedule_from_speakers(program)
     context["_all_keys"] = list(program.keys())
-
     return context
 
 
