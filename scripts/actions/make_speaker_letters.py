@@ -73,7 +73,7 @@ def make_letters(event_name: str, template_filename: str,
         }
 
         safe_name = m.get("safe_filename") or (m.get("name") or "TBD")
-        out_name = f"{no:02d}_{safe_name}_敬請協助提供CV與簡報.docx"
+        out_name = "{:02d}_{}_敬請協助提供CV與簡報.docx".format(no, safe_name)
         out_path = out_base / out_name
         mail_template_utils.render_docx_template(template_path, out_path, mapping, replacers=REPLACERS)
         results.append(out_path)

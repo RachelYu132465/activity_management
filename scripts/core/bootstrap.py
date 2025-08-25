@@ -63,7 +63,7 @@ def search_file(base_dir: Path, target_filename: str) -> Path:
     for path in base_dir.rglob("*"):
         if path.name == target_filename:
             return path
-    raise FileNotFoundError(f"找不到檔案: {target_filename}")
+    raise FileNotFoundError("找不到檔案: {}".format(target_filename))
 
 def load_schema(filename: str) -> dict:
     path = search_file(BASE_DIR / "config" / "schema", filename)

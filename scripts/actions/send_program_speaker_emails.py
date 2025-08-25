@@ -44,11 +44,11 @@ def build_speaker_records(program_id: str) -> List[Dict[str, Any]]:
     program = find_program_by_id(programs, program_id)
 
     if not program:
-        raise ValueError(f"Program id {program_id} not found")
+        raise ValueError("Program id {} not found".format(program_id))
 
     event_names = program.get("eventNames") or []
     if not event_names:
-        raise ValueError(f"Program {program_id} has no eventNames")
+        raise ValueError("Program {} has no eventNames".format(program_id))
     event_name = event_names[0]
 
     mappings = get_event_speaker_mappings(event_name)
