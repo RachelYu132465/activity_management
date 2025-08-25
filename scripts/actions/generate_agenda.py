@@ -37,92 +37,81 @@ def pick_event(programs: List[Dict[str, Any]], event_name: str) -> Dict[str, Any
     raise SystemExit("找不到 event：{}".format(event_name))
 
 # ---------- time helpers ----------
-def distribute_empty_durations(cfg: Dict[str, Any], speaker_count: int) -> Dict[str, Any]:
-    fmt = "%H:%M"
-    total_minutes = int(
-        (datetime.strptime(cfg["end_time"], fmt) - datetime.strptime(cfg["start_time"], fmt)).total_seconds() / 60
-    )
-    total_known = speaker_count * int(cfg["speaker_minutes"])
-    empty_items = []
-
-    for s in cfg.get("special_sessions", []):
-        d = s.get("duration")
-        if d is None:
-            empty_items.append(s)
-        else:
-            total_known += int(d)
-
-    remaining = total_minutes - total_known
-    if remaining < 0:
-        print("[警告] 總時數不足，缺 {} 分鐘（請調整 speaker_minutes 或 special_sessions）".format(-remaining))
-        remaining = 0
-
-    if empty_items:
-        avg = round(remaining / len(empty_items)) if len(empty_items) else 0
-        for s in empty_items:
-            s["duration"] = max(0, avg)
-        print("[INFO] 自動分配空白時段：總剩餘 {} 分鐘，平均每段 {} 分鐘".format(remaining, avg))
-    return cfg
 
 def gen_agenda_rows(event: Dict[str, Any]) -> List[Dict[str, str]]:
-    cfg = distribute_empty_durations(dict(event["agenda_settings"]), len(event["speakers"]))
-    start_str = cfg["start_time"]
-    current = datetime.strptime(start_str, "%H:%M")
+    """Generate agenda rows based on predefined speaker times.
 
-    def add_minutes(dt, m): return dt + timedelta(minutes=int(m))
+    This version reads ``start_time`` and ``end_time`` directly from
+    ``event['speakers']`` and inserts any special sessions defined in
+    ``event['agenda_settings']['special_sessions']`` before or after the
+    corresponding speakers.
+    """
+
+    def parse(t: str) -> datetime:
+        return datetime.strptime(t, "%H:%M")
+
+    def fmt(dt: datetime) -> str:
+        return dt.strftime("%H:%M")
+
+    specials = (event.get("agenda_settings", {}) or {}).get("special_sessions", []) or []
+    speakers = event.get("speakers", []) or []
 
     rows: List[Dict[str, str]] = []
 
-    # 開場 special（after_speaker = 0）
-    for s in cfg["special_sessions"]:
-        if int(s["after_speaker"]) == 0:
-            end = add_minutes(current, s["duration"])
-            rows.append({
-                "kind": "special",
-                "time": "{}-{}".format(current.strftime('%H:%M'), end.strftime('%H:%M')),
-                "title": s["title"],
-                "speaker": ""
-            })
-            current = end
-
-    # 每一位講者 + 之後可能的 special
-    for sp in event["speakers"]:
-        end = add_minutes(current, cfg["speaker_minutes"])
-        start_str = current.strftime('%H:%M')
-        end_str = end.strftime('%H:%M')
-        rows.append({
-            "kind": "talk",
-            "time": "{}-{}".format(start_str, end_str),
-            "title": sp["topic"],
-            "speaker": sp.get("name", "")
-        })
-        # 回填到 speaker
-        sp["start_time"] = start_str
-        sp["end_time"] = end_str
-        current = end
-
-        for s in cfg["special_sessions"]:
-            if int(s["after_speaker"]) == int(sp["no"]):
-                end2 = add_minutes(current, s["duration"])
+    # Specials before the first speaker
+    first_sp = next((s for s in speakers if s.get("start_time")), None)
+    if first_sp:
+        first_start = parse(first_sp["start_time"])
+        for s in specials:
+            if int(s.get("after_speaker", -1)) == 0:
+                start = first_start - timedelta(minutes=int(s.get("duration", 0)))
                 rows.append({
                     "kind": "special",
-                "time": "{}-{}".format(current.strftime('%H:%M'), end2.strftime('%H:%M')),
-                    "title": s["title"],
-                    "speaker": ""
+                    "time": f"{fmt(start)}-{fmt(first_start)}",
+                    "title": s.get("title", ""),
+                    "speaker": "",
                 })
-                current = end2
 
-    # 尾端 special（after_speaker = 999）
-    for s in cfg["special_sessions"]:
-        if int(s["after_speaker"]) == 999:
-            end = add_minutes(current, s["duration"])
-            rows.append({
-                "kind": "special",
-                "time": "{}-{}".format(current.strftime('%H:%M'), end.strftime('%H:%M')),
-                "title": s["title"],
-                "speaker": ""
-            })
-            current = end
+    # Speakers and following specials
+    for sp in speakers:
+        start = sp.get("start_time")
+        end = sp.get("end_time")
+        if not start or not end:
+            continue
+        rows.append({
+            "kind": "talk",
+            "time": f"{start}-{end}",
+            "title": sp.get("topic", ""),
+            "speaker": sp.get("name", ""),
+        })
+        for s in specials:
+            if int(s.get("after_speaker", -1)) == int(sp.get("no", -1)):
+                start_dt = parse(end)
+                end_dt = start_dt + timedelta(minutes=int(s.get("duration", 0)))
+                rows.append({
+                    "kind": "special",
+                    "time": f"{fmt(start_dt)}-{fmt(end_dt)}",
+                    "title": s.get("title", ""),
+                    "speaker": "",
+                })
+
+    # Specials after the last speaker
+    last_end = None
+    for sp in reversed(speakers):
+        if sp.get("end_time"):
+            last_end = parse(sp["end_time"])
+            break
+    if last_end:
+        for s in specials:
+            if int(s.get("after_speaker", -1)) == 999:
+                end_dt = last_end + timedelta(minutes=int(s.get("duration", 0)))
+                rows.append({
+                    "kind": "special",
+                    "time": f"{fmt(last_end)}-{fmt(end_dt)}",
+                    "title": s.get("title", ""),
+                    "speaker": "",
+                })
+                last_end = end_dt
 
     return rows
 
