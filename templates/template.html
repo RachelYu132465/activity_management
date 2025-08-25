@@ -280,20 +280,29 @@ img { max-width: 100%; height: auto; }
     <table class="schedule" role="table" aria-label="議程表">
         <thead>
         <tr>
-            <th style="width:16%;">時間 / Time</th>
-            <th style="width:18%;">主題 / Topic</th>
-            <th style="width:26%;">講者 / Speaker</th>
-            <th>備註 / Note</th>
+            <th style="width:17.2%;">時間 / Time</th>
+            <th style="width:55.2%;">主題 / Topic</th>
+            <th style="width:27.6%;">講者 / Speaker</th>
         </tr>
         </thead>
         <tbody>
         {% for item in schedule %}
+        {% if item.type == 'host' %}
+        <tr>
+            <td colspan="3">{{ item.content }}</td>
+        </tr>
+        {% elif item.type == 'merge' %}
+        <tr>
+            <td>{{ item.time }}</td>
+            <td colspan="2">{{ item.content }}</td>
+        </tr>
+        {% else %}
         <tr>
             <td>{{ item.time }}</td>
             <td>{{ item.topic }}</td>
             <td>{{ item.speaker }}</td>
-            <td>{{ item.note or "" }}</td>
         </tr>
+        {% endif %}
         {% endfor %}
         </tbody>
     </table>

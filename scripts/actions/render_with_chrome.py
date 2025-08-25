@@ -12,11 +12,12 @@ import sys
 import json
 import subprocess
 import argparse
-from datetime import datetime, timedelta
 
 ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
+
+from scripts.actions.schedule_table import build_table
 
 
 # <<<<<<< HEAD
@@ -79,30 +80,6 @@ else:
     print("Unexpected JSON structure in {} (expected list or dict).".format(DATA_FILE), file=sys.stderr)
     sys.exit(1)
 
-# Build schedule by leveraging generate_agenda helper
-def build_schedule(event):
-    """Build schedule rows using generate_agenda's logic.
-
-    This delegates the heavy lifting to ``gen_agenda_rows`` from
-    ``scripts.actions.generate_agenda`` and adapts the returned rows into
-    the structure expected by the rendering pipeline.
-    """
-    try:
-        from scripts.actions.generate_agenda import gen_agenda_rows
-    except Exception:
-        # Fallback to an empty schedule if the helper can't be imported
-        return []
-
-    rows = gen_agenda_rows(event)
-    schedule = []
-    for r in rows:
-        schedule.append({
-            "time": r.get("time", ""),
-            "topic": r.get("title", ""),
-            "speaker": r.get("speaker", ""),
-
-        })
-    return schedule
 
 # Build speaker and chair lists augmented from influencer data
 infl_by_name = {p.get("name"): p for p in influencer_list if isinstance(p, dict)}
@@ -122,7 +99,7 @@ for speaker_entry in program_data.get("speakers", []) or []:
     else:
         speakers.append(enriched)
 
-program_data["schedule"] = build_schedule(program_data)
+program_data["schedule"] = build_table(program_data)
 program_data["chairs"] = chairs
 program_data["speakers"] = speakers
 
