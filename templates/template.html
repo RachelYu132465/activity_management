@@ -1,63 +1,109 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{{ (eventNames[0] if eventNames) or "手冊" }}</title>
 
-<style>
-    /* A4 印刷基礎 */
-    @page { size: A4; margin: 18mm; }
-    html, body { margin:0; padding:0; -webkit-print-color-adjust: exact; }
+    <style>
+        /* A4 印刷基礎 */
+        @page { size: A4; margin: 18mm; }
+        html, body { margin:0; padding:0; -webkit-print-color-adjust: exact; }
 
-/* 如需在 screen 與 print 分別處理 */
-@media print {
-/* 強制列印背景與色彩精確度 */
-html, body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-}
-    body {
-      font-family: "Noto Sans TC", "Helvetica", "Arial", sans-serif;
-      color: #111;
+  /* 如需在 screen 與 print 分別處理 */
+  @media print {
+    /* 強制列印背景與色彩精確度 */
+    html, body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+        body {
+          font-family: "Noto Sans TC", "Helvetica", "Arial", sans-serif;
+          color: #111;
 <!--          font-size: 12pt;-->
-      line-height: 1.45;
-      padding: 12mm;
-      box-sizing: border-box;
-    }
+          line-height: 1.45;
+          padding: 12mm;
+          box-sizing: border-box;
+        }
 
-    /* ---------- 公用：確保一頁至少佔滿 A4（扣 margin） ---------- */
-    /* A4 height = 297mm. margins top+bottom = 18mm*2 = 36mm */
-    .page-full {
-      page-break-after: always;
-      page-break-inside: avoid;
-      min-height: calc(297mm - 36mm); /* 確保至少一頁 */
--          display: block;
-+          display: flex;
-+          flex-direction: column;
-+          justify-content: space-evenly; /* 若不足一頁，內容均勻分布 */
-      padding-top: 10mm;
-      padding-bottom: 10mm;
-      box-sizing: border-box;
-    }
-    .page-full:last-child { page-break-after: auto; }
+        /* ---------- 公用：確保一頁至少佔滿 A4（扣 margin） ---------- */
+        /* A4 height = 297mm. margins top+bottom = 18mm*2 = 36mm */
+        .page-full {
+          page-break-after: always;
+          page-break-inside: avoid;
+          min-height: calc(297mm - 36mm); /* 確保至少一頁 */
+          display: flex;
+          flex-direction: column;
+          justify-content: space-evenly; /* 若不足一頁，內容均勻分布 */
+          padding-top: 10mm;
+          padding-bottom: 10mm;
+          box-sizing: border-box;
+        }
+        .page-full:last-child { page-break-after: auto; }
 
 
-/* 封面：由上往下堆（logo/title/meta 在上方），再用 spacer 推底部區塊 */
-.cover {
-text-align:center;
-display:flex;
-flex-direction:column;
+  /* 封面：由上往下堆（logo/title/meta 在上方），再用 spacer 推底部區塊 */
+  .cover {
+    text-align:center;
+    display:flex;
+    flex-direction:column;
 
-justify-content:flex-start; /* 改成從上方開始堆疊（不是垂直置中） */
-box-sizing: border-box;
-}
+    justify-content:flex-start; /* 改成從上方開始堆疊（不是垂直置中） */
+    box-sizing: border-box;
+  }
 
-/* 讓 page-full.cover 成為定位參考 */
+  /* 讓 page-full.cover 成為定位參考 */
 .page-full.cover {
-position: relative; /* 用於讓 .title 的 absolute 以此為參考 */
+  position: relative; /* 用於讓 .title 的 absolute 以此為參考 */
 }
 .title {
 font-size: 28pt;
 text-align:center;
 }
-diff --git a/templates/template.html b/templates/template.html
-index c35757b9889f17d4574998aa058369636d7484a6..c9f1beb2baac114e5a82fb94c7d07ed453601ed1 100644
---- a/templates/template.html
-+++ b/templates/template.html
-@@ -105,50 +107,58 @@ div[name="參與單位"] { align-self: flex-start; text-align: left; width:100%;
+/* 讓 title 在整頁中心（水平 + 垂直） */
+.page-full.cover .title {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+
+  /* 外觀可自訂 */
+  width: calc(210mm - 36mm);  /* = 174mm */
+  max-width: calc(210mm - 36mm);
+  box-sizing: border-box;
+  padding: 0 6mm;   /* 內側安全距離，可調小或拿掉 */
+  text-align: center;
+<!--  font-size: 28pt;-->
+  font-weight: 700;
+  z-index: 10;
+  word-wrap: break-word;
+}
+
+  .inner-text
+  {
+  font-size:14pt; font-weight:700
+  }
+
+
+  /* spacer：把參與單位推到底（數字越大越靠底） */
+  .cover .spacer { flex: 1 1 auto; }            /* 預設 */
+  /* 若要更靠底可改成： .cover .spacer { flex: 3 1 auto; } */
+
+.participation {
+  margin-top:12px;
+  align-self: flex-start;  /* 在父 flex 中靠左 */
+  text-align: left;        /* 文字靠左 */
+  width:100%;              /* 佔滿可用寬度 */
+  box-sizing: border-box;
+  padding-left: 6mm;      /* 可選：與頁邊距對齊 */
+  padding-right: 12mm;
+}
+.participation p { margin:0px 0; }
+
+div[name="參與單位"] { align-self: flex-start; text-align: left; width:100%; }
+
+        <!--        /* 封面 */-->
+<!--        .cover {-->
+<!--          text-align:center;-->
+<!--          display:flex;-->
 <!--          flex-direction:column;-->
 <!--          justify-content:center;-->
 <!--          align-items:center;-->
@@ -66,175 +112,371 @@ index c35757b9889f17d4574998aa058369636d7484a6..c9f1beb2baac114e5a82fb94c7d07ed4
 <!--        .cover .meta { font-size:12pt; color:#333; }-->
 <!--       div[name="參與單位"] .spacer { flex: 3 1 auto; } /* 數字可調：1→原始，3→更靠底，5→更靠底 */-->
 
-    /* 目錄 */
-    .toc h2 { margin-bottom:8px; }
-    .toc ol { padding-left:1.1em;  }
+        /* 目錄 */
+        .toc h2 { margin-bottom:8px; }
+        .toc ol { padding-left:1.1em;  }
 
-    /* 論壇資訊 */
-    .forum-info p { margin:6px 0;  }
+        /* 論壇資訊 */
+        .forum-info p { margin:6px 0;  }
 
-    /* 論壇須知 */
-    .notes ul { margin:6px 0 0 18px;}
+        /* 論壇須知 */
+        .notes ul { margin:6px 0 0 18px;}
 
-    /* 議程 */
+        /* 議程 */
 
-    table.schedule { border-collapse: collapse; margin-top:8px; }
-    table.schedule th, table.schedule td {
-      border:1px solid #ddd; padding:6px 8px; vertical-align:top; font-size:11pt;
-    }
-    table.schedule th { background:#f3f3f3; font-weight:600; text-align:left; }
-table.schedule td.host-cell {
-background: #fbe5d5;
-text-align: center;
-vertical-align: middle;
+        table.schedule { border-collapse: collapse; margin-top:8px; }
+        table.schedule th, table.schedule td {
+          border:1px solid #ddd; padding:6px 8px; vertical-align:top; font-size:11pt;
+        }
+        table.schedule th { background:#f3f3f3; font-weight:600; text-align:left; }
+        table.schedule td.host-cell {
+          background:#fbe5d5;
+          text-align:center;
+          vertical-align:middle;
+        }
+
+        .person-list { list-style:none; padding:0; margin:0; }
+        .person-list li { margin-bottom:6px; }
+
+        /* 主持人 / 講者頁面樣式 */
+        .person-card {
+          overflow: auto;
+        }
+        .person-photo {
+          float: right;
+          width:120px;
+          margin-left:18px;
+        }
+        .person-info {
+          /* text will wrap around the floated photo */
+        }
+        .person-info .name-title { font-size:18pt; font-weight:700; margin-bottom:4px; }
+        .person-info .organization { font-size:14pt; margin-bottom:8px; }
+        .person-info h3 { font-size:16pt; margin:8px 0 4px; }
+        .person-info .section-content { font-size:14pt; }
+        .person-info ul.section-content { margin:0 0 0 20px; padding-left:0; }
+
+        /* 小字 footer */
+        footer.small { font-size:10pt; color:#666; margin-top:10mm; text-align:left; }
+
+        /* print tweaks */
+        @media print {
+          body { padding: 6mm; }
+        }
+
+        /* A4 trim = 210mm x 297mm; bleed 3mm => page size = 210+6 x 297+6 = 216mm x 303mm */
+@page {
+  size: 216mm 303mm;          /* 含出血的紙張尺寸：trim + bleed */
+  margin: 18mm;               /* 這邊 margin 是印內邊；實際 trim 與 crop 由印廠處理 */
 }
 
-.person-list {
-list-style: none;
-padding: 0;
-margin: 0;
+/* 用一個 .trim-box 指定 trim（方便視覺排版參考） */
+.trim-box {
+  width: 210mm;
+  height: 297mm;
+  margin: 3mm auto;           /* 留出出血區域 */
+  box-sizing: border-box;
+  /* 可加虛線顯示 trim（僅供 preview） */
+  outline: 0.5pt dashed rgba(0,0,0,0.2);
 }
 
-.person-list li {
-margin-bottom: 6px;
+/* 請確保重要內容放在 safe area（例如內縮 6~8mm） */
+.safe {
+  padding: 8mm;
 }
 
+/* 其它印刷友好設定 */
+img { max-width: 100%; height: auto; }
 
-    /* 主持人 / 講者頁面樣式 */
-    .person-card {
-      overflow: auto;
-    }
-    .person-photo {
-      float: right;
-      width:120px;
-      margin-left:18px;
-    }
-    .person-info {
-      /* text will wrap around the floated photo */
-    }
-    .person-info .name-title { font-size:18pt; font-weight:700; margin-bottom:4px; }
-    .person-info .organization { font-size:14pt; margin-bottom:8px; }
-    .person-info h3 { font-size:16pt; margin:8px 0 4px; }
-    .person-info .section-content { font-size:14pt; }
-    .person-info ul.section-content { margin:0 0 0 20px; padding-left:0; }
+    </style>
 
-    /* 小字 footer */
-    footer.small { font-size:10pt; color:#666; margin-top:10mm; text-align:left; }
 
-    /* print tweaks */
-    @media print {
-      body { padding: 6mm; }
-diff --git a/templates/template.html b/templates/template.html
-index c35757b9889f17d4574998aa058369636d7484a6..c9f1beb2baac114e5a82fb94c7d07ed453601ed1 100644
---- a/templates/template.html
-+++ b/templates/template.html
-@@ -269,80 +279,106 @@ img { max-width: 100%; height: auto; }
-    <li>本次活動將申請公務人員終身學習時數，請於休息時間簽到。</li>
-    <li>為尊重智慧財產權，本論壇禁止側錄主講人簡報。</li>
-    <li>本次課程場地配置圖請參考下圖。</li>
+
+
+</head>
+<body>
+
+
+<!--&lt;!&ndash; 封面（整頁） &ndash;&gt;-->
+<!--<div class="page-full cover">-->
+<!--    {% if assets.logo_url %}-->
+<!--    <img src="{{ assets.logo_url }}" alt="logo" style="max-height:90px; margin-bottom:8px;">-->
+<!--    {% endif %}-->
+<!--    <div class="title">{{ eventNames[0] }}</div>-->
+<!--    <div class="meta">{{ date }} | {{ locations[0] }}</div>-->
+<!--    -->
+<div class="page-full cover">
+    {% if assets.logo_url|default('') %}
+    <img src="{{ assets.logo_url }}" alt="logo" style="max-height:90px; margin-bottom:8px;">
+    {% endif %}
+
+    <div class="title">{{ eventNames[0] }}</div>
+
+
+    {# spacer 放在參與單位上方，將參與單位推到底部 #}
+    <div class="spacer"></div>
+
+    {# 只在至少一項有值時才輸出參與單位區塊 #}
+
+
+    <div  class="participation inner-text" aria-label="參與單位" >
+       <p>
+
+        <p>指導單位：{{ instructors | join('、') }}</p>
+        <p>主辦單位：{{ organizers | join('、') }}</p>
+        {% if variable is defined and variable|default('')|trim %}
+        <p>合辦單位：{{ jointOrganizers | join('、') }}</p>
+        {% endif %}
+        {% if variable is defined and variable|default('')|trim %}
+        <p>協辦單位：{{ coOrganizers | join('、') }}</p>
+        {% endif %}
+
+        <!-- 改用 span 來做內聯，並用 class 控制字級與顏色 -->
+        <span class="inner-text">日期：</span>
+        <span class="inner-text js-date" data-iso="{{ date }}">{{ date }}</span>
+
+<!--        <p style=" display:inline" >日期：</p><p class="meta js-date " data-iso="{{ date }}" style="display:inline">日期：{{ date }}</p>-->
+        <p  >地點：{{ locations[0] }}<br> &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp (  {{ locations[1] }} )</p>
+
+    </div>
+
+</div>
+
+<!-- 目錄（整頁） -->
+<nav class="page-full title" aria-label="目錄 Contents">
+    <h2>目錄 / Contents</h2>
+    <hr>
+    <ol class="inner text">
+<!--        <li>論壇資訊 / Forum Info</li>-->
+        <li>論壇須知 / Notes</li>
+        <li>議程 / Agenda</li>
+        <li>主持人 / Chairs</li>
+        <li>講者 / Speakers</li>
+    </ol>
+</nav>
+
+<!-- 論壇資訊（整頁：若資訊過少仍保留空白讓它佔一頁） -->
+<!--<section class="page-full title forum-info" aria-label="論壇資訊 Forum Info">-->
+<!--    <h2>論壇資訊 / Forum Info</h2>-->
+<!--    <p><strong>名稱 / Title：</strong> {{ eventNames[0] }}</p>-->
+<!--    <p><strong>日期 / Date：</strong> {{ date }}</p>-->
+<!--    <p><strong>地點 / Venue：</strong> {{ locations[0] }}</p>-->
+<!--    {% if locations|length > 1 %}-->
+<!--    <p><strong>地點 / Venue：</strong> {{ locations[1] }}</p>-->
+<!--    {% endif %}-->
+<!--    <p><strong>主辦單位 / Organizer：</strong> {{ organizers | join('、') }}</p>-->
+<!--    <p><strong>協辦單位 / Co-organizer：</strong> {{ coOrganizers | join('、') }}</p>-->
+<!--    {% if activities_contacts is defined and activities_contacts %}-->
+<!--    <p><strong>聯絡 / Contact：</strong> {{ activities_contacts | join('、') }}</p>-->
+<!--    {% endif %}-->
+<!--</section>-->
+
+<!-- 論壇須知（整頁） -->
+<section class="page-full notes" aria-label="論壇須知 Notes">
+    <h2>論壇須知 / Notes</h2>
+
+    <ul>
+        <li>本次活動報到時間為上午09:30-10:00。</li>
+        <li>本次活動將申請公務人員終身學習時數，請於休息時間簽到。</li>
+        <li>為尊重智慧財產權，本論壇禁止側錄主講人簡報。</li>
+        <li>本次課程場地配置圖請參考下圖。</li>
 <!--        <li><img src="802.png" alt="Girl in a jacket" width="500" height="600"> </li>-->
-    <li>
-        <img src="{{ url_for('static', filename='802.png') }}"
-             alt="Girl in a jacket" width="500" height="600">
-    </li>
-    <li>滿意度問卷</li>
-    <li><img src="frame.png" alt="Girl in a jacket" width="500" height="600"> </li>
-</ul>
+        <li>
+            <img src="{{ url_for('static', filename='802.png') }}"
+                 alt="Girl in a jacket" width="500" height="600">
+        </li>
+        <li>滿意度問卷</li>
+        <li><img src="frame.png" alt="Girl in a jacket" width="500" height="600"> </li>
+    </ul>
 
 </section>
 
 <!-- 議程（此區可視情況短長；放在一頁或超過亦可） -->
 <section class="page-full">
-<h2>議程 / Schedule</h2>
-<table class="schedule" role="table" aria-label="議程表" style="width:17.4cm;">
-    <colgroup>
-        <col style="width:3.0cm;">
-        <col style="width:9.6cm;">
-        <col style="width:4.8cm;">
-    </colgroup>
-    <thead>
-    <tr>
--
-        <th>時間 / Time</th>
-        <th>主題 / Topic</th>
-        <th>講者 / Speaker</th>
--
-    </tr>
-    </thead>
-    <tbody>
-    {% for row in schedule %}
-    {% if row.type == 'host' %}
-    <tr>
--            <td colspan="3" style="text-align:center">{{ row.content }}</td>
-+            <td colspan="3" class="host-cell">{{ row.content }}</td>
-    </tr>
-    {% elif row.type == 'break' %}
-    <tr>
-        <td>{{ row.time }}</td>
-        <td colspan="2">{{ row.content }}</td>
-    </tr>
-    {% else %}
-    <tr>
-        <td>{{ row.time }}</td>
-        <td>{{ row.topic }}</td>
-        <td>{{ row.speaker }}</td>
-    </tr>
-    {% endif %}
-    {% endfor %}
-    </tbody>
-</table>
+    <h2>議程 / Schedule</h2>
+    <hr>
+    <table class="schedule" role="table" aria-label="議程表" style="width:17.4cm;">
+        <colgroup>
+            <col style="width:3.0cm;">
+            <col style="width:3.0cm;">
+            <col style="width:7.8cm;">
+            <col style="width:3.6cm;">
+        </colgroup>
+        <thead>
+        <tr>
+            <th>主持人 / Host</th>
+            <th>時間 / Time</th>
+            <th>主題 / Topic</th>
+            <th>講者 / Speaker</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for row in schedule %}
+        <tr>
+            {% if loop.first %}
+            <td rowspan="{{ schedule|length }}" class="host-cell">
+                {% for chair in chairs %}
+                    {{ chair.name }}{% if chair.title %} {{ chair.title }}{% endif %}
+                    {% if chair.organization %}<br>{{ chair.organization }}{% endif %}
+                    {% if not loop.last %}<br><br>{% endif %}
+                {% endfor %}
+            </td>
+            {% endif %}
+            {% if row.type == 'break' %}
+            <td>{{ row.time }}</td>
+            <td colspan="2">{{ row.content }}</td>
+            {% else %}
+            <td>{{ row.time }}</td>
+            <td>{{ row.topic }}</td>
+            <td>{{ row.speaker }}</td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 </section>
 
 {% if chairs %}
 <section class="page-full">
-<h2>主持人 / Chairs</h2>
-<ul class="person-list">
-{% for chair in chairs %}
-   <li>
-       {{ chair.name }}{% if chair.title %} {{ chair.title }}{% endif %}
-       {% if chair.organization %}<br>{{ chair.organization }}{% endif %}
-   </li>
-{% endfor %}
-</ul>
+    <h2>主持人 / Chairs</h2>
+    <ul class="person-list">
+    {% for chair in chairs %}
+        <li>
+            {{ chair.name }}{% if chair.title %} {{ chair.title }}{% endif %}
+            {% if chair.organization %}<br>{{ chair.organization }}{% endif %}
+        </li>
+    {% endfor %}
+    </ul>
 </section>
 {% endif %}
 
 {% if speakers %}
 <section class="page-full">
-<h2>講者 / Speakers</h2>
-<ul class="person-list">
-{% for sp in speakers %}
-   <li>
-       {{ sp.name }}{% if sp.title %} {{ sp.title }}{% endif %}
-       {% if sp.organization %}<br>{{ sp.organization }}{% endif %}
-   </li>
-{% endfor %}
-</ul>
+    <h2>講者 / Speakers</h2>
+    <ul class="person-list">
+    {% for sp in speakers %}
+        <li>
+            {{ sp.name }}{% if sp.title %} {{ sp.title }}{% endif %}
+            {% if sp.organization %}<br>{{ sp.organization }}{% endif %}
+        </li>
+    {% endfor %}
+    </ul>
 </section>
 {% endif %}
 
 <!-- 主持人：每位主持人各一頁 -->
 {% for chair in chairs %}
 <section class="page-full" aria-label="主持人 Chair">
-<h2>主持人 / Chair</h2>
-<div class="person-card">
-    {% set chair_photo = chair.photo_url or url_for('static', filename=chair.name ~ '.png') %}
-    {% if chair_photo %}
-    <div class="person-photo"><img src="{{ chair_photo }}" style="width:100%; height:auto;"></div>
-    {% endif %}
-    <div class="person-info">
-        <div class="name-title">{{ chair.name }}{% if chair.title %} {{ chair.title }}{% endif %}</div>
-        {% if chair.organization %}<div class="organization">{{ chair.organization }}</div>{% endif %}
-        {% if chair.highest_education %}
-        <h3>學歷</h3>
-        <div class="section-content">{{ chair.highest_education }}</div>
+    <h2>主持人 / Chair</h2>
+    <hr>
+    <div class="person-card">
+        {% set chair_photo = chair.photo_url or url_for('static', filename=chair.name ~ '.png') %}
+        {% if chair_photo %}
+        <div class="person-photo"><img src="{{ chair_photo }}" style="width:100%; height:auto;"></div>
         {% endif %}
-        {% if chair.experience %}
-        <h3>經歷</h3>
-        <ul class="section-content">
-        {% for item in chair.experience %}<li>{{ item }}</li>{% endfor %}
-        </ul>
+        <div class="person-info">
+            <div class="name-title">{{ chair.name }}{% if chair.title %} {{ chair.title }}{% endif %}</div>
+            {% if chair.organization %}<div class="organization">{{ chair.organization }}</div>{% endif %}
+            {% if chair.highest_education %}
+            <h3>學歷</h3>
+            <div class="section-content">{{ chair.highest_education }}</div>
+            {% endif %}
+            {% if chair.experience %}
+            <h3>經歷</h3>
+            <ul class="section-content">
+            {% for item in chair.experience %}<li>{{ item }}</li>{% endfor %}
+            </ul>
+            {% endif %}
+            {% if chair.achievements %}
+            <h3>成就</h3>
+            <ul class="section-content">
+            {% for item in chair.achievements %}<li>{{ item }}</li>{% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endfor %}
+
+<!-- 講者：每位講者各一頁 -->
+{% for sp in speakers %}
+<section class="page-full" aria-label="講者 Speaker">
+    <h2>講者 / Speaker</h2>
+    <hr>
+    <div class="person-card">
+        {% set sp_photo = sp.photo_url or url_for('static', filename=sp.name ~ '.png') %}
+        {% if sp_photo %}
+        <div class="person-photo"><img src="{{ sp_photo }}" style="width:100%; height:auto;"></div>
         {% endif %}
-        {% if chair.achievements %}
-        <h3>成就</h3>
-        <ul class="section-content">
+        <div class="person-info">
+            <div class="name-title">{{ sp.name }}{% if sp.title %} {{ sp.title }}{% endif %}</div>
+            {% if sp.organization %}<div class="organization">{{ sp.organization }}</div>{% endif %}
+            {% if sp.highest_education %}
+            <h3>學歷</h3>
+            <div class="section-content">{{ sp.highest_education }}</div>
+            {% endif %}
+            {% if sp.experience %}
+            <h3>經歷</h3>
+            <ul class="section-content">
+            {% for item in sp.experience %}<li>{{ item }}</li>{% endfor %}
+            </ul>
+            {% endif %}
+            {% if sp.achievements %}
+            <h3>成就</h3>
+            <ul class="section-content">
+            {% for item in sp.achievements %}<li>{{ item }}</li>{% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endfor %}
+
+<footer class="small">
+    來源：依據上傳手冊內容製作。 Generated from uploaded handbook.
+</footer>
+</body>
+
+<script>
+
+
+
+
+
+           (function(){
+             // 使用 Intl 產生本地化（zh-TW）年月日(兩位) + 星期（長格式）
+             const formatter = new Intl.DateTimeFormat('zh-TW', {
+               year: 'numeric',
+               month: '2-digit',
+               day: '2-digit',
+               weekday: 'long'
+             });
+
+             function parseDateAvoidTZ(s){
+               if(!s) return null;
+               s = String(s).trim();
+               // YYYY-MM-DD or YYYY/MM/DD -> construct local date (avoid UTC shift)
+               let m = s.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})$/);
+               if(m){
+                 return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+               }
+               // YYYYMMDD
+               m = s.match(/^(\d{4})(\d{2})(\d{2})$/);
+               if(m){
+                 return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+               }
+               // fallback to Date constructor (handles ISO with time)
+               const d = new Date(s);
+               return isNaN(d) ? null : d;
+             }
+
+             document.querySelectorAll('.js-date').forEach(el=>{
+               const raw = el.dataset.iso || el.textContent || '';
+               const d = parseDateAvoidTZ(raw);
+               if(!d) return;
+               // format -> e.g. "2025年09月03日 星期四"
+               el.textContent = formatter.format(d);
+             });
+           })();
+</script>
+</html>
