@@ -160,6 +160,32 @@ def _schedule_from_speakers(program, influencers=None):
     return schedule
 
 
+def _format_highest_education(he):
+    """Return a single-line string for highest education info."""
+    if not isinstance(he, dict):
+        return ""
+    parts = [
+        he.get("school"),
+        he.get("department"),
+        he.get("degree"),
+        he.get("graduation_year"),
+    ]
+    return " ".join([p for p in parts if p])
+
+
+def _merge_person(name, influencer_map):
+    """Combine base name with influencer details."""
+    inf = influencer_map.get(name, {}) if isinstance(influencer_map, dict) else {}
+    current = inf.get("current_position") or {}
+    return {
+        "name": name,
+        "title": current.get("title", ""),
+        "organization": current.get("organization", ""),
+        "highest_education": _format_highest_education(inf.get("highest_education")),
+        "experience": inf.get("experience", []) or [],
+        "achievements": inf.get("achievements", []) or [],
+    }
+
 def build_safe_context(program, influencer_map=None):
     """Build a simple template context focused on speakers."""
     if not program or not isinstance(program, dict):
@@ -190,9 +216,20 @@ def build_safe_context(program, influencer_map=None):
     context["locations"] = program.get("locations", []) or []
     context["organizers"] = program.get("organizers", []) or []
     context["contact"] = program.get("contact", "") or ""
+    chairs = []
+    speakers_list = []
+    for sp in program.get("speakers", []) or []:
+        if not isinstance(sp, dict):
+            continue
+        name = sp.get("name", "")
+        person = _merge_person(name, influencer_map)
+        if sp.get("type") == "主持人" or sp.get("topic") == "主持":
+            chairs.append(person)
+        else:
+            speakers_list.append(person)
 
-    context["speakers"] = program.get("speakers", []) or []
-    context["chairs"] = []
+    context["speakers"] = speakers_list
+    context["chairs"] = chairs
     context["schedule"] = _schedule_from_speakers(program, influencer_map)
     context["_all_keys"] = list(program.keys())
     return context
