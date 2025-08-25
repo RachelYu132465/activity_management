@@ -1,4 +1,175 @@
 [
+
+  [
+    {
+      "id_number": "",
+      "name": "林世嘉",
+      "phone": "",
+      "email": [],
+      "specialties": [
+        "再生醫療政策",
+        "國際醫療交流",
+        "會議與訓練籌辦"
+      ],
+      "achievements": [
+        "草擬並推動《再生醫療管理製劑條例（草案）》",
+        "主編／總編輯多本再生醫療與生醫政策相關書籍",
+        "2015–2024 間主辦 37 場細胞治療技術醫師訓練課程，訓練 3,195 名相關人員"
+      ],
+      "academic_title": "",
+      "certificate_number": "",
+      "highest_education": {
+        "school": "國立陽明大學（衛生福利研究所）；國立臺灣大學（公共衛生學系）",
+        "department": "衛生福利研究 / 公共衛生",
+        "graduation_year": "",
+        "degree": ""
+      },
+      "experience": [
+        "第八屆立法委員（衛環委員）",
+        "財團法人台灣醫界聯盟基金會 執行長",
+        "台安生物科技股份有限公司 總經理",
+        "多個政府／智庫／基金會顧問與董事職務（包含衛福部國際醫療管理工作小組專家顧問等）",
+        "與日本、英國、韓國等國際再生醫療單位長期交流與合作"
+      ],
+      "current_position": {
+        "organization": "財團法人台灣醫界聯盟基金會（及兼任多家生醫組織顧問）",
+        "title": "執行長",
+        "start_year": null,
+        "teaching_years": null,
+        "practice_years": null,
+        "research_years": null
+      },
+      "contact_person": {
+        "name": "",
+        "email": [],
+        "CC": []
+      }
+    },
+    {
+      "id_number": "",
+      "name": "中山功一 (Koichi Nakayama)",
+      "phone": "",
+      "email": [],
+      "specialties": [
+        "骨科",
+        "再生醫療",
+        "生體 3D 列印（Kenzan 法）"
+      ],
+      "achievements": [
+        "發明並推廣「Kenzan 法」，為無支架生物 3D 列印領域的重要貢獻者",
+        "多篇與生體 3D 列印與組織工程相關之重要發表"
+      ],
+      "academic_title": "教授",
+      "certificate_number": "",
+      "highest_education": {
+        "school": "九州大學",
+        "department": "",
+        "graduation_year": "2005",
+        "degree": "博士"
+      },
+      "experience": [
+        "佐賀大學醫學部再生醫療研究中心 教授（2019–至今）",
+        "琉球大學 客座教授（2020–2021）",
+        "其他國際訪問／客座職務"
+      ],
+      "current_position": {
+        "organization": "佐賀大學醫學部（再生醫療研究中心）；另擔任 Arktus Therapeutics 董事",
+        "title": "教授 / 董事",
+        "start_year": 2019,
+        "teaching_years": null,
+        "practice_years": null,
+        "research_years": null
+      },
+      "contact_person": {
+        "name": "",
+        "email": [],
+        "CC": []
+      }
+    },
+    {
+      "id_number": "",
+      "name": "林奕汝",
+      "phone": "0972397079",
+      "email": [],
+      "specialties": [
+        "藥事法規",
+        "國際合作"
+      ],
+      "achievements": [],
+      "academic_title": "",
+      "certificate_number": "",
+      "highest_education": {
+        "school": "臺北醫學大學",
+        "department": "藥學系",
+        "graduation_year": "106",
+        "degree": "碩士"
+      },
+      "experience": [
+        "衛生福利部食品藥物管理署 藥品組 科長（紀錄顯示：11312-迄今）",
+        "衛生福利部食品藥物管理署 藥品組 視察（記載：11204-11312）",
+        "先前職務含副研究員、技士等（檔案列示多段實務年資）"
+      ],
+      "current_position": {
+        "organization": "衛生福利部食品藥物管理署（TFDA） 藥品組",
+        "title": "科長",
+        "start_year": null,
+        "teaching_years": null,
+        "practice_years": null,
+        "research_years": null
+      },
+      "contact_person": {
+        "name": "",
+        "email": [],
+        "CC": []
+      }
+    },
+    {
+      "id_number": "F121753495",
+      "name": "官建村",
+      "phone": "0909-576-846",
+      "email": [],
+      "specialties": [
+        "癌症藥物研究與開發",
+        "自體免疫疾病藥物",
+        "神經退化性疾病藥物"
+      ],
+      "achievements": [
+        "2014 AACR Team Science Award",
+        "第20屆國家新創獎-企業新創獎",
+        "第21屆國家新創精進獎",
+        "台灣創投 40 年會、新創 100 大（相關榮譽列示）"
+      ],
+      "academic_title": "博士",
+      "certificate_number": "",
+      "highest_education": {
+        "school": "Purdue University (美國)",
+        "department": "分子生物暨生物化學",
+        "graduation_year": "1992",
+        "degree": "博士"
+      },
+      "experience": [
+        "承寶生技股份有限公司 總經理/執行長（2019/12 - 現今）",
+        "先驅生技股份有限公司 副總經理、營運長/技術長（2019/01-2019/11）",
+        "財團法人生物技術開發中心 生物製藥研究所 副所長（2015-2018）",
+        "美國 Duke University 病理系及生醫工程系 副教授（1996-至今紀錄中列示）",
+        "美國 NIH Fogarty Fellow 研究員（1992-1996）"
+      ],
+      "current_position": {
+        "organization": "承寶生技股份有限公司",
+        "title": "總經理 / 執行長",
+        "start_year": 2019,
+        "teaching_years": null,
+        "practice_years": null,
+        "research_years": null
+      },
+      "contact_person": {
+        "name": "",
+        "email": [],
+        "CC": []
+      }
+    }
+  ],
+
   {
     "id_number": "N120300638",
     "name": "張正雄",
@@ -193,66 +364,8 @@
       "CC": []
     }
   },
-  {
-    "id_number": "",
-    "name": "林奕汝",
-    "phone": "",
-    "email": [],
-    "specialties": [],
-    "achievements": [],
-    "academic_title": "",
-    "certificate_number": "",
-    "highest_education": {
-      "school": "",
-      "department": "",
-      "graduation_year": "",
-      "degree": ""
-    },
-    "experience": [],
-    "current_position": {
-      "organization": "衛生福利部食品藥物管理署",
-      "title": "科長",
-      "start_year": null,
-      "teaching_years": null,
-      "practice_years": null,
-      "research_years": null
-    },
-    "contact_person": {
-      "name": "",
-      "email": [],
-      "CC": []
-    }
-  },
-  {
-    "id_number": "",
-    "name": "官建村",
-    "phone": "",
-    "email": [],
-    "specialties": [],
-    "achievements": [],
-    "academic_title": "",
-    "certificate_number": "",
-    "highest_education": {
-      "school": "",
-      "department": "",
-      "graduation_year": "",
-      "degree": ""
-    },
-    "experience": [],
-    "current_position": {
-      "organization": "承寶生技股份有限公司",
-      "title": "執行長",
-      "start_year": null,
-      "teaching_years": null,
-      "practice_years": null,
-      "research_years": null
-    },
-    "contact_person": {
-      "name": "",
-      "email": [],
-      "CC": []
-    }
-  },
+
+
   {
     "id_number": "",
     "name": "中山功一",
@@ -283,36 +396,7 @@
       "CC": []
     }
   },
-  {
-    "id_number": "",
-    "name": "林世嘉",
-    "phone": "",
-    "email": [],
-    "specialties": [],
-    "achievements": [],
-    "academic_title": "",
-    "certificate_number": "",
-    "highest_education": {
-      "school": "",
-      "department": "",
-      "graduation_year": "",
-      "degree": ""
-    },
-    "experience": [],
-    "current_position": {
-      "organization": "財團法人台灣醫界聯盟基金會",
-      "title": "執行長",
-      "start_year": null,
-      "teaching_years": null,
-      "practice_years": null,
-      "research_years": null
-    },
-    "contact_person": {
-      "name": "",
-      "email": [],
-      "CC": []
-    }
-  },
+
   {
     "id_number": "",
     "name": "王玲美",
