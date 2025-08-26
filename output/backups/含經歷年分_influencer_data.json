@@ -47,7 +47,7 @@
     },
     {
       "id_number": "",
-      "name": "中山功一",
+      "name": "中山功一 (Koichi Nakayama)",
       "phone": "",
       "email": [],
       "specialties": [
@@ -68,12 +68,12 @@
         "degree": "博士"
       },
       "experience": [
-        "佐賀大學醫學部再生醫療研究中心 教授",
-        "琉球大學 客座教授",
+        "佐賀大學醫學部再生醫療研究中心 教授（2019–至今）",
+        "琉球大學 客座教授（2020–2021）",
         "其他國際訪問／客座職務"
       ],
       "current_position": {
-        "organization": "佐賀大學醫學部（再生醫療研究中心）；\n 另擔任 Arktus Therapeutics 董事",
+        "organization": "佐賀大學醫學部（再生醫療研究中心）；另擔任 Arktus Therapeutics 董事",
         "title": "教授 / 董事",
         "start_year": 2019,
         "teaching_years": null,
@@ -105,12 +105,12 @@
         "degree": "碩士"
       },
       "experience": [
-        "衛生福利部食品藥物管理署 藥品組 科長",
-        "衛生福利部食品藥物管理署 藥品組 視察",
-        "先前職務含副研究員、技士等"
+        "衛生福利部食品藥物管理署 藥品組 科長（紀錄顯示：11312-迄今）",
+        "衛生福利部食品藥物管理署 藥品組 視察（記載：11204-11312）",
+        "先前職務含副研究員、技士等（檔案列示多段實務年資）"
       ],
       "current_position": {
-        "organization": "衛生福利部食品藥物管理署 藥品組",
+        "organization": "衛生福利部食品藥物管理署（TFDA） 藥品組",
         "title": "科長",
         "start_year": null,
         "teaching_years": null,
@@ -148,11 +148,11 @@
         "degree": "博士"
       },
       "experience": [
-        "承寶生技股份有限公司 總經理/執行長",
-        "先驅生技股份有限公司 副總經理、營運長/技術長",
-        "財團法人生物技術開發中心 生物製藥研究所 副所長",
-        "美國 Duke University 病理系及生醫工程系 副教授",
-        "美國 NIH Fogarty Fellow 研究員"
+        "承寶生技股份有限公司 總經理/執行長（2019/12 - 現今）",
+        "先驅生技股份有限公司 副總經理、營運長/技術長（2019/01-2019/11）",
+        "財團法人生物技術開發中心 生物製藥研究所 副所長（2015-2018）",
+        "美國 Duke University 病理系及生醫工程系 副教授（1996-至今紀錄中列示）",
+        "美國 NIH Fogarty Fellow 研究員（1992-1996）"
       ],
       "current_position": {
         "organization": "承寶生技股份有限公司",
@@ -366,7 +366,36 @@
   },
 
 
-
+  {
+    "id_number": "",
+    "name": "中山功一",
+    "phone": "",
+    "email": [],
+    "specialties": [],
+    "achievements": [],
+    "academic_title": "",
+    "certificate_number": "",
+    "highest_education": {
+      "school": "",
+      "department": "",
+      "graduation_year": "",
+      "degree": ""
+    },
+    "experience": [],
+    "current_position": {
+      "organization": "Arktus Therapeutics",
+      "title": "董事",
+      "start_year": null,
+      "teaching_years": null,
+      "practice_years": null,
+      "research_years": null
+    },
+    "contact_person": {
+      "name": "",
+      "email": [],
+      "CC": []
+    }
+  },
 
   {
     "id_number": "",
