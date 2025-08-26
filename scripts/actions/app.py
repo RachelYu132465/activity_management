@@ -295,7 +295,8 @@ def build_safe_context(program, influencer_map=None):
         if not isinstance(sp, dict):
             continue
         name = sp.get("name", "")
-        person = _merge_person(name, influencer_map)
+        influencer = influencer_map.get(name, {}) if isinstance(influencer_map, dict) else {}
+        person = _merge_person(sp, influencer)
         topic = sp.get("topic", "") or ""
         sp_type = sp.get("type", "") or ""
         if sp_type == "主持人" or topic == "主持":
@@ -307,6 +308,7 @@ def build_safe_context(program, influencer_map=None):
     context["chairs"] = chairs
     context["schedule"] = _schedule_from_speakers(program, influencer_map)
     context["_all_keys"] = list(program.keys())
+    context["test_influencer"] = next(iter(influencer_map.keys()), "") if isinstance(influencer_map, dict) else ""
     return context
 
 
