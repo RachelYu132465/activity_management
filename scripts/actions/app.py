@@ -238,7 +238,7 @@ def build_safe_context(program, influencer_map=None):
         sp_type = sp.get("type", "") or ""
         if sp_type == "主持人" or topic == "主持":
             chairs.append(person)
-        elif ("致詞" not in topic) and ("休息" not in topic) and sp_type not in ("致詞人", "休息"):
+        elif ("致詞" not in topic) and ("休息" not in topic) and ("討論" not in topic)  and sp_type not in ("致詞人", "休息"):
             speakers_list.append(person)
 
     context["speakers"] = speakers_list
