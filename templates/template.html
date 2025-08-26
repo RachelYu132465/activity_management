@@ -31,7 +31,9 @@
           page-break-after: always;
           page-break-inside: avoid;
           min-height: calc(297mm - 36mm); /* 確保至少一頁 */
-          display: block;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-evenly; /* 若不足一頁，內容均勻分布 */
           padding-top: 10mm;
           padding-bottom: 10mm;
           box-sizing: border-box;
@@ -103,13 +105,35 @@
         }
         table.schedule th { background:#f3f3f3; font-weight:600; text-align:left; }
 
+        .person-list { list-style:none; padding:0; margin:0; }
+        .person-list li { margin-bottom:6px; }
+
         /* 主持人 / 講者頁面樣式 */
+<<<<<<< HEAD
         .person-card { display:flex; gap:18px; align-items:flex-start; }
         .person-photo { width:120px; flex: 0 0 120px; }
         .person-info { flex:1; }
         .person-info .name { font-size:18pt; font-weight:700; margin-bottom:6px; }
         .person-info .title { font-size:12pt; color:#333; margin-bottom:8px; }
         .person-info .bio { font-size:11pt; white-space:pre-wrap; }
+=======
+        .person-card {
+          overflow: auto;
+        }
+        .person-photo {
+          float: right;
+          width:120px;
+          margin-left:18px;
+        }
+        .person-info {
+          /* text will wrap around the floated photo */
+        }
+        .person-info .name-title { font-size:18pt; font-weight:700; margin-bottom:4px; }
+        .person-info .organization { font-size:14pt; margin-bottom:8px; }
+        .person-info h3 { font-size:16pt; margin:8px 0 4px; }
+        .person-info .section-content { font-size:14pt; }
+        .person-info ul.section-content { margin:0 0 0 20px; padding-left:0; }
+>>>>>>> 1f2a8be40c81c6b311dbfd6a524e8a710e698456
 
         /* 小字 footer */
         footer.small { font-size:10pt; color:#666; margin-top:10mm; text-align:left; }
@@ -163,9 +187,12 @@
 
 <nav class="page-full title" aria-label="目錄 Contents">
     <h2>目錄 / Contents</h2>
-    <ol class="inner-text">
+    <hr>
+    <ol class="inner text">
+<!--        <li>論壇資訊 / Forum Info</li>-->
+
         <li>論壇須知 / Notes</li>
-        <li>議程 / Schedule</li>
+        <li>議程 / Agenda</li>
         <li>主持人 / Chairs</li>
         <li>講者 / Speakers</li>
     </ol>
@@ -188,11 +215,12 @@
 
 <section class="page-full">
     <h2>議程 / Schedule</h2>
+    <hr>
     <table class="schedule" role="table" aria-label="議程表" style="width:17.4cm;">
         <colgroup>
             <col style="width:3.0cm;">
-            <col style="width:9.6cm;">
-            <col style="width:4.8cm;">
+            <col style="width:10.8cm;">
+            <col style="width:3.6cm;">
         </colgroup>
         <thead>
         <tr>
@@ -202,6 +230,7 @@
         </tr>
         </thead>
         <tbody>
+<<<<<<< HEAD
         {% for item in schedule %}
         {% if item.kind == 'host' %}
         <tr>
@@ -219,22 +248,91 @@
             <td>{{ item.speaker or '' }}</td>
         </tr>
         {% endif %}
+=======
+        {% for row in schedule %}
+        <tr>
+            {% if row.type == 'break' %}
+            <td>{{ row.time }}</td>
+            <td colspan="2">{{ row.content }}</td>
+            {% elif row.type == 'host' %}
+            <td colspan="3" style="text-align:center;  background: #fbe5d5;">{{ row.content }}</td>
+            {% else %}
+            <td>{{ row.time }}</td>
+            <td>{{ row.topic }}</td>
+            <td>{{ row.speaker }}</td>
+            {% endif %}
+        </tr>
+>>>>>>> 1f2a8be40c81c6b311dbfd6a524e8a710e698456
         {% endfor %}
         </tbody>
     </table>
 </section>
 
+<<<<<<< HEAD
+=======
+{% if chairs %}
+<section class="page-full">
+    <h2>主持人 / Chairs</h2>
+    <ul class="person-list">
+    {% for chair in chairs %}
+        <li>
+            {{ chair.name }}{% if chair.title %} {{ chair.title }}{% endif %}
+            {% if chair.organization %}<br>{{ chair.organization }}{% endif %}
+        </li>
+    {% endfor %}
+    </ul>
+</section>
+{% endif %}
+
+{% if speakers %}
+<section class="page-full">
+    <h2>講者 / Speakers</h2>
+    <ul class="person-list">
+    {% for sp in speakers %}
+        <li>
+            {{ sp.name }}{% if sp.title %} {{ sp.title }}{% endif %}
+            {% if sp.organization %}<br>{{ sp.organization }}{% endif %}
+        </li>
+    {% endfor %}
+    </ul>
+</section>
+{% endif %}
+
+<!-- 主持人：每位主持人各一頁 -->
+>>>>>>> 1f2a8be40c81c6b311dbfd6a524e8a710e698456
 {% for chair in chairs %}
 <section class="page-full" aria-label="主持人 Chair">
     <h2>主持人 / Chair</h2>
+    <hr>
     <div class="person-card">
+<<<<<<< HEAD
         {% if chair.photo_url %}
         <div class="person-photo"><img src="{{ chair.photo_url }}" alt="{{ chair.name }} 照片" style="width:100%; height:auto;"></div>
+=======
+        {% set chair_photo = chair.photo_url or url_for('static', filename=chair.name ~ '.png') %}
+        {% if chair_photo %}
+        <div class="person-photo"><img src="{{ chair_photo }}" style="width:100%; height:auto;"></div>
+>>>>>>> 1f2a8be40c81c6b311dbfd6a524e8a710e698456
         {% endif %}
         <div class="person-info">
-            <div class="name">{{ chair.name }}</div>
-            <div class="title">{{ chair.title }}</div>
-            <div class="bio">{{ chair.profile or "" }}</div>
+            <div class="name-title">{{ chair.name }}{% if chair.title %} {{ chair.title }}{% endif %}</div>
+            {% if chair.organization %}<div class="organization">{{ chair.organization }}</div>{% endif %}
+            {% if chair.highest_education %}
+            <h3>學歷</h3>
+            <div class="section-content">{{ chair.highest_education }}</div>
+            {% endif %}
+            {% if chair.experience %}
+            <h3>經歷</h3>
+            <ul class="section-content">
+            {% for item in chair.experience %}<li>{{ item }}</li>{% endfor %}
+            </ul>
+            {% endif %}
+            {% if chair.achievements %}
+            <h3>成就</h3>
+            <ul class="section-content">
+            {% for item in chair.achievements %}<li>{{ item }}</li>{% endfor %}
+            </ul>
+            {% endif %}
         </div>
     </div>
 </section>
@@ -243,14 +341,36 @@
 {% for sp in speakers %}
 <section class="page-full" aria-label="講者 Speaker">
     <h2>講者 / Speaker</h2>
+    <hr>
     <div class="person-card">
+<<<<<<< HEAD
         {% if sp.photo_url %}
         <div class="person-photo"><img src="{{ sp.photo_url }}" alt="{{ sp.name }} 照片" style="width:100%; height:auto;"></div>
+=======
+        {% set sp_photo = sp.photo_url or url_for('static', filename=sp.name ~ '.png') %}
+        {% if sp_photo %}
+        <div class="person-photo"><img src="{{ sp_photo }}" style="width:100%; height:auto;"></div>
+>>>>>>> 1f2a8be40c81c6b311dbfd6a524e8a710e698456
         {% endif %}
         <div class="person-info">
-            <div class="name">{{ sp.name }}</div>
-            <div class="title">{{ sp.title }}</div>
-            <div class="bio">{{ sp.profile or "" }}</div>
+            <div class="name-title">{{ sp.name }}{% if sp.title %} {{ sp.title }}{% endif %}</div>
+            {% if sp.organization %}<div class="organization">{{ sp.organization }}</div>{% endif %}
+            {% if sp.highest_education %}
+            <h3>學歷</h3>
+            <div class="section-content">{{ sp.highest_education }}</div>
+            {% endif %}
+            {% if sp.experience %}
+            <h3>經歷</h3>
+            <ul class="section-content">
+            {% for item in sp.experience %}<li>{{ item }}</li>{% endfor %}
+            </ul>
+            {% endif %}
+            {% if sp.achievements %}
+            <h3>成就</h3>
+            <ul class="section-content">
+            {% for item in sp.achievements %}<li>{{ item }}</li>{% endfor %}
+            </ul>
+            {% endif %}
         </div>
     </div>
 </section>

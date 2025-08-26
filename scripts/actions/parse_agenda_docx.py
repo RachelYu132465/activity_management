@@ -202,7 +202,15 @@ def parse_agenda(docx_path: Path, event_name: str) -> Dict[str, Any]:
             # 若同一列也含主持人資訊，嘗試把主持人加入 special（title="主持人"）
             host_names = _extract_host_names(speaker_text)
             for hn in host_names:
-                h_idx = _add_special(specials, special_times, "主持人", talk_idx if talk_idx > 0 else 0, duration_val, hn or None, time_rng)
+                h_idx = _add_special(
+                    specials,
+                    special_times,
+                    "主持人",
+                    talk_idx if talk_idx > 0 else 1,
+                    duration_val,
+                    hn or None,
+                    time_rng,
+                )
                 if h_idx is not None:
                     timeline.append(("special", h_idx))
             continue
@@ -214,7 +222,15 @@ def parse_agenda(docx_path: Path, event_name: str) -> Dict[str, Any]:
             # 沒時間：避免把主持人/備註當 talk
             host_names = _extract_host_names(speaker_text)
             for hn in host_names:
-                h_idx = _add_special(specials, special_times, "主持人", talk_idx if talk_idx > 0 else 0, None, hn or None, None)
+                h_idx = _add_special(
+                    specials,
+                    special_times,
+                    "主持人",
+                    talk_idx if talk_idx > 0 else 1,
+                    None,
+                    hn or None,
+                    None,
+                )
                 if h_idx is not None:
                     timeline.append(("special", h_idx))
             continue
@@ -362,12 +378,6 @@ def parse_agenda(docx_path: Path, event_name: str) -> Dict[str, Any]:
         # Insert the item
         base_list.insert(insert_idx, item)
 
-    # Ensure the first 主持人 (if any) is at index 0
-    for i, it in enumerate(base_list):
-        if it.get("type") == "主持人":
-            if i != 0:
-                base_list.insert(0, base_list.pop(i))
-            break
 
     # Re-number and finalize speakers_out, setting 'no' and ensuring fields match expected keys
     speakers_out: List[Dict[str, Any]] = []
