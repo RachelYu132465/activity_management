@@ -143,22 +143,9 @@ def build_schedule(event):
     return schedule
 
 # Build speaker and chair lists augmented from influencer data
-infl_by_name = {p.get("name"): p for p in influencer_list if isinstance(p, dict)}
-chairs = []
-speakers = []
-for speaker_entry in program_data.get("speakers", []) or []:
-    name = speaker_entry.get("name")
-    info = infl_by_name.get(name, {}) or {}
-    enriched = {
-        "name": name,
-        "title": info.get("current_position", {}).get("title", "") if isinstance(info.get("current_position"), dict) else "",
-        "profile": "\n".join(info.get("experience", [])) if isinstance(info.get("experience"), list) else info.get("experience", "") or "",
-        "photo_url": info.get("photo_url", ""),
-    }
-    if speaker_entry.get("type") == "主持人":
-        chairs.append(enriched)
-    else:
-        speakers.append(enriched)
+from scripts.actions.influencer import build_people
+
+chairs, speakers = build_people(program_data, influencer_list)
 
 # Use build_table (from schedule_table) as the main schedule generator.
 # If it fails, fall back to build_schedule(program_data).
