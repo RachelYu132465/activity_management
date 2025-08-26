@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render HTML to PDF using headless Chrome with centralized paths (direct import style)."""
+"""Render HTML to PDF using headless Chrome with centralized paths (direct-import style)."""
 
 from __future__ import print_function, unicode_literals
 
@@ -18,22 +18,22 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-# project-specific helpers
+# Project-specific helpers
 from scripts.actions.schedule_table import build_table
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape, Undefined
 from jinja2.exceptions import UndefinedError, TemplateNotFound
 
-# Direct import from bootstrap (requested "direct" style)
+# Direct import from bootstrap (preferred "direct" style)
 from scripts.core.bootstrap import TEMPLATE_DIR, OUTPUT_DIR, DATA_DIR, CHROME_BIN
 
 DATA_FILE = DATA_DIR / "shared" / "program_data.json"
 INFLUENCER_FILE = DATA_DIR / "shared" / "influencer_data.json"
 
-# Ensure output directory exists
+# Ensure the output directory exists
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-# Load program and influencer data (expect list or dict)
+# Load program and influencer data (expecting a list or a dict)
 try:
     with DATA_FILE.open("r", encoding="utf-8") as fh:
         programs_raw = json.load(fh)
@@ -45,7 +45,7 @@ try:
     with INFLUENCER_FILE.open("r", encoding="utf-8") as fh:
         influencer_list = json.load(fh)
 except (OSError, ValueError) as e:
-    print("Failed to load influencer data file {}: {}".format(INFLUENCER_FILE, e), file=sys.stderr)
+    print("Failed to load influencer data file {}: {}. Continuing with an empty influencer list.".format(INFLUENCER_FILE, e), file=sys.stderr)
     influencer_list = []
 
 # CLI: pick event id if provided
@@ -74,11 +74,12 @@ else:
 
 # Build schedule directly from program data
 def build_schedule(event):
-    """Build schedule rows based on ``event['speakers']`` and any
-    special sessions defined in ``agenda_settings``.
+    """Build schedule rows based on `event['speakers']` and any
+    special sessions defined in `agenda_settings`.
 
-    All time ranges are derived from the speakers' ``start_time`` and
-    ``end_time`` values to ensure accuracy."""
+    All time ranges are derived from the speakers' `start_time` and
+    `end_time` values to ensure accuracy.
+    """
 
     def time_range(start: str | None, end: str | None) -> str:
         if start and end:
@@ -93,19 +94,22 @@ def build_schedule(event):
 
     schedule: list[dict[str, str]] = []
 
-    # Host row (merged later in template)
+    # Host row (the template may merge this later)
     host = next((sp for sp in speakers if sp.get("type") == "主持人"), None)
     if host:
         text_parts = [time_range(host.get("start_time"), host.get("end_time")), host.get("topic"), host.get("name")]
         schedule.append({
             "kind": "host",
             "text": " ".join(filter(None, text_parts)),
-
         })
 
+    # Group special sessions by the speaker after which they occur
     specials_by_after: dict[int, list[dict[str, str]]] = {}
     for s in specials:
-        after = int(s.get("after_speaker", -1))
+        try:
+            after = int(s.get("after_speaker", -1))
+        except (TypeError, ValueError):
+            after = -1
         specials_by_after.setdefault(after, []).append(s)
 
     for sp in speakers:
@@ -157,7 +161,7 @@ for speaker_entry in program_data.get("speakers", []) or []:
         speakers.append(enriched)
 
 # Use build_table (from schedule_table) as the main schedule generator.
-# If you prefer the generate_agenda-based fallback, replace with build_schedule(program_data)
+# If it fails, fall back to build_schedule(program_data).
 try:
     program_data["schedule"] = build_table(program_data)
 except Exception as e:
@@ -208,7 +212,7 @@ try:
     render_args["assets"] = {}
     html = tpl.render(**render_args)
 except UndefinedError:
-    print("Template rendering failed due to missing variable:", file=sys.stderr)
+    print("Template rendering failed due to a missing variable.", file=sys.stderr)
     traceback.print_exc()
     sys.exit(1)
 except Exception:
