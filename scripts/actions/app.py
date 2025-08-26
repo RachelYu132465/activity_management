@@ -8,7 +8,9 @@ from pathlib import Path
 from flask import Flask, render_template, request, Response, url_for
 from jinja2 import Undefined
 from jinja2.exceptions import TemplateNotFound
-
+# 新增（若尚未 import）
+import copy
+from typing import Any, Dict
 # Project layout: this file is scripts/core/app.py
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 TEMPLATE_DIR = PROJECT_ROOT / "templates"
@@ -173,29 +175,89 @@ def _format_highest_education(he):
     return " ".join([p for p in parts if p])
 
 
-def _merge_person(name, influencer_map):
-    """Combine base name with influencer details."""
-    inf = influencer_map.get(name, {}) if isinstance(influencer_map, dict) else {}
-    current = inf.get("current_position") or {}
-    photo_url = ""
-    # Look for a local static image named after the person
-    for ext in [".png", ".jpg", ".jpeg", ".gif", ".webp"]:
-        candidate = STATIC_DIR / f"{name}{ext}"
-        if candidate.exists():
-            photo_url = url_for("static", filename=f"{name}{ext}")
-            break
-    if not photo_url:
-        photo_url = inf.get("photo_url", "")
 
-    return {
-        "name": name,
-        "title": current.get("title", ""),
-        "organization": current.get("organization", ""),
-        "highest_education": _format_highest_education(inf.get("highest_education")),
-        "experience": inf.get("experience", []) or [],
-        "achievements": inf.get("achievements", []) or [],
-        "photo_url": photo_url,
+def _merge_person(current: Dict[str, Any], influencer: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Normalize/merge an influencer record + event-specific 'current' override into a person dict
+    that always contains the canonical set of fields (with default empty values).
+    - current: dict coming from program_data (may include name/title/organization etc.)
+    - influencer: dict loaded from influencer_data.json (may be missing fields)
+    Returns: person dict safe to pass directly into Jinja template.
+    """
+    # 1) base = deep copy of influencer (if any), else empty dict
+    base = copy.deepcopy(influencer) if influencer else {}
+
+    # 2) canonical defaults (extend this dict if you want more canonical keys)
+    defaults = {
+        "name": "",
+        "title": "",
+        "organization": "",
+        "profile": "",           # free-text bio
+        "bio": "",               # alias
+        "photo_url": "",
+        "email": [],             # list of emails
+        "phone": "",
+        "achievements": [],      # list of strings
+        "experience": [],        # list of strings or objects
+        "highest_education": {}, # dict with school/department/year/degree
+        "certificates": [],      # list
+        "links": {},             # dict of named links
+        "social": {},            # dict: linkedin/twitter/...
+        "roles": [],             # list
+        "affiliations": [],      # list
+        "meta": {},              # any extra metadata
     }
+
+    # ensure every canonical key exists with correct default type
+    person = {}
+    for k, v in defaults.items():
+        # prefer base value if present and correct type; otherwise use deep copy of default
+        if k in base and base[k] is not None:
+            person[k] = copy.deepcopy(base[k])
+        else:
+            person[k] = copy.deepcopy(v)
+
+    # 3) keep any additional keys that were present in influencer but not in defaults
+    # (this preserves arbitrary fields so template can access them too)
+    for k, v in base.items():
+        if k not in person:
+            person[k] = copy.deepcopy(v)
+
+    # 4) normalize highest_education into a predictable structure
+    he = person.get("highest_education") or {}
+    if not isinstance(he, dict):
+        # if it's a string or list, put into 'raw' field
+        person["highest_education"] = {
+            "raw": he,
+            "school": "",
+            "department": "",
+            "graduation_year": None,
+            "degree": ""
+        }
+    else:
+        # fill missing subkeys
+        person["highest_education"] = {
+            "school": he.get("school", "") or "",
+            "department": he.get("department", "") or "",
+            "graduation_year": he.get("graduation_year", None),
+            "degree": he.get("degree", "") or "",
+            **({k: v for k, v in he.items() if k not in ("school","department","graduation_year","degree")})
+        }
+
+    # 5) apply program-level overrides (current should override influencer when present)
+    for k in ("name", "title", "organization", "photo_url", "phone"):
+        if current and current.get(k) is not None:
+            person[k] = current[k]
+
+    # if current contains arbitrary extras (e.g., role-specific note), merge them under 'meta'
+    if current:
+        for k, v in current.items():
+            if k not in person and k not in ("name","title","organization","photo_url","phone"):
+                # keep it visible but also add to meta to avoid collisions
+                person[k] = v
+                person.setdefault("meta", {})[k] = v
+
+    return person
 
 def build_safe_context(program, influencer_map=None):
     """Build a simple template context focused on speakers."""
