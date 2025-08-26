@@ -197,6 +197,7 @@ def _merge_person(name, influencer_map):
         "photo_url": photo_url,
     }
 
+
 def build_safe_context(program, influencer_map=None):
     """Build a simple template context focused on speakers."""
     if not program or not isinstance(program, dict):
@@ -238,7 +239,7 @@ def build_safe_context(program, influencer_map=None):
         sp_type = sp.get("type", "") or ""
         if sp_type == "主持人" or topic == "主持":
             chairs.append(person)
-        elif ("致詞" not in topic) and ("休息" not in topic) and ("討論" not in topic)  and sp_type not in ("致詞人", "休息"):
+        elif ("致詞" not in topic) and ("休息" not in topic) and ("討論" not in topic) and sp_type not in ("致詞人", "休息"):
             speakers_list.append(person)
 
     context["speakers"] = speakers_list
@@ -293,6 +294,43 @@ def event_route(event_id):
         return f"Rendering error: {e}", 500
 
 
+def _render_section(section):
+    event_id = request.args.get("event_id", None)
+    try:
+        event_id = int(event_id) if event_id is not None else None
+    except Exception:
+        event_id = None
+    ctx = get_context_for_event(event_id)
+    ctx["section"] = section
+    try:
+        return render_template("template.html", **ctx)
+    except TemplateNotFound:
+        return f"Template template.html not found in {TEMPLATE_DIR}", 404
+    except Exception as e:
+        traceback.print_exc()
+        return f"Rendering error: {e}", 500
+
+
+@app.route("/cover")
+def cover_page():
+    return _render_section("cover")
+
+
+@app.route("/notes")
+def notes_page():
+    return _render_section("notes")
+
+
+@app.route("/chairs")
+def chairs_page():
+    return _render_section("chairs")
+
+
+@app.route("/speakers")
+def speakers_page():
+    return _render_section("speakers")
+
+
 # Optional: a debug endpoint that returns the context as JSON (handy while developing)
 @app.route("/_ctx")
 def show_ctx():
@@ -314,7 +352,7 @@ def show_ctx():
 def main():
     parser = argparse.ArgumentParser(description="Serve templates/template.html with optional event_id")
     parser.add_argument("--serve", action="store_true", help="Run Flask dev server")
-    parser.add_argument("--port", type=int, default=5000, help="Port for server")
+    parser.add_argument("--port", type=int, default  =5000, help="Port for server")
     parser.add_argument("--event-id", type=int, default=None, help="Program id to render by default")
     args = parser.parse_args()
 
