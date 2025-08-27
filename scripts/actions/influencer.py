@@ -41,6 +41,12 @@ def build_profile(info: dict) -> str:
         parts.extend(exp)
     elif isinstance(exp, str):
         parts.append(exp)
+
+        exp = info.get("achievements")
+    if isinstance(exp, list):
+        parts.extend(exp)
+    elif isinstance(exp, str):
+        parts.append(exp)
     return "\n".join(parts)
 
 

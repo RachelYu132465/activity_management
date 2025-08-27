@@ -261,7 +261,7 @@ def main() -> None:
     h3.style = 'Heading 1'
 
     if chairs:
-        doc.add_paragraph("主持人")
+
         for ch in chairs:
             p = doc.add_paragraph()
             name_run = p.add_run(ch.get("name", ""))
@@ -280,8 +280,9 @@ def main() -> None:
     h4 = doc.add_heading("講者", level=1)
     h4.style = 'Heading 1'
     if speakers:
-        doc.add_paragraph("講者")
+
         for sp in speakers:
+            doc.add_paragraph("講者")
             p = doc.add_paragraph()
             name_run = p.add_run(sp.get("name", ""))
             set_run_font(name_run, NAME_PT, bold=True)
@@ -294,6 +295,8 @@ def main() -> None:
                 prof_p = doc.add_paragraph(prof)
                 for r in prof_p.runs:
                     set_run_font(r, PROFILE_PT)
+            if idx != len(speakers) - 1:
+                doc.add_page_break()
         doc.add_page_break()
 
     # Footer page numbers (skip cover page)
