@@ -202,16 +202,12 @@ def main() -> None:
 
     doc.add_page_break()
 
+
+
     # Table of contents
     toc_title_p = doc.add_paragraph()
     toc_title_run = toc_title_p.add_run("目錄")
     set_run_font(toc_title_run, SECTION_PT, bold=True)
-
-    doc.add_page_break()
-
-    # Table of contents
-    doc.add_heading("目錄", level=1)
-
     toc_p = doc.add_paragraph()
     fld = OxmlElement("w:fldSimple")
     fld.set(qn("w:instr"), 'TOC \\o "1-3" \\h \\z \\u')
@@ -238,7 +234,9 @@ def main() -> None:
     doc.add_page_break()
 
 
-    doc.add_heading("議程", level=1)
+    h2 = doc.add_heading("議程", level=1)
+    h2.style = 'Heading 1'
+
     if schedule_rows:
         table = doc.add_table(rows=1, cols=3)
         table.alignment = WD_TABLE_ALIGNMENT.CENTER
@@ -259,8 +257,11 @@ def main() -> None:
                 set_run_font(run, TABLE_PT)
     doc.add_page_break()
 
+    h3 = doc.add_heading("主持人", level=1)
+    h3.style = 'Heading 1'
+
     if chairs:
-        doc.add_heading("主持人", level=1)
+        doc.add_paragraph("主持人")
         for ch in chairs:
             p = doc.add_paragraph()
             name_run = p.add_run(ch.get("name", ""))
@@ -276,8 +277,10 @@ def main() -> None:
                     set_run_font(r, PROFILE_PT)
         doc.add_page_break()
 
+    h4 = doc.add_heading("講者", level=1)
+    h4.style = 'Heading 1'
     if speakers:
-        doc.add_heading("講者", level=1)
+        doc.add_paragraph("講者")
         for sp in speakers:
             p = doc.add_paragraph()
             name_run = p.add_run(sp.get("name", ""))
@@ -291,6 +294,7 @@ def main() -> None:
                 prof_p = doc.add_paragraph(prof)
                 for r in prof_p.runs:
                     set_run_font(r, PROFILE_PT)
+        doc.add_page_break()
 
     # Footer page numbers (skip cover page)
     section = doc.sections[0]
@@ -310,6 +314,47 @@ def main() -> None:
 
     doc.save(out_path)
     print(f"Saved docx to {out_path}")
+
+    doc.save(out_path)
+# 若在 Windows + Office 環境，更新 TOC 使頁碼顯示正確：
+#     update_docx_fields_with_word(out_path, visible=False)
+#     print(f"Saved and updated docx to {out_path}")
+
+def update_docx_fields_with_word(docx_path: str, visible: bool = False) -> None:
+    """
+    Use MS Word COM to open the docx, update fields (TOC, page numbers), save and close.
+    Requires Windows and MS Word installed. Install with: pip install pywin32
+    """
+    try:
+        import pythoncom
+        from win32com.client import Dispatch, constants
+    except Exception as e:
+        print("pywin32 未安裝或不可用：", e)
+        return
+
+    # Open Word
+    word = Dispatch("Word.Application")
+    word.Visible = visible  # True 可在執行時看到 Word 視窗（除錯用）
+    # open document (Read/Write)
+    doc = word.Documents.Open(str(docx_path))
+
+    # 更新所有欄位（含 TOC）與所有目錄（若有複數 TOC）
+    try:
+        # Update fields generally
+        doc.Fields.Update()
+        # Update tables of contents specifically
+        toc_count = doc.TablesOfContents.Count
+        if toc_count > 0:
+            for i in range(1, toc_count + 1):
+                toc = doc.TablesOfContents(i)
+                toc.Update()
+    except Exception as e:
+        print("更新欄位/TOC 時發生錯誤：", e)
+
+    # Save and close
+    doc.Save()
+    doc.Close(False)
+    word.Quit()
 
 
 if __name__ == "__main__":
