@@ -270,18 +270,30 @@ def main() -> None:
             if title:
                 title_run = p.add_run(f" {title}")
                 set_run_font(title_run, NAME_PT)
-            prof = ch.get("profile")
-            if prof:
-                prof_p = doc.add_paragraph(prof)
-                for r in prof_p.runs:
-                    set_run_font(r, PROFILE_PT)
+
+            sections = ch.get("profile_sections") or {}
+            if sections:
+                for heading, lines in sections.items():
+                    head_p = doc.add_paragraph()
+                    head_run = head_p.add_run(heading)
+                    set_run_font(head_run, PROFILE_PT, bold=True)
+                    for line in lines:
+                        line_p = doc.add_paragraph(line, style="List Bullet")
+                        for r in line_p.runs:
+                            set_run_font(r, PROFILE_PT)
+            else:
+                prof = ch.get("profile")
+                if prof:
+                    prof_p = doc.add_paragraph(prof)
+                    for r in prof_p.runs:
+                        set_run_font(r, PROFILE_PT)
         doc.add_page_break()
 
     h4 = doc.add_heading("講者", level=1)
     h4.style = 'Heading 1'
     if speakers:
 
-        for sp in speakers:
+        for idx, sp in enumerate(speakers):
             doc.add_paragraph("講者")
             p = doc.add_paragraph()
             name_run = p.add_run(sp.get("name", ""))
@@ -290,11 +302,24 @@ def main() -> None:
             if title:
                 title_run = p.add_run(f" {title}")
                 set_run_font(title_run, NAME_PT)
-            prof = sp.get("profile")
-            if prof:
-                prof_p = doc.add_paragraph(prof)
-                for r in prof_p.runs:
-                    set_run_font(r, PROFILE_PT)
+
+            sections = sp.get("profile_sections") or {}
+            if sections:
+                for heading, lines in sections.items():
+                    head_p = doc.add_paragraph()
+                    head_run = head_p.add_run(heading)
+                    set_run_font(head_run, PROFILE_PT, bold=True)
+                    for line in lines:
+                        line_p = doc.add_paragraph(line, style="List Bullet")
+                        for r in line_p.runs:
+                            set_run_font(r, PROFILE_PT)
+            else:
+                prof = sp.get("profile")
+                if prof:
+                    prof_p = doc.add_paragraph(prof)
+                    for r in prof_p.runs:
+                        set_run_font(r, PROFILE_PT)
+
             if idx != len(speakers) - 1:
                 doc.add_page_break()
         doc.add_page_break()

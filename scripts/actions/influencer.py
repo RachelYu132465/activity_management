@@ -42,12 +42,64 @@ def build_profile(info: dict) -> str:
     elif isinstance(exp, str):
         parts.append(exp)
 
-        exp = info.get("achievements")
-    if isinstance(exp, list):
-        parts.extend(exp)
-    elif isinstance(exp, str):
-        parts.append(exp)
+    # achievements may be stored separately; include them as part of profile
+    ach = info.get("achievements")
+    if isinstance(ach, list):
+        parts.extend(ach)
+    elif isinstance(ach, str):
+        parts.append(ach)
     return "\n".join(parts)
+
+
+def build_profile_sections(info: dict) -> Dict[str, List[str]]:
+    """Return structured profile sections with headings.
+
+    The sections are returned in an ordered dictionary mapping a Chinese
+    heading (e.g. ``"現職"``) to a list of lines. Only non-empty sections are
+    included.
+    """
+    sections: Dict[str, List[str]] = {}
+
+    # Current position
+    current = info.get("current_position")
+    if isinstance(current, dict):
+        org = current.get("organization")
+        title = current.get("title")
+        line = " ".join(filter(None, [org, title]))
+        if line:
+            sections["現職"] = [line]
+
+    # Education
+    edu = info.get("highest_education")
+    if isinstance(edu, dict):
+        school = edu.get("school")
+        dept = edu.get("department")
+        line = " ".join(filter(None, [school, dept]))
+        if line:
+            sections["學歷"] = [line]
+
+    # Experience
+    exp = info.get("experience")
+    if isinstance(exp, list) and exp:
+        sections["經歷"] = exp
+    elif isinstance(exp, str) and exp:
+        sections["經歷"] = [exp]
+
+    # Achievements
+    ach = info.get("achievements")
+    if isinstance(ach, list) and ach:
+        sections["成就"] = ach
+    elif isinstance(ach, str) and ach:
+        sections["成就"] = [ach]
+
+    # Specialties
+    spec = info.get("specialties")
+    if isinstance(spec, list) and spec:
+        sections["專長"] = spec
+    elif isinstance(spec, str) and spec:
+        sections["專長"] = [spec]
+
+    return sections
 
 
 def build_people(program: dict, influencers: Iterable) -> Tuple[List[dict], List[dict]]:
@@ -66,6 +118,7 @@ def build_people(program: dict, influencers: Iterable) -> Tuple[List[dict], List
             else "",
             "profile": build_profile(info),
             "photo_url": info.get("photo_url", ""),
+            "profile_sections": build_profile_sections(info),
         }
         if entry.get("type") == "主持人":
             chairs.append(enriched)
