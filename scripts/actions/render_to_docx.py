@@ -22,7 +22,10 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Pt
-
+import sys
+ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 # Project helpers
 from scripts.core.bootstrap import DATA_DIR, OUTPUT_DIR, initialize
 from scripts.actions.influencer import build_people

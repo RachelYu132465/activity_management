@@ -29,19 +29,29 @@
         }
 
         /* ---------- page container ---------- */
-        .page-full {
-          overflow: visible;
-          page-break-after: always;
-          page-break-inside: avoid;
-          /* A4 height (297mm) minus top+bottom margins (18mm*2 = 36mm) */
-          min-height: calc(297mm - 36mm);
-          display: flex;
-          flex-direction: column;
-          justify-content: space-evenly;
-          padding-top: 20mm;
-          padding-bottom: 10mm;
-          box-sizing: border-box;
-        }
+<!--        .page-full {-->
+<!--          overflow: visible;-->
+<!--          page-break-after: always;-->
+<!--          page-break-inside: avoid;-->
+<!--          /* A4 height (297mm) minus top+bottom margins (18mm*2 = 36mm) */-->
+<!--          min-height: calc(297mm - 36mm);-->
+<!--          display: flex;-->
+<!--          flex-direction: column;-->
+<!--          justify-content: space-evenly;-->
+<!--          padding-top: 0mm;-->
+<!--          padding-bottom: 10mm;-->
+<!--          box-sizing: border-box;-->
+<!--        }-->
+.page-full {
+  /* 確保用 A4 可用高度（297mm 減掉上下 margin 36mm） */
+  max-height: calc(297mm - 36mm); /* mm 單位，瀏覽器印刷時生效 */
+  height: calc(297mm - 36mm);
+  overflow: hidden;        /* 超出直接裁切：保證只一頁 */
+  box-sizing: border-box;
+  /* 保持現有的內距 */
+  padding-top: 0mm;
+  padding-bottom: 10mm;
+}
         .page-full:last-child { page-break-after: auto; }
 
         /* cover 封面樣式（以 page-full.cover 為定位參考） */
@@ -58,7 +68,7 @@
           word-wrap: break-word;
           position: absolute;
           left: 50%;
-          top: 40%;                /* 更穩定的位置 */
+          top: 10%;                /* 更穩定的位置 */
           transform: translateX(-50%);
           line-height: 1.6;
         }
@@ -66,10 +76,10 @@
         .inner-text { font-size: 14pt; font-weight: 700; }
 
         /* spacer：把參與單位推到底（數字越大越靠底） */
-        .cover .spacer { flex: 1 1 auto; } /* 調整為 3 會更靠底 */
+<!--        .cover .spacer { flex: 1 1 auto; } /* 調整為 3 會更靠底 */-->
 
         .participation {
-          margin-top: 12px;
+          margin-top: 0px;
           align-self: flex-start;
           text-align: left;
           width: 100%;
