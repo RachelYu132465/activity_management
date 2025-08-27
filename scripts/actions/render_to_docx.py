@@ -171,15 +171,72 @@ def main() -> None:
     title_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
     title_run = title_p.add_run(event_name)
     set_run_font(title_run, TITLE_PT, bold=True)
+
+
+    # Cover details
+    cover_lines = []
+    if program.get("date"):
+        cover_lines.append(f"日期：{program['date']}")
+    locations = program.get("locations") or []
+    if locations:
+        loc_text = locations[0]
+        if len(locations) > 1:
+            loc_text += f"（{locations[1]}）"
+        cover_lines.append(f"地點：{loc_text}")
+    if program.get("organizers"):
+        cover_lines.append(
+            f"主辦單位：{'、'.join(program['organizers'])}"
+        )
+    if program.get("coOrganizers"):
+        cover_lines.append(
+            f"協辦單位：{'、'.join(program['coOrganizers'])}"
+        )
+    if program.get("jointOrganizers"):
+        cover_lines.append(
+            f"合辦單位：{'、'.join(program['jointOrganizers'])}"
+        )
+    for line in cover_lines:
+        p = doc.add_paragraph()
+        run = p.add_run(line)
+        set_run_font(run, PROFILE_PT, bold=True)
+
+    doc.add_page_break()
+
+    # Table of contents
+    toc_title_p = doc.add_paragraph()
+    toc_title_run = toc_title_p.add_run("目錄")
+    set_run_font(toc_title_run, SECTION_PT, bold=True)
+
     doc.add_page_break()
 
     # Table of contents
     doc.add_heading("目錄", level=1)
+
     toc_p = doc.add_paragraph()
     fld = OxmlElement("w:fldSimple")
     fld.set(qn("w:instr"), 'TOC \\o "1-3" \\h \\z \\u')
     toc_p._p.append(fld)
     doc.add_page_break()
+
+    # Activity info section
+    doc.add_heading("活動資訊", level=1)
+    info_lines = []
+    if program.get("date"):
+        info_lines.append(f"日期：{program['date']}")
+    if locations:
+        info_lines.append(f"地點：{loc_text}")
+    if program.get("organizers"):
+        info_lines.append(f"主辦單位：{'、'.join(program['organizers'])}")
+    if program.get("coOrganizers"):
+        info_lines.append(f"協辦單位：{'、'.join(program['coOrganizers'])}")
+    if program.get("jointOrganizers"):
+        info_lines.append(f"合辦單位：{'、'.join(program['jointOrganizers'])}")
+    for line in info_lines:
+        p = doc.add_paragraph(line)
+        for r in p.runs:
+            set_run_font(r, PROFILE_PT)
+    doc.add_page_break()
+
 
     doc.add_heading("議程", level=1)
     if schedule_rows:
