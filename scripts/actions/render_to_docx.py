@@ -169,6 +169,7 @@ def main() -> None:
     title_run = title_p.add_run(event_name)
     set_run_font(title_run, TITLE_PT, bold=True)
 
+
     # Cover details
     cover_lines = []
     if program.get("date"):
@@ -202,6 +203,12 @@ def main() -> None:
     toc_title_p = doc.add_paragraph()
     toc_title_run = toc_title_p.add_run("目錄")
     set_run_font(toc_title_run, SECTION_PT, bold=True)
+
+    doc.add_page_break()
+
+    # Table of contents
+    doc.add_heading("目錄", level=1)
+
     toc_p = doc.add_paragraph()
     fld = OxmlElement("w:fldSimple")
     fld.set(qn("w:instr"), 'TOC \\o "1-3" \\h \\z \\u')
@@ -226,6 +233,7 @@ def main() -> None:
         for r in p.runs:
             set_run_font(r, PROFILE_PT)
     doc.add_page_break()
+
 
     doc.add_heading("議程", level=1)
     if schedule_rows:
