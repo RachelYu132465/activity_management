@@ -72,8 +72,10 @@ def make_letters(event_name: str, template_filename: str,
             "title": pos.get("title") or m.get("title", ""),
         }
 
+        # 假設 template_filename 可能是 "敬請協助提供CV與簡報.docx"
         safe_name = m.get("safe_filename") or (m.get("name") or "TBD")
-        out_name = "{:02d}_{}_敬請協助提供CV與簡報.docx".format(no, safe_name)
+        tpl_stem = Path(template_filename).stem   # 會去除路徑與副檔名
+        out_name = "{:02d}_{}_{}.docx".format(no, safe_name, tpl_stem)
         out_path = out_base / out_name
         mail_template_utils.render_docx_template(template_path, out_path, mapping, replacers=REPLACERS)
         results.append(out_path)
