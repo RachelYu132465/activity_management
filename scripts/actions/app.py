@@ -97,13 +97,19 @@ def _normalize_event_names(program):
 
 
 def _schedule_from_speakers(program, influencers=None):
-    """Build a schedule with merged-column rules.
+    """Build a schedule with merged-column rules matching ``template.html``.
 
-    - Entries with topic "主持" render as a centered row spanning all columns.
-    - If topic is "休息", merge topic and speaker columns.
-    - Otherwise keep the three-column layout.
-    - Time column includes duration in minutes on a new line.
-    - Speaker column includes title and organization pulled from influencer data.
+    The resulting list contains dictionaries with ``kind`` keys used by the
+    template:
+
+    - ``host`` rows span all columns and use ``text`` as their content.
+    - ``break`` rows merge the topic and speaker columns using ``topic`` and
+      optional ``speaker`` values.
+    - ``talk`` rows keep the three-column layout with ``topic`` and ``speaker``.
+
+    In all cases the ``time`` field contains a human readable time range.
+    Speaker information is enriched with title and organization pulled from
+    influencer data.
     """
 
     influencers = influencers or {}
@@ -144,18 +150,27 @@ def _schedule_from_speakers(program, influencers=None):
             speaker = f"{speaker}\n{org}"
 
         if topic == "主持":
-            content = f"{topic} {speaker}".strip()
-            schedule.append({"type": "host", "content": content})
+            text = f"{topic} {speaker}".strip()
+            schedule.append({"kind": "host", "text": text})
         elif topic == "休息":
-            content = topic if not name or name == topic else f"{topic} {speaker}"
-            schedule.append({"type": "break", "time": time, "content": content})
+            speaker_text = "" if not name or name == topic else speaker
+            schedule.append(
+                {
+                    "kind": "break",
+                    "time": time,
+                    "topic": topic,
+                    "speaker": speaker_text,
+                }
+            )
         else:
-            schedule.append({
-                "type": "talk",
-                "time": time,
-                "topic": topic,
-                "speaker": speaker,
-            })
+            schedule.append(
+                {
+                    "kind": "talk",
+                    "time": time,
+                    "topic": topic,
+                    "speaker": speaker,
+                }
+            )
 
     return schedule
 
