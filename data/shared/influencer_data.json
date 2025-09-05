@@ -1,6 +1,6 @@
 [
 
-  [
+
     {
       "id_number": "",
       "name": "林世嘉",
@@ -168,7 +168,7 @@
         "CC": []
       }
     }
-  ],
+  ,
 
   {
     "id_number": "N120300638",
@@ -366,7 +366,36 @@
   },
 
 
-
+  {
+    "id_number": "",
+    "name": "王玲美",
+    "phone": "",
+    "email": [],
+    "specialties": [],
+    "achievements": [],
+    "academic_title": "",
+    "certificate_number": "",
+    "highest_education": {
+      "school": "",
+      "department": "",
+      "graduation_year": "",
+      "degree": ""
+    },
+    "experience": [],
+    "current_position": {
+      "organization": "仲恩生醫",
+      "title": "總經理",
+      "start_year": null,
+      "teaching_years": null,
+      "practice_years": null,
+      "research_years": null
+    },
+    "contact_person": {
+      "name": "",
+      "email": [],
+      "CC": []
+    }
+  },
 
   {
     "id_number": "",
