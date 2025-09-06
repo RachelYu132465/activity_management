@@ -24,6 +24,9 @@ from docx.oxml.ns import qn
 from docx.shared import Pt
 import sys
 
+from __init__ import format_date
+
+
 ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
@@ -126,7 +129,9 @@ def render_cover_table(doc: Document, program: Dict[str, Any], profile_pt: int) 
     Accepts profile_pt (integer) to avoid depending on main() scope.
     """
     # build cover values from program
-    date_text = program.get("date", "")
+    date_text_original = program.get("date", "")
+    date_text =format_date(date_text_original, "%Y年%m月%d日 %A", chinese_weekday=True, no_leading_zero=True)
+
     locations = program.get("locations") or []
     loc_text = ""
     if locations:
@@ -169,8 +174,9 @@ def render_cover_table(doc: Document, program: Dict[str, Any], profile_pt: int) 
     # 關閉自動調整，轉為使用固定欄寬
     cover_table.autofit = False
 
+    left_table_width_label = 3.5
     # 設定欄寬（範例：左欄 6 cm，右欄 10 cm）
-    cover_table.columns[0].width = Cm(6)
+    cover_table.columns[0].width = Cm(left_table_width_label)
     cover_table.columns[1].width = Cm(10)
 
     def add_cover_row(table, label, value):
@@ -197,7 +203,7 @@ def render_cover_table(doc: Document, program: Dict[str, Any], profile_pt: int) 
 
     # 如果 table 已有 row（或之後會新增 row），也對每個 cell 指定 width（保險做法）
     for row in cover_table.rows:
-        row.cells[0].width = Cm(3.5)
+        row.cells[0].width = Cm(left_table_width_label)
         row.cells[1].width = Cm(10)
     # spacing after table
     doc.add_paragraph()
@@ -299,7 +305,8 @@ def main() -> None:
         run_label = p_label.add_run("日期：")
         set_run_font(run_label, PROFILE_PT, bold=True)
         p_val = doc.add_paragraph()
-        run_val = p_val.add_run(date_val)
+        date_2 =format_date(date_val, "%Y年%m月%d日 %A", chinese_weekday=True, no_leading_zero=True)
+        run_val = p_val.add_run(date_2)
         set_run_font(run_val, PROFILE_PT)
         doc.add_paragraph()  # blank line separator
 
@@ -424,8 +431,7 @@ def main() -> None:
 
     if speakers:
         for sp in speakers:
-            label_run = p.add_run("講者 ")
-            set_run_font(label_run, NAME_PT, bold=False)
+
             name = (sp.get("name") or "").strip()
             title = (sp.get("title") or "").strip()
             organization = (sp.get("organization") or "").strip()
@@ -467,6 +473,9 @@ def main() -> None:
         for sp in speakers:
             # 第一段：名稱（粗體）與職稱
             p = doc.add_paragraph()
+            label_run = p.add_run("講者")
+            set_run_font(label_run, NAME_PT, bold=False)
+            p = doc.add_paragraph()
             name_run = p.add_run(sp.get("name", ""))
             set_run_font(name_run, NAME_PT, bold=True)
 
@@ -492,7 +501,7 @@ def main() -> None:
                     prof_p = doc.add_paragraph(prof)
                     for r in prof_p.runs:
                         set_run_font(r, PROFILE_PT)
-        doc.add_page_break()
+            doc.add_page_break()
 
         # 整個講者區塊結束後分頁（若不想分頁請刪掉下一行）
         doc.add_page_break()
