@@ -1,3 +1,4 @@
+# scripts/actions/influencer.py
 """Utilities for building speaker/chair information from influencer data."""
 from __future__ import annotations
 from typing import Iterable, Iterator, List, Dict, Tuple
@@ -113,7 +114,8 @@ def build_people(program: dict, influencers: Iterable) -> Tuple[List[dict], List
         info = infl_by_name.get(name, {}) or {}
         enriched = {
             "name": name,
-            "title": info.get("current_position", {}).get("title", "")
+            "title": info.get("current_position", {}).get("title", ""),
+            "organization": info.get("current_position", {}).get("organization", "")
             if isinstance(info.get("current_position"), dict)
             else "",
             "profile": build_profile(info),
@@ -122,6 +124,6 @@ def build_people(program: dict, influencers: Iterable) -> Tuple[List[dict], List
         }
         if entry.get("type") == "主持人":
             chairs.append(enriched)
-        else:
+        elif entry.get("type") == "講者":
             speakers.append(enriched)
     return chairs, speakers

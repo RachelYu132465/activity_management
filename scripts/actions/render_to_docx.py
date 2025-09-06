@@ -1,258 +1,52 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-generate_simple_nameplates_layout2_full.py
+"""Render program handbook to a Word document.
 
-完整可執行腳本 — 針對 Windows 環境（亦可在 Linux 上跑但字型需調整）
-功能：
-- 讀 program_data.json 與 influencer_data.json
-- 呼叫 build_people(program, influencers) 取得 chairs / speakers
-- 對每位產生一張 1200x700 PNG 桌牌，版面樣式類似「圖二」：
-  - 左上：單位（標楷體或備援字型）
-  - 中間偏左：姓名（大標、顯著、粗體）
-  - 右側：職稱（標楷體或備援字型），右對齊
-- 會嘗試載入多種系統字型、並印出載入結果以便 debug
-- 若找不到系統字型會提示並使用 pillow 的 fallback（但效果不佳；建議放入專案 fonts/）
-"""
+This script loads ``program_data.json`` and ``influencer_data.json`` from the
+``data/shared`` directory, selects a program by ``--program-id`` (defaults to the
+first program) and creates a simple `.docx` file in the ``output`` directory.
 
+The goal is to mirror ``templates/template.html`` but for Word output.  The
+layout is intentionally simple so that the generated document remains
+readable even without HTML rendering support.
+"""
 from __future__ import annotations
+
+import argparse
 import json
-import sys
-import platform
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List
 
-from PIL import Image, ImageDraw, ImageFont
+from docx import Document
+from docx.enum.table import WD_TABLE_ALIGNMENT
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
+from docx.shared import Pt
+import sys
 
-# project root
 ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
+# Project helpers
+from scripts.core.bootstrap import DATA_DIR, OUTPUT_DIR, initialize
+from scripts.actions.influencer import build_people
+from docx.shared import Cm
+from docx.shared import Pt, RGBColor
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
 
-# import project bootstrap + build_people
-try:
-    from scripts.core.bootstrap import DATA_DIR, OUTPUT_DIR, initialize
-except Exception as e:
-    print("[ERROR] 無法 import scripts.core.bootstrap:", e)
-    raise
 
-try:
-    from scripts.actions.influencer import build_people
-except Exception as e:
-    print("[ERROR] 無法 import build_people from scripts.actions.influencer:", e)
-    raise
-
-# Card constants
-CARD_W = 1200
-CARD_H = 700
-PADDING = 40
-
-NAME_SIZE = 220
-TITLE_SIZE = 48
-ORG_SIZE = 44
-
-# --- font candidate lists (use absolute paths found on Windows) ---
-# These reflect typical files present on Windows (based on your list).
-MSJH_BOLD_CANDIDATES = [
-    r"C:\Windows\Fonts\msjhbd.ttc",
-    r"C:\Windows\Fonts\msjhbd.ttf",
-    r"C:\Windows\Fonts\msjhl.ttc",
-    r"C:\Windows\Fonts\msjh.ttc",
-    r"C:\Windows\Fonts\msjh.ttf",
-]
-
-MSJH_REGULAR_CANDIDATES = [
-    r"C:\Windows\Fonts\msjh.ttc",
-    r"C:\Windows\Fonts\msjh.ttf",
-    r"C:\Windows\Fonts\msyh.ttc",    # 微軟雅黑 (備援)
-]
-
-BKAI_CANDIDATES = [
-    r"C:\Windows\Fonts\kaiu.ttf",       # 你的系統中存在
-    r"C:\Windows\Fonts\STKAITI.TTF",
-    r"C:\Windows\Fonts\STXINGKA.TTF",
-    r"C:\Windows\Fonts\NotoSansTC-VF.ttf",  # fallback
-]
-
-# If you prefer to bundle fonts with the project, add:
-PROJECT_FONTS_DIR = ROOT / "scripts" / "fonts"
-# You can insert these into candidate lists (uncomment if you copied fonts into project)
-# Example:
-# MSJH_BOLD_CANDIDATES.insert(0, str(PROJECT_FONTS_DIR / "msjhbd.ttf"))
-# BKAI_CANDIDATES.insert(0, str(PROJECT_FONTS_DIR / "DFKai-SB.ttf"))
-
-# ---------------- helpers ----------------
-def sanitize_filename(s: str) -> str:
-    s = str(s or "").strip()
-    invalid = '<>:"/\\|?*\n\r\t'
-    for ch in invalid:
-        s = s.replace(ch, "_")
-    return s
-
-def load_font_with_fallback(candidates: List[str], size: int, friendly_name: str) -> Tuple[ImageFont.FreeTypeFont, str | None]:
-    """
-    Try to load a TTF/collection from given absolute paths (candidates).
-    Then try some common system names that freetype might resolve.
-    Returns (font_obj, source_path_or_name_or_None).
-    Prints debug info.
-    """
-    for p in candidates:
-        if not p:
-            continue
-        try:
-            pth = Path(p)
-            if pth.exists():
-                f = ImageFont.truetype(str(pth), size)
-                print(f"[font] loaded {friendly_name} from path: {pth}")
-                return f, str(pth)
-        except Exception as e:
-            # continue trying next
-            # print(f"[font debug] failed to load {p}: {e}")
-            continue
-
-    # try a small list of common names (let freetype / OS try to resolve)
-    common_names = ["DejaVuSans.ttf", "Arial.ttf", "LiberationSans-Regular.ttf"]
-    if platform.system() == "Windows":
-        # include MSJH / DFKai names commonly present
-        common_names = ["msjhbd.ttf", "msjh.ttf", "msyh.ttc", "DFKai-SB.ttf", "kaiu.ttf"] + common_names
-
-    for name in common_names:
-        try:
-            f = ImageFont.truetype(name, size)
-            print(f"[font] loaded {friendly_name} by system name: {name}")
-            return f, name
-        except Exception:
-            continue
-
-    # last resort: use default bitmap font (not scalable) and warn
-    print(f"[font WARNING] Could not find TTF for {friendly_name}. Candidates tried: {candidates + common_names}")
-    print(" -> Using ImageFont.load_default() fallback (small bitmap font; not scalable).")
-    return ImageFont.load_default(), None
-
-def text_size(draw: ImageDraw.ImageDraw, text: str, font: ImageFont.FreeTypeFont) -> Tuple[int, int]:
-    """Return width,height using textbbox for Pillow compatibility."""
-    if not text:
-        return 0, 0
-    bbox = draw.textbbox((0, 0), text, font=font)
-    w = bbox[2] - bbox[0]
-    h = bbox[3] - bbox[1]
-    return int(w), int(h)
-
-def draw_right_aligned(draw: ImageDraw.ImageDraw, text: str, font: ImageFont.FreeTypeFont, right_x: int, y: int, fill="black") -> Tuple[int, int, int, int]:
-    w, h = text_size(draw, text, font)
-    x = right_x - w
-    draw.text((x, y), text, font=font, fill=fill)
-    return x, y, w, h
-
-# ---------------- layout rendering ----------------
-def generate_card_image_layout2(
-        name: str,
-        title: str,
-        org: str,
-        out_path: Path,
-        name_font: ImageFont.FreeTypeFont,
-        title_font: ImageFont.FreeTypeFont,
-        org_font: ImageFont.FreeTypeFont,
-):
-    """Create the card with the requested layout and save to out_path."""
-    img = Image.new("RGB", (CARD_W, CARD_H), "white")
-    draw = ImageDraw.Draw(img)
-
-    # --- Draw organization top-left ---
-    org_text = (org or "").strip()
-    if org_text:
-        ox = PADDING
-        oy = PADDING
-        max_org_w = CARD_W - PADDING * 2 - 200
-        # naive wrapping
-        org_lines: List[str] = []
-        if text_size(draw, org_text, org_font)[0] <= max_org_w:
-            org_lines = [org_text]
-        else:
-            words = org_text.split()
-            cur = ""
-            for w in words:
-                test = (cur + " " + w).strip()
-                if text_size(draw, test, org_font)[0] <= max_org_w:
-                    cur = test
-                else:
-                    if cur:
-                        org_lines.append(cur)
-                    cur = w
-            if cur:
-                org_lines.append(cur)
-        oy_cursor = oy
-        for ln in org_lines[:3]:
-            draw.text((ox, oy_cursor), ln, font=org_font, fill="black")
-            _, hln = text_size(draw, ln, org_font)
-            oy_cursor += hln + 6
-
-    # --- Draw Name (big, left-biased area) ---
-    name_text = (name or "").strip()
-    x_name = PADDING + 40
-    right_column_width = 360
-    right_column_left = CARD_W - PADDING - right_column_width
-    max_name_width = right_column_left - x_name - 20
-
-    # attempt to scale down name font if needed
-    trial_font = name_font
-    w_name, h_name = text_size(draw, name_text, trial_font)
-    if w_name > max_name_width and w_name > 0:
-        scale = max_name_width / float(w_name)
-        new_size = max(36, int(NAME_SIZE * scale))
-        try:
-            # If original font was truetype, get its path if possible; else just try to load by name
-            # We can't easily recover path from ImageFont object, so just attempt to load same style by common filenames:
-            # Try msjhbd first from candidates
-            trial_font = ImageFont.truetype(MSJH_BOLD_CANDIDATES[0], new_size) if Path(MSJH_BOLD_CANDIDATES[0]).exists() else ImageFont.truetype(MSJH_BOLD_CANDIDATES[-1], new_size)
-            w_name, h_name = text_size(draw, name_text, trial_font)
-            name_font = trial_font
-        except Exception:
-            # fallback: keep original font size (may overflow)
-            w_name, h_name = text_size(draw, name_text, name_font)
-
-    y_name = (CARD_H // 2) - (h_name // 2)
-    draw.text((x_name, y_name), name_text, font=name_font, fill="black")
-
-    # --- Draw Title on right column, right-aligned, vertically centered ---
-    title_text = (title or "").strip()
-    if title_text:
-        right_x = CARD_W - PADDING
-        max_title_w = right_column_width - 20
-        # naive wrap
-        title_lines: List[str] = []
-        if text_size(draw, title_text, title_font)[0] <= max_title_w:
-            title_lines = [title_text]
-        else:
-            words = title_text.split()
-            cur = ""
-            for w in words:
-                test = (cur + " " + w).strip()
-                if text_size(draw, test, title_font)[0] <= max_title_w:
-                    cur = test
-                else:
-                    if cur:
-                        title_lines.append(cur)
-                    cur = w
-            if cur:
-                title_lines.append(cur)
-        total_h = sum(text_size(draw, ln, title_font)[1] + 6 for ln in title_lines) - 6
-        y_title_start = (CARD_H // 2) - (total_h // 2)
-        y_cursor = y_title_start
-        for ln in title_lines:
-            draw_right_aligned(draw, ln, title_font, right_x, y_cursor, fill="black")
-            _, hln = text_size(draw, ln, title_font)
-            y_cursor += hln + 6
-
-    # Save
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    img.save(str(out_path), format="PNG", optimize=True)
-    return out_path
-
-# ---------------- program loading ----------------
 def load_program(program_id: int | None) -> Dict[str, Any]:
+    """Return the program matching ``program_id`` from program_data.json.
+
+    If ``program_id`` is ``None`` or not found, the first program entry is
+    returned.
+    """
     data_file = DATA_DIR / "shared" / "program_data.json"
     programs_raw = json.loads(data_file.read_text(encoding="utf-8"))
+
+    # program_data.json may contain a list or a single dict
     if isinstance(programs_raw, list):
         if program_id is not None:
             for prog in programs_raw:
@@ -266,90 +60,502 @@ def load_program(program_id: int | None) -> Dict[str, Any]:
         return programs_raw
     return {}
 
-# ---------------- main flow ----------------
-def main(program_id_raw: str):
-    try:
-        pid = int(program_id_raw)
-    except (TypeError, ValueError):
-        pid = None
+
+def build_schedule(event: Dict[str, Any]) -> List[Dict[str, str]]:
+    """Build schedule rows from speaker information.
+
+    The result is a list of dictionaries containing ``time``, ``topic`` and
+    ``speaker`` keys, using each speaker's ``start_time`` and ``end_time``
+    fields.  Special sessions are ignored so that only the regular speaker
+    timetable is returned.
+    """
+    def time_range(start: str | None, end: str | None) -> str:
+        if start and end:
+            return f"{start}-{end}"
+        return start or end or ""
+
+    speakers = event.get("speakers", []) or []
+
+    rows: List[Dict[str, str]] = []
+
+    host = next((sp for sp in speakers if sp.get("type") == "主持人"), None)
+    if host:
+        text = " ".join(
+            filter(
+                None,
+                [
+                    time_range(host.get("start_time"), host.get("end_time")),
+                    host.get("topic"),
+                    host.get("name"),
+                ],
+            )
+        )
+        rows.append({"kind": "host", "time": "", "topic": text, "speaker": ""})
+
+    for sp in speakers:
+        if sp.get("type") == "主持人":
+            continue
+        start = sp.get("start_time")
+        end = sp.get("end_time")
+        rows.append(
+            {
+                "kind": "talk",
+                "time": time_range(start, end),
+                "topic": sp.get("topic", ""),
+                "speaker": sp.get("name", ""),
+            }
+        )
+    return rows
+
+
+def set_run_font(run, size_pt: int, bold: bool = False) -> None:
+    """Apply project font settings to ``run``.
+
+    Chinese characters use Microsoft JhengHei while Latin characters use
+    Times New Roman.  ``size_pt`` is the font size in points.
+    """
+    run.font.name = "Times New Roman"
+    run._element.rPr.rFonts.set(qn("w:eastAsia"), "Microsoft JhengHei")
+    run.font.size = Pt(size_pt)
+    run.bold = bold
+
+
+def render_cover_table(doc: Document, program: Dict[str, Any], profile_pt: int) -> None:
+    """Render cover info as invisible-border 2-column table.
+
+    Accepts profile_pt (integer) to avoid depending on main() scope.
+    """
+    # build cover values from program
+    date_text = program.get("date", "")
+    locations = program.get("locations") or []
+    loc_text = ""
+    if locations:
+        loc_text = locations[0]
+        if len(locations) > 1:
+            loc_text += f"（{locations[1]}）"
+
+    organizers_text = "、".join(program.get("organizers", [])) if program.get("organizers") else ""
+    co_organizers_text = "、".join(program.get("coOrganizers", [])) if program.get("coOrganizers") else ""
+    joint_organizers_text = "、".join(program.get("jointOrganizers", [])) if program.get("jointOrganizers") else ""
+
+    instructors = program.get("instructors") or []
+    instructor_text = ""
+    if locations:
+        instructor_text = instructors[0]
+        if len(instructors) > 1:
+            instructor_text += f"（{instructors[1]}）"
+
+    # helper to remove borders
+    def set_table_borders(table):
+        tbl_pr = table._element.tblPr
+        existing = tbl_pr.findall(qn("w:tblBorders"))
+        for e in existing:
+            tbl_pr.remove(e)
+        borders = OxmlElement("w:tblBorders")
+        for name in ("top", "left", "bottom", "right", "insideH", "insideV"):
+            node = OxmlElement(f"w:{name}")
+            node.set(qn("w:val"), "nil")
+            borders.append(node)
+        tbl_pr.append(borders)
+
+    # create table
+    cover_table = doc.add_table(rows=0, cols=2)
+    cover_table.alignment = WD_TABLE_ALIGNMENT.CENTER
+    set_table_borders(cover_table)
+
+
+
+
+    # 關閉自動調整，轉為使用固定欄寬
+    cover_table.autofit = False
+
+    # 設定欄寬（範例：左欄 6 cm，右欄 10 cm）
+    cover_table.columns[0].width = Cm(6)
+    cover_table.columns[1].width = Cm(10)
+
+    def add_cover_row(table, label, value):
+        if value is None or (isinstance(value, str) and value.strip() == ""):
+            return
+        row = table.add_row().cells
+        p_label = row[0].paragraphs[0]
+        p_label.alignment = WD_ALIGN_PARAGRAPH.LEFT
+        run_label = p_label.add_run(label)
+        set_run_font(run_label, profile_pt, bold=True)
+        p_val = row[1].paragraphs[0]
+        p_val.alignment = WD_ALIGN_PARAGRAPH.LEFT
+        run_val = p_val.add_run(value)
+        set_run_font(run_val, profile_pt)
+
+    # add rows (order)
+    add_cover_row(cover_table, "日期：", date_text)
+    add_cover_row(cover_table, "地點：", loc_text)
+    add_cover_row(cover_table, "主辦單位：", organizers_text)
+    add_cover_row(cover_table, "協辦單位：", co_organizers_text)
+    add_cover_row(cover_table, "合辦單位：", joint_organizers_text)
+    add_cover_row(cover_table, "指導單位：", instructor_text)
+
+
+    # 如果 table 已有 row（或之後會新增 row），也對每個 cell 指定 width（保險做法）
+    for row in cover_table.rows:
+        row.cells[0].width = Cm(3.5)
+        row.cells[1].width = Cm(10)
+    # spacing after table
+    doc.add_paragraph()
+
+
+# ---------------------------------------------------------------------------
+# Main
+# ---------------------------------------------------------------------------
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Render program to docx")
+    parser.add_argument("--program-id", type=int, default=None, help="Program id to render")
+    parser.add_argument("--out", type=Path, default=None, help="Output .docx path")
+    args = parser.parse_args()
 
     initialize()
+    program = load_program(args.program_id)
 
-    # load influencers
+    # Build chairs/speakers enriched with influencer data
     infl_file = DATA_DIR / "shared" / "influencer_data.json"
     try:
         influencers = json.loads(infl_file.read_text(encoding="utf-8"))
-    except Exception:
+    except OSError:
         influencers = []
+    chairs, speakers = build_people(program, influencers)
 
-    program = load_program(pid)
-    if not program:
-        print(f"[ERROR] 找不到 program (id={pid}) / program not found.")
+    schedule_rows = build_schedule(program)
+
+    event_name = (program.get("eventNames") or ["Program"])[0]
+
+    out_path = args.out or (OUTPUT_DIR / f"program_{program.get('id', '0')}.docx")
+
+    doc = Document()
+    normal_style = doc.styles["Normal"]
+    normal_font = normal_style.font
+    normal_font.name = "Times New Roman"
+    normal_style._element.rPr.rFonts.set(qn("w:eastAsia"), "Microsoft JhengHei")
+    normal_font.size = Pt(12)
+
+    # Heading style for TOC inclusion (set 置中)
+    heading1 = doc.styles["Heading 1"]
+    heading1.font.name = "Times New Roman"
+    heading1._element.rPr.rFonts.set(qn("w:eastAsia"), "Microsoft JhengHei")
+    heading1.font.size = Pt(28)  # <- changed as requested
+    heading1.font.bold = True
+    heading1.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    heading1.font.color.rgb = RGBColor(0, 0, 0)
+# Style constants (pt) derived from the HTML template
+    TITLE_PT = 28
+    NAME_PT = 18
+    PROFILE_PT = 14
+    TABLE_PT = 14  # <- changed as requested
+
+    title_p = doc.add_paragraph()
+    title_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    title_run = title_p.add_run(event_name)
+    set_run_font(title_run, TITLE_PT, bold=True)
+
+    # Render cover table (pass PROFILE_PT explicitly)
+    render_cover_table(doc, program, PROFILE_PT)
+    doc.add_page_break()
+
+    # Table of contents
+    toc_title_p = doc.add_paragraph()
+    toc_title_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    toc_title_run = toc_title_p.add_run("目錄")
+    set_run_font(toc_title_run, TITLE_PT, bold=True)
+
+    # 接著插入 TOC field（不變）
+    toc_p = doc.add_paragraph()
+    fld = OxmlElement("w:fldSimple")
+    fld.set(qn("w:instr"), 'TOC \\o "1-3" \\h \\z \\u')
+    toc_p._p.append(fld)
+    doc.add_page_break()
+
+    # Activity info section (label on its own line, value on next line, blank line between blocks)
+    doc.add_heading("活動資訊", level=1)
+
+    # compute locations/strings locally for reuse
+    locations = program.get("locations") or []
+    loc_text = ""
+    if locations:
+        loc_text = locations[0]
+        if len(locations) > 1:
+            loc_text += f"（{locations[1]}）"
+
+    # helper inline: handle str or list/tuple -> single string
+    def _join_val(v):
+        if v is None:
+            return ""
+        if isinstance(v, (list, tuple)):
+            return "、".join(str(x).strip() for x in v if x is not None and str(x).strip())
+        return str(v).strip()
+
+    # DATE
+    date_val = _join_val(program.get("date"))
+    if date_val:
+        p_label = doc.add_paragraph()
+        run_label = p_label.add_run("日期：")
+        set_run_font(run_label, PROFILE_PT, bold=True)
+        p_val = doc.add_paragraph()
+        run_val = p_val.add_run(date_val)
+        set_run_font(run_val, PROFILE_PT)
+        doc.add_paragraph()  # blank line separator
+
+    # LOCATION
+    if loc_text:
+        p_label = doc.add_paragraph()
+        run_label = p_label.add_run("地點：")
+        set_run_font(run_label, PROFILE_PT, bold=True)
+        p_val = doc.add_paragraph()
+        run_val = p_val.add_run(loc_text)
+        set_run_font(run_val, PROFILE_PT)
+        doc.add_paragraph()
+
+    # ORGANIZERS (主辦)
+    organizers_val = _join_val(program.get("organizers"))
+    if organizers_val:
+        p_label = doc.add_paragraph()
+        run_label = p_label.add_run("主辦單位：")
+        set_run_font(run_label, PROFILE_PT, bold=True)
+        p_val = doc.add_paragraph()
+        run_val = p_val.add_run(organizers_val)
+        set_run_font(run_val, PROFILE_PT)
+        doc.add_paragraph()
+
+    # CO-ORGANIZERS (協辦)
+    co_org_val = _join_val(program.get("coOrganizers"))
+    if co_org_val:
+        p_label = doc.add_paragraph()
+        run_label = p_label.add_run("協辦單位：")
+        set_run_font(run_label, PROFILE_PT, bold=True)
+        p_val = doc.add_paragraph()
+        run_val = p_val.add_run(co_org_val)
+        set_run_font(run_val, PROFILE_PT)
+        doc.add_paragraph()
+
+    # JOINT-ORGANIZERS (合辦)
+    joint_org_val = _join_val(program.get("jointOrganizers"))
+    if joint_org_val:
+        p_label = doc.add_paragraph()
+        run_label = p_label.add_run("合辦單位：")
+        set_run_font(run_label, PROFILE_PT, bold=True)
+        p_val = doc.add_paragraph()
+        run_val = p_val.add_run(joint_org_val)
+        set_run_font(run_val, PROFILE_PT)
+        doc.add_paragraph()
+
+    # INSTRUCTORS / 指導單位
+    instructor_val = _join_val(program.get("instructors") or program.get("instructor") or program.get("guidance"))
+    if instructor_val:
+        p_label = doc.add_paragraph()
+        run_label = p_label.add_run("指導單位：")
+        set_run_font(run_label, PROFILE_PT, bold=True)
+        p_val = doc.add_paragraph()
+        run_val = p_val.add_run(instructor_val)
+        set_run_font(run_val, PROFILE_PT)
+        doc.add_paragraph()
+
+
+    doc.add_page_break()
+
+    h2 = doc.add_heading("議程", level=1)
+    h2.style = 'Heading 1'
+
+    if schedule_rows:
+        table = doc.add_table(rows=1, cols=3)
+        table.alignment = WD_TABLE_ALIGNMENT.CENTER
+        hdr = table.rows[0].cells
+        headers = ["時間", "議程", "講者"]
+        for idx, text in enumerate(headers):
+            p = hdr[idx].paragraphs[0]
+            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            run = p.add_run(text)
+            set_run_font(run, TABLE_PT, bold=True)
+        for row in schedule_rows:
+            cells = table.add_row().cells
+            data = [row.get("time", ""), row.get("topic", ""), row.get("speaker", "")]
+            for idx, text in enumerate(data):
+                p = cells[idx].paragraphs[0]
+                p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                run = p.add_run(text)
+                set_run_font(run, TABLE_PT)
+    doc.add_page_break()
+
+    h3 = doc.add_heading("主持人", level=1)
+    h3.style = 'Heading 1'
+
+    if chairs:
+        for ch in chairs:
+            p = doc.add_paragraph()
+            name_run = p.add_run(ch.get("name", ""))
+            set_run_font(name_run, NAME_PT, bold=True)
+            title = ch.get("title")
+            if title:
+                title_run = p.add_run(f" {title}")
+                set_run_font(title_run, NAME_PT)
+
+            sections = ch.get("profile_sections") or {}
+            if sections:
+                for heading, lines in sections.items():
+                    head_p = doc.add_paragraph()
+                    head_run = head_p.add_run(heading)
+                    set_run_font(head_run, PROFILE_PT, bold=True)
+                    for line in lines:
+                        line_p = doc.add_paragraph(line, style="List Bullet")
+                        for r in line_p.runs:
+                            set_run_font(r, PROFILE_PT)
+            else:
+                prof = ch.get("profile")
+                if prof:
+                    prof_p = doc.add_paragraph(prof)
+                    for r in prof_p.runs:
+                        set_run_font(r, PROFILE_PT)
+        doc.add_page_break()
+
+    h4 = doc.add_heading("講者", level=1)
+    h4.style = 'Heading 1'
+    # 只顯示 type 為 "講者" 的項目
+    # ---- speakers: bullet list, first line = name (bold) + title, second line = organization ----
+    # 確認是否有 List Bullet style，沒有就 fallback 用手動 bullet
+    style_names = [s.name for s in doc.styles]
+    has_list_bullet = "List Bullet" in style_names
+
+    if speakers:
+        for sp in speakers:
+            label_run = p.add_run("講者 ")
+            set_run_font(label_run, NAME_PT, bold=False)
+            name = (sp.get("name") or "").strip()
+            title = (sp.get("title") or "").strip()
+            organization = (sp.get("organization") or "").strip()
+            # 第一行（bullet + name + title）
+            if has_list_bullet:
+                p = doc.add_paragraph(style="List Bullet")
+            else:
+                p = doc.add_paragraph()
+                # 手動加入 bullet 字元（用 run 以便後續格式化）
+                b = p.add_run("• ")
+                set_run_font(b, NAME_PT, bold=False)
+
+            # name（粗體）
+            name_run = p.add_run(name)
+            set_run_font(name_run, NAME_PT, bold=True)
+
+            # title（同一行，普通字）
+            if title:
+                title_run = p.add_run(f" {title}")
+                set_run_font(title_run, NAME_PT, bold=False)
+                title_run.add_break()
+            if organization:
+
+                organization_run = p.add_run(f" {organization}")
+
+                set_run_font(organization_run, NAME_PT, bold=False)
+
+
+
+            # 空行分隔（視覺上與你範例一致）
+            doc.add_paragraph()
+    doc.add_page_break()
+        # ---- end speakers ----
+
+
+
+    # ---- speakers (same style as chairs) ----
+    if speakers:
+        for sp in speakers:
+            # 第一段：名稱（粗體）與職稱
+            p = doc.add_paragraph()
+            name_run = p.add_run(sp.get("name", ""))
+            set_run_font(name_run, NAME_PT, bold=True)
+
+            title = sp.get("title")
+            if title:
+                title_run = p.add_run(f" {title}")
+                set_run_font(title_run, NAME_PT)
+
+            # 接著列出 profile_sections（若有）或 profile（若無 sections）
+            sections = sp.get("profile_sections") or {}
+            if sections:
+                for heading, lines in sections.items():
+                    head_p = doc.add_paragraph()
+                    head_run = head_p.add_run(heading)
+                    set_run_font(head_run, PROFILE_PT, bold=True)
+                    for line in lines:
+                        line_p = doc.add_paragraph(line, style="List Bullet")
+                        for r in line_p.runs:
+                            set_run_font(r, PROFILE_PT)
+            else:
+                prof = sp.get("profile")
+                if prof:
+                    prof_p = doc.add_paragraph(prof)
+                    for r in prof_p.runs:
+                        set_run_font(r, PROFILE_PT)
+        doc.add_page_break()
+
+        # 整個講者區塊結束後分頁（若不想分頁請刪掉下一行）
+        doc.add_page_break()
+        # ---- end speakers ----
+
+
+    # Footer page numbers (skip cover page)
+    section = doc.sections[0]
+    section.different_first_page_header_footer = True
+    footer_p = section.footer.paragraphs[0]
+    footer_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    run = footer_p.add_run()
+    fld_begin = OxmlElement("w:fldChar")
+    fld_begin.set(qn("w:fldCharType"), "begin")
+    instr = OxmlElement("w:instrText")
+    instr.set(qn("xml:space"), "preserve")
+    instr.text = "PAGE"
+    fld_end = OxmlElement("w:fldChar")
+    fld_end.set(qn("w:fldCharType"), "end")
+    run._r.extend([fld_begin, instr, fld_end])
+    set_run_font(run, 12)
+
+
+    doc.save(out_path)
+    print(f"Saved docx to {out_path}")
+
+
+def update_docx_fields_with_word(docx_path: str, visible: bool = False) -> None:
+    """
+    Use MS Word COM to open the docx, update fields (TOC, page numbers), save and close.
+    Requires Windows and MS Word installed. Install with: pip install pywin32
+    """
+    try:
+        import pythoncom
+        from win32com.client import Dispatch, constants
+    except Exception as e:
+        print("pywin32 未安裝或不可用：", e)
         return
 
-    people_tuple = build_people(program, influencers)
-    if isinstance(people_tuple, tuple) and len(people_tuple) == 2:
-        chairs, speakers = people_tuple
-    elif isinstance(people_tuple, list):
-        chairs, speakers = [], people_tuple
-    else:
-        chairs, speakers = [], []
+    # Open Word
+    word = Dispatch("Word.Application")
+    word.Visible = visible  # True 可在執行時看到 Word 視窗（除錯用）
+    # open document (Read/Write)
+    doc = word.Documents.Open(str(docx_path))
 
-    all_people: List[Dict[str, Any]] = []
-    for c in (chairs or []):
-        c["_role"] = "chair"
-        all_people.append(c)
-    for s in (speakers or []):
-        s["_role"] = "speaker"
-        all_people.append(s)
+    # 更新所有欄位（含 TOC）與所有目錄（若有複數 TOC）
+    try:
+        # Update fields generally
+        doc.Fields.Update()
+        # Update tables of contents specifically
+        toc_count = doc.TablesOfContents.Count
+        if toc_count > 0:
+            for i in range(1, toc_count + 1):
+                toc = doc.TablesOfContents(i)
+                toc.Update()
+    except Exception as e:
+        print("更新欄位/TOC 時發生錯誤：", e)
 
-    if not all_people:
-        print("[INFO] 沒有 chairs 或 speakers 資料 / no people found.")
-        return
+    # Save and close
+    doc.Save()
+    doc.Close(False)
+    word.Quit()
 
-    # load fonts (with debug)
-    name_font_obj, name_src = load_font_with_fallback(MSJH_BOLD_CANDIDATES, NAME_SIZE, "Name-Bold")
-    title_font_obj, title_src = load_font_with_fallback(MSJH_REGULAR_CANDIDATES, TITLE_SIZE, "Title-Regular")
-    org_font_obj, org_src = load_font_with_fallback(BKAI_CANDIDATES, ORG_SIZE, "Org-BKAI")
-
-    print(f"[font selected] Name -> {name_src}, Title -> {title_src}, Org -> {org_src}")
-
-    out_dir = OUTPUT_DIR / "desk_cards"
-    out_dir.mkdir(parents=True, exist_ok=True)
-    created = []
-
-    for i, person in enumerate(all_people, start=1):
-        name = person.get("name", "N/A")
-        title = person.get("title", "") or ""
-        # organization resolution: prefer current_position.organization if present
-        org = ""
-        cur_pos = person.get("current_position")
-        if isinstance(cur_pos, dict):
-            org = cur_pos.get("organization") or cur_pos.get("org") or ""
-        org = org or person.get("organization") or person.get("affiliation") or ""
-        fname = f"program_{pid or 'unknown'}_{i}_{sanitize_filename(name)}.png"
-        out_path = out_dir / fname
-        print(f"[render] {i}/{len(all_people)} -> {name} | title='{title}' | org='{org}'")
-        try:
-            generate_card_image_layout2(
-                name=name,
-                title=title,
-                org=org,
-                out_path=out_path,
-                name_font=name_font_obj,
-                title_font=title_font_obj,
-                org_font=org_font_obj,
-            )
-            created.append(out_path)
-            print(f"[ok] saved: {out_path}")
-        except Exception as e:
-            print(f"[ERROR] failed render for {name}: {e}")
-
-    print(f"[DONE] 共產生 {len(created)} 張桌牌。 路徑: {out_dir}")
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        pid_arg = sys.argv[1]
-    else:
-        pid_arg = input("請輸入 Program ID：").strip()
-    main(pid_arg)
+    main()
