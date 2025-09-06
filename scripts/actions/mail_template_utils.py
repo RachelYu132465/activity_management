@@ -134,7 +134,58 @@ def find_template_file(template_filename: str, template_dir: Optional[Path] = No
     raise FileNotFoundError("找不到模板：{}（已搜尋 {} 及子資料夾）".format(template_filename, template_dir))
 
 
-# -------------------- helpers: date formatting & highlight wrapper --------------------
+# -------------------- helpers: date formatting & highlight wrapper -------------------
+def format_chinese_date_no_week(value: Any) -> str:
+    """
+    Accepts date/datetime or string.
+    Returns a string using the Republic of China (ROC, 中華民國) year:
+      - "民國{N}年M月D日" when year >= 1912 (1912 -> 民國1年)
+      - "西元YYYY年M月D日" when year < 1912 (fallback to Gregorian for clarity)
+    If value is None returns "".
+    If parsing fails, returns the original string representation.
+
+    接受 date/datetime 或字串。回傳中華民國年格式：
+      - 年份 >= 1912 則回傳 "民國{N}年M月D日"（1912 -> 民國1年）
+      - 年份 < 1912 則回傳 "西元YYYY年M月D日"（作為 fallback）
+    無輸入回傳空字串；解析失敗則回傳原字串。
+    """
+    if value is None:
+        return ""
+
+    dt: date | None = None
+
+    # already a datetime/date
+    if isinstance(value, datetime):
+        dt = value.date()
+    elif isinstance(value, date):
+        dt = value
+    else:
+        s = str(value).strip()
+        # try ISO first (handles "YYYY-MM-DD" and "YYYY-MM-DDTHH:MM:SS")
+        try:
+            dt = datetime.fromisoformat(s).date()
+        except Exception:
+            # try common other formats
+            fmts = ["%Y-%m-%d", "%Y/%m/%d", "%Y%m%d", "%Y.%m.%d", "%Y %m %d"]
+            for fmt in fmts:
+                try:
+                    dt = datetime.strptime(s, fmt).date()
+                    break
+                except Exception:
+                    continue
+
+    if dt is None:
+        # parsing failed: return original string
+        return str(value)
+
+    # Convert to ROC year if applicable
+    if dt.year >= 1912:
+        roc = dt.year - 1911  # 1912 -> 民國1年
+        return f"{roc}年{dt.month}月{dt.day}日"
+    else:
+        # earlier than ROC founding: show Gregorian as explicit fallback
+        return f"{dt.year}年{dt.month}月{dt.day}日"
+
 def format_chinese_date(value: Any) -> str:
     """
     Accepts date/datetime or string. Returns "YYYY年M月D日(星期X)" with Chinese weekday.
@@ -216,6 +267,8 @@ def render_docx_template(template_path: Path, out_path: Path, mapping: Dict[str,
             for flt in parts[1:]:
                 if flt in ("cn_date", "cnDate", "format_date"):
                     s = format_chinese_date(s)
+                elif flt in ("cn_date_no_wk"):
+                    s = format_chinese_date_no_week(s)
                 elif flt in ("hl", "highlight"):
                     s = _wrap_highlight(s)
                 else:
