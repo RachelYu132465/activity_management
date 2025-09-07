@@ -220,7 +220,7 @@ def main() -> None:
     event_name = (program.get("eventNames") or ["Program"])[0]
     date = program.get("date")
 
-    out_path = args.out or (OUTPUT_DIR / f"講師簽到表_{program.get('eventNames')}.docx")
+    out_path = args.out or (OUTPUT_DIR / f"講師簽到表_{program.get('eventNames[0]')}.docx")
 
     # 使用程式內參數 FONT_PT
     font_pt = int(FONT_PT)
@@ -325,7 +325,7 @@ def main() -> None:
 
     p = hdr_cells[1].paragraphs[0]
     # p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    run = p.add_run("講員 Name")
+    run = p.add_run("姓名 Name")
     set_run_font(run, font_pt, bold=True)
 
     p = hdr_cells[2].paragraphs[0]
