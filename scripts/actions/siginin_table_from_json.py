@@ -192,6 +192,15 @@ def set_run_color_black(run):
         run.font.color.rgb = RGBColor(0x00, 0x00, 0x00)
     except Exception:
         pass
+def set_repeat_table_header(row) -> None:
+    """讓指定的 row 在跨頁時重複顯示為表頭"""
+    tr = row._tr
+    trPr = tr.get_or_add_trPr()
+    if trPr.find(qn("w:tblHeader")) is None:
+        tbl_header = OxmlElement("w:tblHeader")
+        tbl_header.set(qn("w:val"), "true")
+        trPr.append(tbl_header)
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Render program to docx")
     parser.add_argument("--program-id", type=int, default=None, help="Program id to render")
@@ -209,18 +218,25 @@ def main() -> None:
         influencers = []
     chairs, speakers = build_people(program, influencers)
 
-    # program topic map
-    program_speakers = program.get("speakers", []) or []
-    program_topic_map: Dict[str, str] = {
-        (entry.get("name") or "").strip(): (entry.get("topic") or "").strip()
-        for entry in program_speakers
-    }
+    # # program topic map
+    # program_speakers = program.get("speakers", []) or []
+    # program_topic_map: Dict[str, str] = {
+    #     (entry.get("name") or "").strip(): (entry.get("topic") or "").strip()
+    #     for entry in program_speakers
+    # }
+    # Collect program speaker entries of type "講者" in declared order
+    program_speaker_entries = [
+        entry
+        for entry in (program.get("speakers") or [])
+        if (entry.get("type") or "").strip() == "講者"
+    ]
+    program_speaker_entries.sort(key=lambda e: e.get("no", 0))
 
     planName = program.get("planName")
     event_name = (program.get("eventNames") or ["Program"])[0]
     date = program.get("date")
 
-    out_path = args.out or (OUTPUT_DIR / f"講師簽到表_{program.get('eventNames[0]')}.docx")
+    out_path = args.out or (OUTPUT_DIR / f"講師簽到表_{program.get('eventNames')[0]}.docx")
 
     # 使用程式內參數 FONT_PT
     font_pt = int(FONT_PT)
@@ -313,6 +329,7 @@ def main() -> None:
     hdr = signin_table.rows[0]
     safe_set_row_height(hdr, HDR_HEIGHT_CM)
 
+    set_repeat_table_header(hdr)
 
 
     # 設 header 高度為 0.9 cm
@@ -347,7 +364,8 @@ def main() -> None:
 
     # 替換原本的 if speakers: 迴圈
     if speakers:
-        for sp in speakers:
+        # for sp in speakers:
+        for idx, sp in enumerate(speakers):
             # 新增一列並設定固定列高（使用你已有的 helper）
             row = signin_table.add_row()
             try:
@@ -357,7 +375,10 @@ def main() -> None:
 
             row_cells = row.cells
             name_val = (sp.get("name") or "").strip()
-            topic_val = program_topic_map.get(name_val, "") or ""
+            # topic_val = program_topic_map.get(name_val, "") or ""
+            topic_val = ""
+            if idx < len(program_speaker_entries):
+                topic_val = (program_speaker_entries[idx].get("topic") or "").strip()
 
             # ---------- 第一欄：Topic（覆寫第一個 paragraph） ----------
             c0 = row_cells[0]
