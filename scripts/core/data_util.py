@@ -34,6 +34,64 @@ def load_programs(path: Optional[Path] = None) -> List[Dict[str, Any]]:
     return []
 
 
+def load_program_by_id(
+    program_id: Optional[Any],
+    *,
+    path: Optional[Path] = None,
+    fallback_to_first: bool = True,
+) -> Dict[str, Any]:
+    """Return a program dict matching ``program_id``.
+
+    Parameters
+    ----------
+    program_id:
+        The program ``id`` to look up. Accepts ``None`` (when ``fallback_to_first``
+        is ``True``), ``int`` or ``str``.
+    path:
+        Optional path to a program_data.json file. Defaults to
+        ``data/shared/program_data.json``.
+    fallback_to_first:
+        When ``True`` (default) and ``program_id`` is ``None`` or no match is
+        found, the first program in the file is returned. When ``False`` a
+        ``LookupError`` is raised instead.
+
+    Raises
+    ------
+    FileNotFoundError
+        If the JSON file does not exist.
+    ValueError
+        If the file is empty or contains no program entries.
+    LookupError
+        If ``program_id`` is provided but no matching program is found and
+        ``fallback_to_first`` is ``False``.
+    """
+
+    path = Path(path) if path else DEFAULT_SHARED_JSON
+    if not path.exists():
+        raise FileNotFoundError(path)
+
+    programs = load_programs(path)
+    if not programs:
+        raise ValueError("No program entries found in {}".format(path))
+
+    if program_id is None:
+        if fallback_to_first:
+            return programs[0]
+        raise LookupError("Program id is required")
+
+    target = str(program_id).strip()
+    for program in programs:
+        pid = program.get("id")
+        if pid is None:
+            continue
+        if str(pid).strip() == target:
+            return program
+
+    if fallback_to_first:
+        return programs[0]
+    raise LookupError("Program id {} not found in {}".format(program_id, path))
+
+
 def find_data_file_by_id(data_dir: Path, target_id: str) -> Optional[Path]:
     target = str(target_id).strip()
     # JSON search
