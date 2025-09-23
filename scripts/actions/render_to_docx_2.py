@@ -235,7 +235,7 @@ def main() -> None:
 
     event_name = (program.get("eventNames") or ["Program"])[0]
 
-    out_path = args.out or (OUTPUT_DIR / f"program_{program.get('id', '0')}.docx")
+
 
     doc = Document()
     normal_style = doc.styles["Normal"]
@@ -252,282 +252,45 @@ def main() -> None:
     heading1.font.bold = True
     heading1.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
     heading1.font.color.rgb = RGBColor(0, 0, 0)
-# Style constants (pt) derived from the HTML template
+    # Style constants (pt) derived from the HTML template
     TITLE_PT = 28
     NAME_PT = 18
     PROFILE_PT = 14
     TABLE_PT = 14  # <- changed as requested
 
-    title_p = doc.add_paragraph()
-    title_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    title_run = title_p.add_run(event_name)
-    set_run_font(title_run, TITLE_PT, bold=True)
 
-    # Render cover table (pass PROFILE_PT explicitly)
-    render_cover_table(doc, program, PROFILE_PT)
-    doc.add_page_break()
-
-    # Table of contents
-    toc_title_p = doc.add_paragraph()
-    toc_title_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    toc_title_run = toc_title_p.add_run("目錄")
-    set_run_font(toc_title_run, TITLE_PT, bold=True)
-
-    # 接著插入 TOC field（不變）
-    toc_p = doc.add_paragraph()
-    fld = OxmlElement("w:fldSimple")
-    fld.set(qn("w:instr"), 'TOC \\o "1-3" \\h \\z \\u')
-    toc_p._p.append(fld)
-    doc.add_page_break()
-
-    # Activity info section (label on its own line, value on next line, blank line between blocks)
-    doc.add_heading("活動資訊", level=1)
-
-    # compute locations/strings locally for reuse
-    locations = program.get("locations") or []
-    loc_text = ""
-    if locations:
-        loc_text = locations[0]
-        if len(locations) > 1:
-            loc_text += f"（{locations[1]}）"
-
-    # helper inline: handle str or list/tuple -> single string
-    def _join_val(v):
-        if v is None:
-            return ""
-        if isinstance(v, (list, tuple)):
-            return "、".join(str(x).strip() for x in v if x is not None and str(x).strip())
-        return str(v).strip()
-
-    # DATE
-    date_val = _join_val(program.get("date"))
-    if date_val:
-        p_label = doc.add_paragraph()
-        run_label = p_label.add_run("日期：")
-        set_run_font(run_label, PROFILE_PT, bold=True)
-        p_val = doc.add_paragraph()
-        date_2 =format_date(date_val, "%Y年%m月%d日 %A", chinese_weekday=True, no_leading_zero=True)
-        run_val = p_val.add_run(date_2)
-        set_run_font(run_val, PROFILE_PT)
-        doc.add_paragraph()  # blank line separator
-
-    # LOCATION
-    if loc_text:
-        p_label = doc.add_paragraph()
-        run_label = p_label.add_run("地點：")
-        set_run_font(run_label, PROFILE_PT, bold=True)
-        p_val = doc.add_paragraph()
-        run_val = p_val.add_run(loc_text)
-        set_run_font(run_val, PROFILE_PT)
-        doc.add_paragraph()
-
-    # ORGANIZERS (主辦)
-    organizers_val = _join_val(program.get("organizers"))
-    if organizers_val:
-        p_label = doc.add_paragraph()
-        run_label = p_label.add_run("主辦單位：")
-        set_run_font(run_label, PROFILE_PT, bold=True)
-        p_val = doc.add_paragraph()
-        run_val = p_val.add_run(organizers_val)
-        set_run_font(run_val, PROFILE_PT)
-        doc.add_paragraph()
-
-    # CO-ORGANIZERS (協辦)
-    co_org_val = _join_val(program.get("coOrganizers"))
-    if co_org_val:
-        p_label = doc.add_paragraph()
-        run_label = p_label.add_run("協辦單位：")
-        set_run_font(run_label, PROFILE_PT, bold=True)
-        p_val = doc.add_paragraph()
-        run_val = p_val.add_run(co_org_val)
-        set_run_font(run_val, PROFILE_PT)
-        doc.add_paragraph()
-
-    # JOINT-ORGANIZERS (合辦)
-    joint_org_val = _join_val(program.get("jointOrganizers"))
-    if joint_org_val:
-        p_label = doc.add_paragraph()
-        run_label = p_label.add_run("合辦單位：")
-        set_run_font(run_label, PROFILE_PT, bold=True)
-        p_val = doc.add_paragraph()
-        run_val = p_val.add_run(joint_org_val)
-        set_run_font(run_val, PROFILE_PT)
-        doc.add_paragraph()
-
-    # INSTRUCTORS / 指導單位
-    instructor_val = _join_val(program.get("instructors") or program.get("instructor") or program.get("guidance"))
-    if instructor_val:
-        p_label = doc.add_paragraph()
-        run_label = p_label.add_run("指導單位：")
-        set_run_font(run_label, PROFILE_PT, bold=True)
-        p_val = doc.add_paragraph()
-        run_val = p_val.add_run(instructor_val)
-        set_run_font(run_val, PROFILE_PT)
-        doc.add_paragraph()
-
-
-    doc.add_page_break()
-
-    h2 = doc.add_heading("議程", level=1)
-    h2.style = 'Heading 1'
-
+    schedule_rows = build_schedule(program)
     if schedule_rows:
-        table = doc.add_table(rows=1, cols=3)
-        table.alignment = WD_TABLE_ALIGNMENT.CENTER
-        hdr = table.rows[0].cells
-        headers = ["時間", "議程", "講者"]
-        for idx, text in enumerate(headers):
-            p = hdr[idx].paragraphs[0]
-            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-            run = p.add_run(text)
-            set_run_font(run, TABLE_PT, bold=True)
+
+
         for row in schedule_rows:
-            cells = table.add_row().cells
-            data = [row.get("time", ""), row.get("topic", ""), row.get("speaker", "")]
-            for idx, text in enumerate(data):
-                p = cells[idx].paragraphs[0]
-                p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-                run = p.add_run(text)
-                set_run_font(run, TABLE_PT)
-    doc.add_page_break()
 
-    h3 = doc.add_heading("主持人", level=1)
-    h3.style = 'Heading 1'
 
-    if chairs:
-        for ch in chairs:
-            p = doc.add_paragraph()
-            name_run = p.add_run(ch.get("name", ""))
-            set_run_font(name_run, NAME_PT, bold=True)
-            title = ch.get("title")
-            if title:
-                title_run = p.add_run(f" {title}")
-                set_run_font(title_run, NAME_PT)
-
-            sections = ch.get("profile_sections") or {}
-            if sections:
-                for heading, lines in sections.items():
-                    head_p = doc.add_paragraph()
-                    head_run = head_p.add_run(heading)
-                    set_run_font(head_run, PROFILE_PT, bold=True)
-                    for line in lines:
-                        line_p = doc.add_paragraph(line, style="List Bullet")
-                        for r in line_p.runs:
-                            set_run_font(r, PROFILE_PT)
-            else:
-                prof = ch.get("profile")
-                if prof:
-                    prof_p = doc.add_paragraph(prof)
-                    for r in prof_p.runs:
-                        set_run_font(r, PROFILE_PT)
-        doc.add_page_break()
-
-    h4 = doc.add_heading("講者", level=1)
-    h4.style = 'Heading 1'
-    # 只顯示 type 為 "講者" 的項目
-    # ---- speakers: bullet list, first line = name (bold) + title, second line = organization ----
-    # 確認是否有 List Bullet style，沒有就 fallback 用手動 bullet
-    style_names = [s.name for s in doc.styles]
-    has_list_bullet = "List Bullet" in style_names
-
-    if speakers:
-        for sp in speakers:
-
-            name = (sp.get("name") or "").strip()
-            title = (sp.get("title") or "").strip()
-            organization = (sp.get("organization") or "").strip()
-            # 第一行（bullet + name + title）
-            if has_list_bullet:
-                p = doc.add_paragraph(style="List Bullet")
-            else:
-                p = doc.add_paragraph()
-                # 手動加入 bullet 字元（用 run 以便後續格式化）
-                b = p.add_run("• ")
-                set_run_font(b, NAME_PT, bold=False)
-
-            # name（粗體）
+            doc = Document()
+            name = row.get("speaker", "")
+            title = row.get("topic", "")
+            no = row.get("no", "")
+            p    = doc.add_paragraph()
             name_run = p.add_run(name)
-            set_run_font(name_run, NAME_PT, bold=True)
-
+            set_run_font(name_run, TITLE_PT, bold=True)
+            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
             # title（同一行，普通字）
-            if title:
-                title_run = p.add_run(f" {title}")
-                set_run_font(title_run, NAME_PT, bold=False)
-                title_run.add_break()
-            if organization:
-
-                organization_run = p.add_run(f" {organization}")
-
-                set_run_font(organization_run, NAME_PT, bold=False)
-
-
-
-            # 空行分隔（視覺上與你範例一致）
             doc.add_paragraph()
-    doc.add_page_break()
-        # ---- end speakers ----
+            p    = doc.add_paragraph()
+            name_run = p.add_run(title)
+            set_run_font(name_run, TITLE_PT, bold=True)
+            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+            out_path =  (OUTPUT_DIR / f"{no}-1_{name}_{title}.docx")
+            doc.save(out_path)
+            print(f"Saved docx to {out_path}")
 
 
 
-    # ---- speakers (same style as chairs) ----
-    if speakers:
-        for sp in speakers:
-            # 第一段：名稱（粗體）與職稱
-            p = doc.add_paragraph()
-            label_run = p.add_run("講者")
-            set_run_font(label_run, NAME_PT, bold=False)
-            p = doc.add_paragraph()
-            name_run = p.add_run(sp.get("name", ""))
-            set_run_font(name_run, NAME_PT, bold=True)
-
-            title = sp.get("title")
-            if title:
-                title_run = p.add_run(f" {title}")
-                set_run_font(title_run, NAME_PT)
-
-            # 接著列出 profile_sections（若有）或 profile（若無 sections）
-            sections = sp.get("profile_sections") or {}
-            if sections:
-                for heading, lines in sections.items():
-                    head_p = doc.add_paragraph()
-                    head_run = head_p.add_run(heading)
-                    set_run_font(head_run, PROFILE_PT, bold=True)
-                    for line in lines:
-                        line_p = doc.add_paragraph(line, style="List Bullet")
-                        for r in line_p.runs:
-                            set_run_font(r, PROFILE_PT)
-            else:
-                prof = sp.get("profile")
-                if prof:
-                    prof_p = doc.add_paragraph(prof)
-                    for r in prof_p.runs:
-                        set_run_font(r, PROFILE_PT)
-            doc.add_page_break()
-
-        # 整個講者區塊結束後分頁（若不想分頁請刪掉下一行）
-        # doc.add_page_break()
-        # ---- end speakers ----
 
 
-    # Footer page numbers (skip cover page)
-    section = doc.sections[0]
-    section.different_first_page_header_footer = True
-    footer_p = section.footer.paragraphs[0]
-    footer_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    run = footer_p.add_run()
-    fld_begin = OxmlElement("w:fldChar")
-    fld_begin.set(qn("w:fldCharType"), "begin")
-    instr = OxmlElement("w:instrText")
-    instr.set(qn("xml:space"), "preserve")
-    instr.text = "PAGE"
-    fld_end = OxmlElement("w:fldChar")
-    fld_end.set(qn("w:fldCharType"), "end")
-    run._r.extend([fld_begin, instr, fld_end])
-    set_run_font(run, 12)
 
 
-    doc.save(out_path)
-    print(f"Saved docx to {out_path}")
 
 
 def update_docx_fields_with_word(docx_path: str, visible: bool = False) -> None:

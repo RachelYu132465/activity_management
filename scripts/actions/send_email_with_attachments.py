@@ -2,16 +2,9 @@
 """
 Send personalized email(s) for an identifier or for all followers of a program.
 
-Usage examples:
-  # send for a single identifier (keeps old behavior)
-  python scripts/actions/send_email_with_attachments.py jam123 --send
-
-  # send to all followers of program id 5 using an explicit follower file
-  python scripts/actions/send_email_with_attachments.py --program 5 --followers-file data/follower.xlsx --sheet-name "Sheet1" --draft
-
-Notes:
- - Template rendering uses Jinja2 if installed (recommended). Otherwise falls back to a simple replace.
- - Supports JSON, .xlsx, .xls (xls requires xlrd).
+This variant converts .docx templates to HTML using mammoth + premailer, then
+applies template context (Jinja2 preferred, fallback flatten/replace). It also
+post-processes HTML to preserve centered paragraphs and visible table borders.
 """
 from __future__ import annotations
 
@@ -32,6 +25,7 @@ from email.message import EmailMessage
 from typing import Iterable, List, Dict, Any, Optional
 import smtplib
 import html as _html_mod
+import base64
 
 # optional deps
 try:
@@ -43,6 +37,22 @@ try:
     import jinja2
 except ModuleNotFoundError:
     jinja2 = None
+
+# optional for docx -> HTML conversion
+MAMMOTH_OK = True
+try:
+    import mammoth
+    from premailer import transform
+except Exception:
+    MAMMOTH_OK = False
+    mammoth = None
+    transform = None
+
+# optional for post-processing
+try:
+    from bs4 import BeautifulSoup
+except Exception:
+    BeautifulSoup = None
 
 # main logging (set INFO by default; set to DEBUG if you need more)
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
@@ -241,6 +251,196 @@ def render_body_from_template(template_path: Path, context: Dict[str, Any]) -> s
     return _fallback_render_body_from_template(template_path, context)
 
 
+# -------------------- docx -> html conversion (mammoth + premailer) ----------
+# Only used when template is a .docx and mammoth/premailer are available.
+# Images are inlined as data URIs.
+FONT_CONTAINER_STYLE = (
+    "font-family: '標楷體','DFKai-SB','PMingLiU','Microsoft JhengHei',"
+    "'Noto Sans CJK TC','PingFang TC',Helvetica,Arial,sans-serif;"
+    "font-size:14px; line-height:1.6;"
+)
+
+def docx_to_html_inline(docx_path: Path) -> str:
+    """
+    Convert a .docx file to HTML and inline CSS, attempting to preserve:
+    - paragraph alignment 'center' (mapped via style_map to .center)
+    - table visibility by adding robust inline attributes (border/cellpadding)
+    - if no table is found in the mammoth output, save debug HTML for inspection
+    """
+    if not MAMMOTH_OK:
+        raise RuntimeError("mammoth or premailer not available. Install `mammoth premailer` to enable .docx -> HTML conversion.")
+
+    # style_map: map certain Word named styles to classes we can detect
+    style_map = [
+        "p[style-name='Title'] => p.title",
+        "p[style-name='Heading 1'] => h1.heading",
+        "p[style-name='Heading 2'] => h2.heading",
+        "p[style-name='Center'] => p.center",
+        "p[style-name='Centered'] => p.center",
+        # Add other named style mappings if your templates use different names
+    ]
+
+    def _image_handler(image):
+        data = image.read()
+        content_type = image.content_type or "image/png"
+        b64 = base64.b64encode(data).decode("ascii")
+        return {"src": f"data:{content_type};base64,{b64}"}
+
+    with docx_path.open("rb") as fh:
+        result = mammoth.convert_to_html(
+            fh,
+            convert_image=mammoth.images.inline(_image_handler),
+            style_map=style_map
+        )
+        mammoth_html = result.value or ""
+
+    # quick check: did mammoth produce any <table> at all?
+    mammoth_has_table = "<table" in mammoth_html.lower()
+
+    wrapped = f"<div style=\"{FONT_CONTAINER_STYLE}\">{mammoth_html}</div>"
+
+    # Keep classes (remove_classes=False) so we can post-process them into inline styles
+    try:
+        inlined = transform(wrapped, remove_classes=False)
+    except Exception:
+        inlined = wrapped
+
+    # If BeautifulSoup missing, still return inlined, but save debug if no table present
+    if BeautifulSoup is None:
+        if not mammoth_has_table:
+            logging.warning("mammoth output contains no <table>. Install beautifulsoup4 and check output/debug_docx_html.html for details.")
+            try:
+                Path("output").mkdir(parents=True, exist_ok=True)
+                with open("output/debug_docx_html.html", "w", encoding="utf-8") as fh:
+                    fh.write("=== MAMMOTH OUTPUT ===\n")
+                    fh.write(mammoth_html)
+                    fh.write("\n\n=== PREMAILER INLINED OUTPUT ===\n")
+                    fh.write(inlined)
+            except Exception:
+                pass
+        return inlined
+
+    # Post-process with BeautifulSoup
+    soup = BeautifulSoup(inlined, "html.parser")
+
+    # Convert elements with class 'center' to have inline text-align:center
+    for el in soup.select(".center"):
+        existing = el.get("style", "") or ""
+        if "text-align" not in existing:
+            new_style = (existing + ";" if existing and not existing.endswith(";") else existing) + "text-align:center;"
+            el['style'] = new_style
+
+    # Ensure tables use border-collapse and cells have border and padding
+    tables = soup.find_all("table")
+    if not tables:
+        # no table at all: save debug HTML files (mammoth raw + premailer result) to help diagnose
+        logging.warning("No <table> found in mammoth output or post-processed HTML. Saving debug HTML to output/debug_docx_html.html")
+        try:
+            Path("output").mkdir(parents=True, exist_ok=True)
+            with open("output/debug_docx_html.html", "w", encoding="utf-8") as fh:
+                fh.write("=== MAMMOTH OUTPUT ===\n")
+                fh.write(mammoth_html)
+                fh.write("\n\n=== PREMAILER INLINED OUTPUT ===\n")
+                fh.write(inlined)
+        except Exception:
+            logging.debug("Failed to write debug file output/debug_docx_html.html")
+        # return anyway so caller can still see something
+        return str(soup)
+
+    for table in tables:
+        # ensure table attributes that email clients respect
+        try:
+            table['border'] = table.get('border', "1")
+            table['cellpadding'] = table.get('cellpadding', "6")
+            table['cellspacing'] = table.get('cellspacing', "0")
+        except Exception:
+            pass
+
+        tstyle = table.get("style", "") or ""
+        if "border-collapse" not in tstyle:
+            tstyle = (tstyle + ";" if tstyle and not tstyle.endswith(";") else tstyle) + "border-collapse:collapse;"
+        table['style'] = tstyle
+
+        # for each cell, ensure inline border & padding
+        for cell in table.find_all(["td", "th"]):
+            cstyle = cell.get("style", "") or ""
+            additions = "border:1px solid #444;padding:6px;vertical-align:top;"
+            # only append if not already present
+            if additions not in cstyle:
+                cstyle = (cstyle + ";" if cstyle and not cstyle.endswith(";") else cstyle) + additions
+            cell['style'] = cstyle
+
+    # also ensure th have border if missing
+    for th in soup.find_all("th"):
+        tstyle = th.get("style", "") or ""
+        if "border" not in tstyle:
+            th['style'] = (tstyle + ";" if tstyle and not tstyle.endswith(";") else tstyle) + "border:1px solid #444;padding:6px;"
+
+    # save a debug copy (helpful when testing)
+    try:
+        Path("output").mkdir(parents=True, exist_ok=True)
+        with open("output/debug_docx_html.html", "w", encoding="utf-8") as fh:
+            fh.write(str(soup))
+    except Exception:
+        pass
+
+    return str(soup)
+
+
+# -------------------- apply context to generated HTML ----------------------
+def _flatten_context(prefix: str, val: Any, out: Dict[str, str]):
+    """Flatten nested context to dotted keys for simple replacement fallback."""
+    if isinstance(val, dict):
+        for k, v in val.items():
+            _flatten_context(f"{prefix}.{k}" if prefix else str(k), v, out)
+    elif isinstance(val, (list, tuple)):
+        for i, item in enumerate(val):
+            _flatten_context(f"{prefix}[{i}]" if prefix else f"[{i}]", item, out)
+    else:
+        out[prefix] = "" if val is None else str(val)
+
+def apply_context_to_html(html: str, context: Dict[str, Any]) -> str:
+    """
+    Render an HTML fragment using context.
+    - If jinja2 is available, use it (supports expressions/filters).
+    - Otherwise do a simple dotted-key replacement for common patterns like {{ follower.name }}.
+    """
+    if not context:
+        return html
+
+    # Prefer jinja2 if installed (handles nested access, filters, etc.)
+    if jinja2 is not None:
+        try:
+            env = jinja2.Environment(autoescape=True)
+            tmpl = env.from_string(html)
+            return tmpl.render(**context)
+        except Exception:
+            # fall through to simple replacement fallback
+            pass
+
+    # Fallback: flatten context and perform literal replacements.
+    flat: Dict[str, str] = {}
+    for k, v in context.items():
+        _flatten_context(k, v, flat)
+
+    out = html
+    for key, val in flat.items():
+        # Replace common forms without touching Jinja filters (best-effort)
+        patterns = [
+            r"\{\{\s*" + re.escape(key) + r"\s*\}\}",
+            r"\{\{\s*" + re.escape(key) + r"\s*\|[^\}]*\}\}",  # with filter, replace whole expr
+        ]
+        for pat in patterns:
+            out = re.sub(pat, lambda m: val, out)
+
+        # also bare replacement without dots (compatibility): {{ key }}
+        if "." not in key:
+            out = re.sub(r"\{\{\s*" + re.escape(key) + r"\s*\}\}", val, out)
+
+    return out
+
+# ---------------------------------------------------------------------------
+
 # -------------------- attachments & helpers --------------------------------
 def sanitize_filename(s: str, max_len: int = 200) -> str:
     s = re.sub(r"[\\/:\*\?\"<>\|]+", "-", s or "")
@@ -359,6 +559,7 @@ def create_message(record: Dict[str, Any], template_path: Optional[Path], attach
 
     body = record.get("body", "") or ""
     if template_path and template_path.exists():
+
         context = {}
         if "follower" in record and isinstance(record["follower"], dict):
             context["follower"] = {k: ("" if v is None else v) for k, v in record["follower"].items()}
@@ -369,6 +570,7 @@ def create_message(record: Dict[str, Any], template_path: Optional[Path], attach
         else:
             context["program_data"] = record.get("program_data", {}) or {}
         try:
+            # prefer project util if available
             body = render_body_from_template(template_path, context)
         except Exception as e:
             logging.warning("Template render failed for %s: %s", template_path, e)
@@ -382,17 +584,42 @@ def create_message(record: Dict[str, Any], template_path: Optional[Path], attach
 
     # html handling: if record provides html, use it; otherwise auto-generate a simple html from body
     html = record.get("html")
-    if html:
-        msg.set_content(body if body else "This message contains HTML content.")
-        msg.add_alternative(str(html), subtype="html")
-    else:
-        msg.set_content(body)
+    # If template is a .docx and mammoth/premailer are available, convert docx -> HTML and use that
+    used_docx_html = False
+    if template_path and template_path.exists() and template_path.suffix.lower() == ".docx" and MAMMOTH_OK:
         try:
-            safe = _html_mod.escape(body or "")
-            html_generated = safe.replace("\n", "<br/>")
-            msg.add_alternative(html_generated, subtype="html")
-        except Exception:
-            logging.debug("Failed to add html alternative; continuing with plain text only.")
+            docx_html = docx_to_html_inline(template_path)
+
+            # apply context substitutions to the generated HTML
+            try:
+                docx_html = apply_context_to_html(docx_html, context)
+            except Exception as e:
+                logging.debug("apply_context_to_html failed: %s (continuing with unrendered HTML)", e)
+
+            # set plain text fallback by stripping tags (simple)
+            plain = re.sub(r"<[^>]+>", "", docx_html)
+            msg.set_content(plain)
+            msg.add_alternative(docx_html, subtype="html")
+            used_docx_html = True
+        except Exception as e:
+            logging.warning("docx->html conversion failed for %s: %s; falling back to existing behavior.", template_path, e)
+            used_docx_html = False
+
+    if not used_docx_html:
+        if html:
+            msg.set_content(body if body else "This message contains HTML content.")
+            # wrap provided html in font/container to increase chance of correct rendering
+            wrapped_html = f"<div style=\"{FONT_CONTAINER_STYLE}\">{str(html)}</div>"
+            msg.add_alternative(str(wrapped_html), subtype="html")
+        else:
+            msg.set_content(body)
+            try:
+                safe = _html_mod.escape(body or "")
+                html_generated = safe.replace("\n", "<br/>")
+                html_wrapped = f"<div style=\"{FONT_CONTAINER_STYLE}\">{html_generated}</div>"
+                msg.add_alternative(html_wrapped, subtype="html")
+            except Exception:
+                logging.debug("Failed to add html alternative; continuing with plain text only.")
 
     attach_entries_from_list(msg, attachments_entries or [], include_pdfs=include_pdfs)
     if templates_dir:
