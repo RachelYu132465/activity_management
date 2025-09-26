@@ -58,7 +58,8 @@ NAME_TITLE_RATIO = (14, 3)  # name : title = 10 : 3 (總份數 13)
 
 # safety limits for negative gap before shrinking font (in fraction of avg char width)
 NEGATIVE_GAP_LIMIT_FACTOR = 0.45  # 允許負 gap 至少為 avg_char_width * -0.45
-
+SHOW_ORG = False  # True = 顯示 organization；False = 不顯示（關閉顯示）
+LOGO_CAPTION_COLOR = (128, 128, 128)
 # font candidates
 KAIU_PATH = r"C:\Windows\Fonts\kaiu.ttf"
 PROJECT_FONTS_DIR = ROOT / "scripts" / "fonts"
@@ -66,7 +67,33 @@ NAME_CANDS = [str(PROJECT_FONTS_DIR / "kaiu.ttf"), KAIU_PATH]
 TITLE_CANDS = [str(PROJECT_FONTS_DIR / "kaiu.ttf"), KAIU_PATH]
 ORG_CANDS = [str(PROJECT_FONTS_DIR / "kaiu.ttf"), KAIU_PATH]
 
+
+# logo asset and caption
+LOGO_PATH_CANDIDATES = [
+    Path(r"C:\\Users\\User\\activity_management\\static logo.png"),
+    Path(r"C:\\Users\\User\\activity_management\\static\\logo.png"),
+    ROOT / "static" / "logo.png",
+    ROOT / "static logo.png",
+    ]
+LOGO_CAPTION = "台灣醫界聯盟基金會"
+LOGO_CAPTION_FONT_SIZE_BASE = 40
+LOGO_PADDING = 60
+LOGO_MAX_HEIGHT = 220
+LOGO_MAX_WIDTH = 320
+
 # ---------- helpers ----------
+def load_font_from_src(src: Optional[str], size: int) -> ImageFont.ImageFont:
+    if src:
+        try:
+            return ImageFont.truetype(src, size)
+        except Exception:
+            pass
+    try:
+        return ImageFont.truetype(KAIU_PATH, size)
+    except Exception:
+        return ImageFont.load_default()
+
+
 def sanitize_filename(s: str) -> str:
     s = str(s or "").strip()
     invalid = '<>:"/\\|?*\n\r\t'
@@ -137,6 +164,58 @@ def wrap_text_to_width(draw: ImageDraw.ImageDraw, text: str, font: ImageFont.Ima
         lines.append(cur)
     return lines
 
+def load_logo_image() -> Tuple[Optional[Image.Image], Optional[Path]]:
+    for path in LOGO_PATH_CANDIDATES:
+        if not path:
+            continue
+        try:
+            p = Path(path)
+        except TypeError:
+            continue
+        if p.is_file():
+            try:
+                img = Image.open(p).convert("RGBA")
+                print(f"[asset] loaded logo from {p}")
+                return img, p
+            except Exception as exc:
+                print(f"[asset WARNING] 無法讀取 logo ({p}): {exc}")
+                continue
+    print("[asset WARNING] 找不到 logo 檔案，將略過 logo 與標註")
+    return None, None
+
+def add_logo_and_caption(img: Image.Image, logo_rgba: Optional[Image.Image], caption_font_src: Optional[str]):
+    if logo_rgba is None:
+        return
+
+    draw = ImageDraw.Draw(img)
+    _, img_h = img.size
+
+    if logo_rgba.width == 0 or logo_rgba.height == 0:
+        return
+
+    scale_factor = min(
+        LOGO_MAX_WIDTH / logo_rgba.width,
+        LOGO_MAX_HEIGHT / logo_rgba.height,
+        1.0,
+        )
+    new_w = int(logo_rgba.width * scale_factor)
+    new_h = int(logo_rgba.height * scale_factor)
+    resized_logo = logo_rgba.resize((new_w, new_h), Image.LANCZOS)
+
+    x_logo = LOGO_PADDING
+    y_logo = img_h - LOGO_PADDING - new_h
+
+    img.paste(resized_logo, (x_logo, y_logo), resized_logo)
+
+    caption = LOGO_CAPTION
+    caption_font_size = max(LOGO_CAPTION_FONT_SIZE_BASE, int(LOGO_CAPTION_FONT_SIZE_BASE * (img_h / 600.0)))
+    caption_font = load_font_from_src(caption_font_src, caption_font_size)
+
+    _, text_h = text_size(draw, caption, caption_font)
+    x_text = x_logo + new_w + 20
+    y_text = y_logo + new_h - text_h -40
+
+    draw.text((x_text, y_text), caption, font=caption_font, fill=LOGO_CAPTION_COLOR)
 def draw_name_proportional(draw: ImageDraw.ImageDraw, name: str, font: ImageFont.ImageFont,
                            x_left: int, y_baseline: int, box_w: int) -> Tuple[ImageFont.ImageFont, int, int]:
     """
@@ -240,7 +319,7 @@ def draw_half_content(img: Image.Image, name: str, title: str, org: str,
     ox = PADDING
     oy = PADDING
     org_height_accum = 0
-    if org:
+    if SHOW_ORG and org:
         max_w = w - PADDING*2
         words = org.split()
         lines = []
@@ -370,6 +449,9 @@ def main(program_id_raw: str):
     _, title_src = try_truetype(TITLE_CANDS, BASE_TITLE_SIZE)
     _, org_src = try_truetype(ORG_CANDS, BASE_ORG_SIZE)
 
+    logo_image, _ = load_logo_image()
+    caption_font_src = org_src or title_src or name_src or KAIU_PATH
+
     created = []
     for idx, person in enumerate(all_people, start=1):
         name = person.get("name", "N/A")
@@ -414,6 +496,9 @@ def main(program_id_raw: str):
 
         # rotate top half 180 degrees so text's head faces the middle fold
         half_top_rot = half_top.rotate(180)
+        # add logo + caption to both halves in their final orientation
+        add_logo_and_caption(half_top_rot, logo_image, caption_font_src)
+        add_logo_and_caption(half_bottom, logo_image, caption_font_src)
 
         # paste halves into canvas: top = rotated top-half, bottom = (normal) bottom-half
         canvas.paste(half_top_rot, (0,0))

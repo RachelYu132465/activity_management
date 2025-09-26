@@ -61,7 +61,7 @@
       "與日本、英國、韓國等國際再生醫療單位長期交流與合作"
     ],
     "current_position": {
-      "organization": "財團法人台灣醫界聯盟基金會（及兼任多家生醫組織顧問）",
+      "organization": "財團法人台灣醫界聯盟基金會",
       "title": "執行長",
       "start_year": null,
       "teaching_years": null,
@@ -428,8 +428,8 @@
   {
     "id_number": "",
     "name": "柯景懷",
-    "phone": "",
-    "email": [],
+    "phone": "0918862020",
+    "email": ["jonathanko@steminent.com"],
     "specialties": [],
     "achievements": [],
     "academic_title": "",
@@ -450,8 +450,8 @@
       "research_years": null
     },
     "contact_person": {
-      "name": "",
-      "email": [],
+      "name": "杜曉惠",
+      "email": ["elainetu@steminent.com"],
       "CC": []
     }
   },
@@ -460,7 +460,7 @@
     "id_number": "",
     "name": "王玲美",
     "phone": "",
-    "email": [],
+    "email": ["lm.wang@steminent.com"],
     "specialties": [],
     "achievements": [],
     "academic_title": "",
@@ -523,7 +523,7 @@
   {
     "id_number": "",
     "name": "楊家琳",
-    "phone": "",
+    "phone": "0988-856-020",
     "email": [
       "jenny.yang@mail.centurydev.com.tw"
     ],
@@ -540,7 +540,7 @@
     "experience": [],
     "current_position": {
       "organization": "世康開發股份有限公司",
-      "title": "副總經理",
+      "title": "楊家琳總",
       "start_year": null,
       "teaching_years": null,
       "practice_years": null,
@@ -555,7 +555,7 @@
   {
     "id_number": "",
     "name": "澤芳樹",
-    "phone": "",
+    "phone": "+81-70-6459-8867",
     "email": [],
     "specialties": [],
     "achievements": [],

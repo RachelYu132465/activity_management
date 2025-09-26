@@ -106,6 +106,7 @@ def build_schedule(event: Dict[str, Any]) -> List[Dict[str, str]]:
                 "time": time_range(start, end),
                 "topic": sp.get("topic", ""),
                 "speaker": sp.get("name", ""),
+                "no":sp.get("no", "")
             }
         )
     return rows
@@ -504,7 +505,7 @@ def main() -> None:
             doc.add_page_break()
 
         # 整個講者區塊結束後分頁（若不想分頁請刪掉下一行）
-        doc.add_page_break()
+        # doc.add_page_break()
         # ---- end speakers ----
 
 
