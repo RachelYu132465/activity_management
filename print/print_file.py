@@ -2,9 +2,22 @@ import os
 import win32com.client
 import win32api
 import win32print
+# IMPORTANT!! CHANGE Tray number!! USE core test_printer to find your tray number, every tray number in different printer seems different
+TRAYS = {
+    "Auto": 7,  # 自動選擇 (Auto Select)
+    "Manual": 261, # 261 手送台 (Bypass / Manual Feed)
+    "Tray1": 257, #  紙匣1
+    "Tray2": 258,
+    "Tray3": 259,
+    "Tray4": 260,
+}
 
+def set_tray(doc, tray_name="Tray1"):
+    tray_code = TRAYS[tray_name]
+    doc.PageSetup.FirstPageTray = tray_code
+    doc.PageSetup.OtherPagesTray = tray_code
 # Word 常數：手送匣
-WD_TRAY_MANUAL = 2   # wdPrinterManualFeed = 2
+WD_TRAY_MANUAL = 259    # wdPrinterManualFeed = 2
 
 def print_word(file_path):
     try:
@@ -13,8 +26,8 @@ def print_word(file_path):
         doc = word.Documents.Open(file_path, ReadOnly=True)
 
         # 設定紙匣：首張 + 其他頁都走手送匣
-        doc.PageSetup.FirstPageTray = WD_TRAY_MANUAL
-        doc.PageSetup.OtherPagesTray = WD_TRAY_MANUAL
+        doc.PageSetup.FirstPageTray = set_tray(doc, "Manual")
+        doc.PageSetup.OtherPagesTray = set_tray(doc, "Manual")
 
         # 靜默列印，逐份
         doc.PrintOut(Background=False, Collate=True)

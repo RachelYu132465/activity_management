@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
+
 from typing import Iterable, Protocol, Sequence, Tuple, runtime_checkable
 
 from docx import Document
@@ -212,6 +213,7 @@ def _coerce_signin_rows(entries: Iterable[SignInRow | SupportsSignInRow]) -> lis
 def render_signin_table(
     context: SignInDocumentContext,
     speakers: Sequence[SignInRow | SupportsSignInRow],
+
     output_path: Path | str,
     *,
     title_pt: int = TITLE_PT,
@@ -230,6 +232,7 @@ def render_signin_table(
         for row in normalized
         if any(_sanitize_text(getattr(row, field)) for field in ("name", "topic", "title", "organization"))
     ]
+
     out_path = Path(output_path)
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
