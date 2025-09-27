@@ -4,7 +4,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable, Sequence, Tuple
+
+from typing import Iterable, Protocol, Sequence, Tuple, runtime_checkable
 
 from docx import Document
 from docx.enum.table import WD_ALIGN_VERTICAL, WD_ROW_HEIGHT_RULE, WD_TABLE_ALIGNMENT
@@ -180,9 +181,39 @@ def _sanitize_text(value: str | None) -> str:
     return (value or "").strip()
 
 
+@runtime_checkable
+class SupportsSignInRow(Protocol):
+    """Protocol for objects that can provide a :class:`SignInRow`."""
+
+    def to_signin_row(self) -> "SignInRow":
+        """Return the :class:`SignInRow` representation of the object."""
+
+
+def _coerce_signin_rows(entries: Iterable[SignInRow | SupportsSignInRow]) -> list[SignInRow]:
+    rows: list[SignInRow] = []
+    for entry in entries:
+        if isinstance(entry, SignInRow):
+            rows.append(entry)
+        elif isinstance(entry, SupportsSignInRow):
+            row = entry.to_signin_row()
+            if not isinstance(row, SignInRow):
+                raise TypeError(
+                    "to_signin_row() must return a SignInRow instance, "
+                    f"got {type(row)!r}"
+                )
+            rows.append(row)
+        else:
+            raise TypeError(
+                "Unsupported entry type for sign-in rendering: "
+                f"{type(entry)!r}. Provide SignInRow or SupportsSignInRow instances."
+            )
+    return rows
+
+
 def render_signin_table(
     context: SignInDocumentContext,
-    speakers: Sequence[SignInRow],
+    speakers: Sequence[SignInRow | SupportsSignInRow],
+
     output_path: Path | str,
     *,
     title_pt: int = TITLE_PT,
@@ -195,7 +226,13 @@ def render_signin_table(
 ) -> SignInRenderResult:
     """Render a sign-in table document and save it to ``output_path``."""
 
-    rows: list[SignInRow] = [row for row in speakers if any(_sanitize_text(getattr(row, f)) for f in ("name", "topic", "title", "organization"))]
+    normalized = _coerce_signin_rows(speakers)
+    rows: list[SignInRow] = [
+        row
+        for row in normalized
+        if any(_sanitize_text(getattr(row, field)) for field in ("name", "topic", "title", "organization"))
+    ]
+
     out_path = Path(output_path)
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -385,6 +422,7 @@ __all__ = [
     "SignInRow",
     "SignInDocumentContext",
     "SignInRenderResult",
+    "SupportsSignInRow",
     "render_signin_table",
     "TITLE_PT",
     "FONT_PT",
