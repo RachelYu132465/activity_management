@@ -2,14 +2,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable, List
+from typing import List
 
 import pandas as pd
 
 __all__ = [
     "FollowerRecord",
     "read_followers_from_excel",
-    "followers_to_signin_rows",
 ]
 
 
@@ -33,22 +32,6 @@ class FollowerRecord:
     referral_source: str = ""
     order_note: str = ""
     system_note: str = ""
-
-    def to_signin_row(self) -> "SignInRow":
-        """Convert this record to a :class:`SignInRow` instance."""
-
-        from scripts.actions.signin_table_render import SignInRow
-
-        topic = (self.company_department or "").strip()
-        if not topic:
-            topic = (self.registration_no or "").strip()
-        return SignInRow(
-            topic=topic,
-            name=(self.chinese_name or "").strip(),
-            title=(self.title or "").strip(),
-            organization=(self.service_unit_category or "").strip(),
-        )
-
 
 _COLUMN_TO_ATTR = {
     "No": "no",
@@ -98,14 +81,3 @@ def read_followers_from_excel(path: Path | str, *, sheet: str | int = 0) -> List
         data = {attr: _as_str(row.get(column)) for column, attr in _COLUMN_TO_ATTR.items()}
         records.append(FollowerRecord(**data))
     return records
-
-
-def followers_to_signin_rows(followers: Iterable[FollowerRecord]) -> List["SignInRow"]:
-    """Helper to map follower records to :class:`SignInRow` values."""
-
-    from scripts.actions.signin_table_render import SignInRow
-
-    rows: List[SignInRow] = []
-    for follower in followers:
-        rows.append(follower.to_signin_row())
-    return rows
