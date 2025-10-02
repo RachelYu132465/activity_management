@@ -1,15 +1,10 @@
-# scripts/actions/influencer.py
 """Utilities for building speaker/chair information from influencer data."""
 from __future__ import annotations
 from typing import Iterable, Iterator, List, Dict, Tuple
 
 
 def iter_dicts(items: Iterable) -> Iterator[dict]:
-    """Recursively yield dict objects from a nested list structure.
-
-    The influencer JSON mixes lists and objects; this helper flattens the
-    structure so each influencer record can be processed uniformly.
-    """
+    """Recursively yield dict objects from a nested list structure."""
     for item in items or []:
         if isinstance(item, dict):
             yield item
@@ -25,11 +20,15 @@ def build_profile(info: dict) -> str:
     multi-line string suitable for template rendering.
     """
     parts: List[str] = []
+
+    # Current position
     current = info.get("current_position")
     if isinstance(current, dict):
         org = current.get("organization")
         if org:
-            parts.append(org)
+            parts.append(str(org))
+
+    # Education
     edu = info.get("highest_education")
     if isinstance(edu, dict):
         school = edu.get("school")
@@ -37,18 +36,30 @@ def build_profile(info: dict) -> str:
         edu_line = " ".join(filter(None, [school, dept]))
         if edu_line:
             parts.append(edu_line)
+
+    # Experience
     exp = info.get("experience")
     if isinstance(exp, list):
-        parts.extend(exp)
+        for e in exp:
+            if isinstance(e, dict):
+                org = e.get("organization")
+                title = e.get("title")
+                line = " ".join(filter(None, [org, title]))
+                if line:
+                    parts.append(line)
+            else:
+                parts.append(str(e))
     elif isinstance(exp, str):
         parts.append(exp)
 
-    # achievements may be stored separately; include them as part of profile
+    # Achievements
     ach = info.get("achievements")
     if isinstance(ach, list):
-        parts.extend(ach)
+        for a in ach:
+            parts.append(str(a))
     elif isinstance(ach, str):
         parts.append(ach)
+
     return "\n".join(parts)
 
 
@@ -82,23 +93,94 @@ def build_profile_sections(info: dict) -> Dict[str, List[str]]:
     # Experience
     exp = info.get("experience")
     if isinstance(exp, list) and exp:
-        sections["經歷"] = exp
+        lines: List[str] = []
+        for e in exp:
+            if isinstance(e, dict):
+                org = e.get("organization")
+                title = e.get("title")
+                line = " ".join(filter(None, [org, title]))
+                if line:
+                    lines.append(line)
+            else:
+                lines.append(str(e))
+        if lines:
+            sections["經歷"] = lines
     elif isinstance(exp, str) and exp:
         sections["經歷"] = [exp]
 
     # Achievements
     ach = info.get("achievements")
     if isinstance(ach, list) and ach:
-        sections["成就"] = ach
+        sections["成就"] = [str(a) for a in ach]
     elif isinstance(ach, str) and ach:
         sections["成就"] = [ach]
 
     # Specialties
     spec = info.get("specialties")
     if isinstance(spec, list) and spec:
-        sections["專長"] = spec
+        sections["專長"] = [str(s) for s in spec]
     elif isinstance(spec, str) and spec:
         sections["專長"] = [spec]
+
+    return sections
+def EN_build_profile_sections(info: dict) -> Dict[str, List[str]]:
+    """Return structured profile sections with headings.
+
+    The sections are returned in an ordered dictionary mapping a Chinese
+    heading (e.g. ``"現職"``) to a list of lines. Only non-empty sections are
+    included.
+    """
+    sections: Dict[str, List[str]] = {}
+
+    # Current position
+    current = info.get("current_position")
+    if isinstance(current, dict):
+        org = current.get("organization")
+        title = current.get("title")
+        line = " ".join(filter(None, [org, title]))
+        if line:
+            sections[""] = [line]
+
+    # Education
+    edu = info.get("highest_education")
+    if isinstance(edu, dict):
+        school = edu.get("school")
+        dept = edu.get("department")
+        line = " ".join(filter(None, [school, dept]))
+        if line:
+            sections["EDUCATION"] = [line]
+
+    # Experience
+    exp = info.get("experience")
+    if isinstance(exp, list) and exp:
+        lines: List[str] = []
+        for e in exp:
+            if isinstance(e, dict):
+                org = e.get("organization")
+                title = e.get("title")
+                line = " ".join(filter(None, [org, title]))
+                if line:
+                    lines.append(line)
+            else:
+                lines.append(str(e))
+        if lines:
+            sections["PROFESSIONAL EXPERIENCE"] = lines
+    elif isinstance(exp, str) and exp:
+        sections["PROFESSIONAL EXPERIENCE"] = [exp]
+
+    # Achievements
+    ach = info.get("achievements")
+    if isinstance(ach, list) and ach:
+        sections["ACHIEVEMENTS"] = [str(a) for a in ach]
+    elif isinstance(ach, str) and ach:
+        sections["ACHIEVEMENTS"] = [ach]
+
+    # Specialties
+    spec = info.get("specialties")
+    if isinstance(spec, list) and spec:
+        sections["SPECIALTIES"] = [str(s) for s in spec]
+    elif isinstance(spec, str) and spec:
+        sections["SPECIALTIES"] = [spec]
 
     return sections
 
@@ -114,13 +196,16 @@ def build_people(program: dict, influencers: Iterable) -> Tuple[List[dict], List
         info = infl_by_name.get(name, {}) or {}
         enriched = {
             "name": name,
-            "title": info.get("current_position", {}).get("title", ""),
+            "title": info.get("current_position", {}).get("title", "")
+            if isinstance(info.get("current_position"), dict)
+            else "",
             "organization": info.get("current_position", {}).get("organization", "")
             if isinstance(info.get("current_position"), dict)
             else "",
             "profile": build_profile(info),
             "photo_url": info.get("photo_url", ""),
-            "profile_sections": build_profile_sections(info),
+            # "profile_sections": build_profile_sections(info),
+            "profile_sections": EN_build_profile_sections(info),
         }
         if entry.get("type") == "主持人":
             chairs.append(enriched)

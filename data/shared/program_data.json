@@ -440,30 +440,209 @@
     "planName": "再生醫療產品技術鏈結與市場拓展計畫",
     "eventNames": [
       "鏈結全球、啟動合作：台灣再生醫療邁向國際市場的策略與契機",
-      "以再生醫療勾勒台灣未來"
+      "【以再生醫療勾勒臺灣未來】研討會"
     ],
     "date": "2025-10-16",
     "locations": [
-      "臺北市"
+      "臺大醫院國際會議中心401會議室",
+      "Room 401,NTUH International Convention Center"
     ],
     "instructors": [
       "經濟部產業發展署"
     ],
     "organizers": [
-      "財團法人台灣醫界聯盟基金會"
+      "財團法人台灣醫界聯盟基金會","經濟部產業發展署","財團法人生物技術開發中心"
     ],
     "coOrganizers": [],
     "jointOrganizers": [],
     "attachments": [],
     "registration_urls": [],
-    "max_capacity": null,
+    "max_capacity": 220,
     "agenda_settings": {
-      "start_time": "",
-      "end_time": "",
-      "speaker_minutes": null,
+      "start_time": "09:00",
+      "end_time": "12:00",
+      "speaker_minutes": 40,
       "special_sessions": []
     },
-    "speakers": [],
+    "speakers": [
+      {
+        "no": "1",
+        "type": "Opening Remark",
+        "topic": "開幕致詞",
+        "name": "陳佩利 副署長 / Pei-Li CHEN, Deputy Director General, Industrial Development Administration, Ministry of Economic Affairs",
+        "start_time": "09:00",
+        "end_time": "09:05"
+      },
+      {
+        "no": "2",
+        "type": "主持人",
+        "topic": "大合照 Group Photo",
+        "name": "林世嘉",
+        "start_time": "09:05",
+        "end_time": "09:15"
+      },
+      {
+        "no": "3",
+        "type": "講者",
+        "topic": "台日攜手邁向國際：再生醫療產業鏈結與合作新模式",
+        "name": "堀 清次",
+        "start_time": "09:15",
+        "end_time": "09:55"
+      },
+      {
+        "no": "4",
+        "type": "講者",
+        "topic": "跨境連結與策略合作：推動再生醫療走向國際的關鍵動能",
+        "name": "坂東 博人",
+        "start_time": "09:55",
+        "end_time": "10:35"
+      },
+      {
+        "no": "5",
+        "type": "休息",
+        "topic": "",
+        "name": "",
+        "start_time": "10:35",
+        "end_time": "10:45"
+      },
+      {
+        "no": "6",
+        "type": "講者",
+        "topic": "2025再生醫療尖端趨勢與臺灣再生醫療雙法的下一步",
+        "name": "林世嘉",
+        "start_time": "10:45",
+        "end_time": "11:25"
+      },
+      {
+        "no": "8",
+        "type": "講者",
+        "topic": "再生醫療產業鏈的國際接軌：台灣與國際合作的挑戰與機會",
+        "name": "陳瑜帆",
+        "start_time": "12:00",
+        "end_time": "12:00"
+      }, {
+        "no": "7",
+        "type": "講者",
+        "topic": "再生醫療產業鏈的國際接軌：台灣與國際合作的挑戰與機會",
+        "name": "何弘能 總顧問 / Hong-Neng HO, General Consultant, Taipei Medical University",
+        "start_time": "11:25",
+        "end_time": "12:00"
+      },
+      {
+        "no": "9",
+        "type": "Closing",
+        "topic": "閉幕 Closing",
+        "name": "",
+        "start_time": "12:00",
+        "end_time": ""
+      }
+    ],
+
+    "activities_contacts": []
+  },
+  {
+    "id": "7_1",
+    "planName": "再生醫療產品技術鏈結與市場拓展計畫",
+    "eventNames": [
+      "Shaping Taiwan’s Future through Regenerative Medicine",
+      "Global Connections and Partnerships: Taiwan’s Regenerative Medicine Going International"
+    ],
+    "date": "2025-10-16",
+    "locations": [
+      "Room 401, NTUH International Convention Center",
+      "No. 2, Xuzhou Road, Zhongzheng District Taipei, Taiwan"
+    ],
+    "instructors": [
+      "Industrial Development Administration, Ministry of Economic Affairs"
+    ],
+    "organizers": [
+      "Room 301, NTUH International Convention Center","Industrial Development Administration, Ministry of Economic Affairs","Development Center for Biotechnology"
+    ],
+    "coOrganizers": [],
+    "jointOrganizers": [],
+    "attachments": [],
+    "registration_urls": [],
+    "max_capacity": 220,
+    "agenda_settings": {
+      "start_time": "09:00",
+      "end_time": "12:00",
+      "speaker_minutes": 40,
+      "special_sessions": []
+    },
+    "speakers": [
+      {
+        "no": "1",
+        "type": "Opening Remark",
+        "topic": "開幕致詞",
+        "name": "陳佩利 副署長 / Pei-Li CHEN, Deputy Director General, Industrial Development Administration, Ministry of Economic Affairs",
+        "start_time": "09:00",
+        "end_time": "09:05"
+      },
+      {
+        "no": "2",
+        "type": "主持人",
+        "topic": "大合照 Group Photo",
+        "name": "林世嘉",
+        "start_time": "09:05",
+        "end_time": "09:15"
+      },
+      {
+        "no": "3",
+        "type": "講者",
+        "topic": "台日攜手邁向國際：再生醫療產業鏈結與合作新模式",
+        "name": "Seiji HORI",
+        "start_time": "09:15",
+        "end_time": "09:55"
+      },
+      {
+        "no": "4",
+        "type": "講者",
+        "topic": "跨境連結與策略合作：推動再生醫療走向國際的關鍵動能",
+        "name": "Hiroto Bando",
+        "start_time": "09:55",
+        "end_time": "10:35"
+      },
+      {
+        "no": "5",
+        "type": "休息",
+        "topic": "",
+        "name": "",
+        "start_time": "10:35",
+        "end_time": "10:45"
+      },
+      {
+        "no": "6",
+        "type": "講者",
+        "topic": "2025再生醫療尖端趨勢與臺灣再生醫療雙法的下一步",
+        "name": "林世嘉",
+        "start_time": "10:45",
+        "end_time": "11:25"
+      },
+      {
+        "no": "8",
+        "type": "講者",
+        "topic": "再生醫療產業鏈的國際接軌：台灣與國際合作的挑戰與機會",
+        "name": "Yu-Fan Chen",
+        "start_time": "12:00",
+        "end_time": "12:00"
+      }, {
+        "no": "7",
+        "type": "講者",
+        "topic": "再生醫療產業鏈的國際接軌：台灣與國際合作的挑戰與機會",
+        "name": "何弘能 總顧問 / Hong-Neng HO, General Consultant, Taipei Medical University",
+        "start_time": "11:25",
+        "end_time": "12:00"
+      },
+      {
+        "no": "9",
+        "type": "Closing",
+        "topic": "閉幕 Closing",
+        "name": "",
+        "start_time": "12:00",
+        "end_time": ""
+      }
+    ],
+
     "activities_contacts": []
   },
   {

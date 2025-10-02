@@ -140,9 +140,9 @@ def render_cover_table(doc: Document, program: Dict[str, Any], profile_pt: int) 
         if len(locations) > 1:
             loc_text += f"（{locations[1]}）"
 
-    organizers_text = "\n".join(program.get("organizers", [])) if program.get("organizers") else ""
-    co_organizers_text = "\n".join(program.get("coOrganizers", [])) if program.get("coOrganizers") else ""
-    joint_organizers_text = "\n".join(program.get("jointOrganizers", [])) if program.get("jointOrganizers") else ""
+    organizers_text = "、".join(program.get("organizers", [])) if program.get("organizers") else ""
+    co_organizers_text = "、".join(program.get("coOrganizers", [])) if program.get("coOrganizers") else ""
+    joint_organizers_text = "、".join(program.get("jointOrganizers", [])) if program.get("jointOrganizers") else ""
 
     instructors = program.get("instructors") or []
     instructor_text = ""
@@ -270,7 +270,7 @@ def main() -> None:
     # Table of contents
     toc_title_p = doc.add_paragraph()
     toc_title_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    toc_title_run = toc_title_p.add_run("目錄")
+    toc_title_run = toc_title_p.add_run("Contents")
     set_run_font(toc_title_run, TITLE_PT, bold=True)
 
     # 接著插入 TOC field（不變）
@@ -281,7 +281,7 @@ def main() -> None:
     doc.add_page_break()
 
     # Activity info section (label on its own line, value on next line, blank line between blocks)
-    doc.add_heading("活動資訊", level=1)
+    doc.add_heading("Conference Information", level=1)
 
     # compute locations/strings locally for reuse
     locations = program.get("locations") or []
@@ -303,7 +303,7 @@ def main() -> None:
     date_val = _join_val(program.get("date"))
     if date_val:
         p_label = doc.add_paragraph()
-        run_label = p_label.add_run("日期：")
+        run_label = p_label.add_run("Date：")
         set_run_font(run_label, PROFILE_PT, bold=True)
         p_val = doc.add_paragraph()
         date_2 =format_date(date_val, "%Y年%m月%d日 %A", chinese_weekday=True, no_leading_zero=True)
@@ -314,7 +314,7 @@ def main() -> None:
     # LOCATION
     if loc_text:
         p_label = doc.add_paragraph()
-        run_label = p_label.add_run("地點：")
+        run_label = p_label.add_run("Venue ：")
         set_run_font(run_label, PROFILE_PT, bold=True)
         p_val = doc.add_paragraph()
         run_val = p_val.add_run(loc_text)
@@ -325,7 +325,7 @@ def main() -> None:
     organizers_val = _join_val(program.get("organizers"))
     if organizers_val:
         p_label = doc.add_paragraph()
-        run_label = p_label.add_run("主辦單位：")
+        run_label = p_label.add_run("Organizers ：")
         set_run_font(run_label, PROFILE_PT, bold=True)
         p_val = doc.add_paragraph()
         run_val = p_val.add_run(organizers_val)
@@ -336,7 +336,7 @@ def main() -> None:
     co_org_val = _join_val(program.get("coOrganizers"))
     if co_org_val:
         p_label = doc.add_paragraph()
-        run_label = p_label.add_run("協辦單位：")
+        run_label = p_label.add_run("Co-Organizers：")
         set_run_font(run_label, PROFILE_PT, bold=True)
         p_val = doc.add_paragraph()
         run_val = p_val.add_run(co_org_val)
@@ -347,7 +347,7 @@ def main() -> None:
     joint_org_val = _join_val(program.get("jointOrganizers"))
     if joint_org_val:
         p_label = doc.add_paragraph()
-        run_label = p_label.add_run("合辦單位：")
+        run_label = p_label.add_run("Joint Organizers：")
         set_run_font(run_label, PROFILE_PT, bold=True)
         p_val = doc.add_paragraph()
         run_val = p_val.add_run(joint_org_val)
@@ -358,7 +358,7 @@ def main() -> None:
     instructor_val = _join_val(program.get("instructors") or program.get("instructor") or program.get("guidance"))
     if instructor_val:
         p_label = doc.add_paragraph()
-        run_label = p_label.add_run("指導單位：")
+        run_label = p_label.add_run("Guided by：")
         set_run_font(run_label, PROFILE_PT, bold=True)
         p_val = doc.add_paragraph()
         run_val = p_val.add_run(instructor_val)
@@ -368,14 +368,14 @@ def main() -> None:
 
     doc.add_page_break()
 
-    h2 = doc.add_heading("議程", level=1)
+    h2 = doc.add_heading("Agenda", level=1)
     h2.style = 'Heading 1'
 
     if schedule_rows:
         table = doc.add_table(rows=1, cols=3)
         table.alignment = WD_TABLE_ALIGNMENT.CENTER
         hdr = table.rows[0].cells
-        headers = ["時間", "議程", "講者"]
+        headers = ["Time", "Topic", "Speaker"]
         for idx, text in enumerate(headers):
             p = hdr[idx].paragraphs[0]
             p.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -391,7 +391,7 @@ def main() -> None:
                 set_run_font(run, TABLE_PT)
     doc.add_page_break()
 
-    h3 = doc.add_heading("主持人", level=1)
+    h3 = doc.add_heading("Moderator", level=1)
     h3.style = 'Heading 1'
 
     if chairs:
@@ -422,7 +422,7 @@ def main() -> None:
                         set_run_font(r, PROFILE_PT)
         doc.add_page_break()
 
-    h4 = doc.add_heading("講者", level=1)
+    h4 = doc.add_heading("Speakers", level=1)
     h4.style = 'Heading 1'
     # 只顯示 type 為 "講者" 的項目
     # ---- speakers: bullet list, first line = name (bold) + title, second line = organization ----
@@ -474,7 +474,7 @@ def main() -> None:
         for sp in speakers:
             # 第一段：名稱（粗體）與職稱
             p = doc.add_paragraph()
-            label_run = p.add_run("講者")
+            label_run = p.add_run("SPEAKER")
             set_run_font(label_run, NAME_PT, bold=False)
             p = doc.add_paragraph()
             name_run = p.add_run(sp.get("name", ""))

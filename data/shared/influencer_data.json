@@ -41,10 +41,11 @@
       "會議與訓練籌辦"
     ],
     "achievements": [
-      "草擬並推動《再生醫療管理製劑條例（草案）》",
-      "主編／總編輯多本再生醫療與生醫政策相關書籍",
-      "2015–2024 間主辦 37 場細胞治療技術醫師訓練課程，訓練 3,195 名相關人員"
-    ],
+
+        "《再生醫療～研發、實踐、支援～》教科書中譯本總編輯",
+        "《厚生富國-台灣發展創新生醫政策建言》系列總編輯",
+        "《未來醫療-再生醫療發展與趨勢》作者"
+      ],
     "academic_title": "",
     "certificate_number": "",
     "highest_education": {
@@ -54,11 +55,23 @@
       "degree": ""
     },
     "experience": [
-      "第八屆立法委員（衛環委員）",
-      "財團法人台灣醫界聯盟基金會 執行長",
-      "台安生物科技股份有限公司 總經理",
-      "多個政府／智庫／基金會顧問與董事職務（包含衛福部國際醫療管理工作小組專家顧問等）",
-      "與日本、英國、韓國等國際再生醫療單位長期交流與合作"
+      "第八屆立法委員、衛環委員、台聯黨團總召",
+      "樂迦再生科技(股)公司董事及執行長",
+      "衛生福利部國際醫療政策諮議會委員",
+      "行政院科技會報生技諮議會（BTC）專家",
+      "行政院國家發展基金生醫與醫療組審議委員",
+      "財團法人生物技術開發中心顧問",
+      "國衛院「生命及醫療倫理規範研擬與制定專責小組」委員",
+      "行政院「推動參與世界衛生組織跨部會小組」成員",
+      "臺灣歐盟研究協會理事",
+      "民間全民電視（股）公司董事",
+      "財團法人彭婉如基金會董事長",
+      "財團法人台灣智庫董事",
+      "草擬並推動《再生醫療管理製劑條例（草案）》",
+      "與日本再生醫療學會（JSRM）就教科書翻譯、人才培訓與認證系統、再生醫療數據平台等事項進行合作",
+      "多次與日本重要學者、日本再生醫療創新論壇（FIRM）、日本PMDA、日本國立醫療研究開發機構（AMED）及英國CGT Catapult、韓國先進再生醫療諮議會（CARM）、韓國再生醫療振興財團(RMAF)等交流",
+      "辦理多場再生醫療國際會議、國內產官學座談會。2015-2024年以來辦理37場施行細胞治療技術醫師訓練課程，合計訓練3,195名臨床相關研究與執行人員"
+
     ],
     "current_position": {
       "organization": "財團法人台灣醫界聯盟基金會",
@@ -344,6 +357,362 @@
       "CC": []
     }
   },
+  {
+    "id_number": "",
+    "name": "Seiji HORI",
+    "phone": "+81 78 304 5260",
+    "email": ["hori@vcct.jp"],
+    "specialties": ["Regenerative medicine", "Neurodegenerative disease", "Drug discovery", "Retinal regenerative medicine", "Stem cell applications"],
+    "achievements": [
+      "Created compounds that inhibit intracellular stress, which entered clinical trials",
+      "Promoted regenerative medicine using stem cells at iPS portal Inc.",
+      "Chairman of the Education Committee of FIRM, contributing to personnel development",
+      "Publication: Pigmentation level of human iPSC-derived RPE does not indicate a specific gene expression profile. Elife. 2024 May 9:12:RP92510. doi:10.7554/eLife.92510.",
+      "Publication: Automated adherent cell elimination by a high-speed laser mediated by a light-responsive polymer. Commun Biol. 2018 Dec 7:1:218. doi:10.1038/s42003-018-0222-4.",
+      "Publication: Novel VCP modulators mitigate major pathologies of rd10, a mouse model of retinitis pigmentosa. Sci Rep. 2014 Aug 6;4:5970. doi:10.1038/srep05970."
+    ],
+    "academic_title": "Ph.D.",
+    "certificate_number": "",
+    "highest_education": {
+      "school": "Kyoto University",
+      "department": "Medical Science",
+      "graduation_year": "1994",
+      "degree": "Ph.D. (Medical Science)"
+    },
+    "experience": [
+      {
+        "period": "2021–present",
+        "position": "Director (CTO)",
+        "organization": "VC Cell Therapy Inc."
+      },
+      {
+        "period": "2014–2021, 2023–present",
+        "position": "Science Fellow",
+        "organization": "iPS portal Inc."
+      },
+      {
+        "period": "2001–2014",
+        "position": "Lecturer",
+        "organization": "Graduate School of Biostudies, Kyoto University"
+      }
+    ],
+    "current_position": {
+      "organization": "VC Cell Therapy Inc.",
+      "title": "Director (CTO)",
+      "start_year": 2021,
+      "teaching_years": 13,
+      "practice_years": null,
+      "research_years": null
+    },
+    "contact_person": {
+      "name": "",
+      "email": [],
+      "CC": []
+    }
+  },
+  {
+    "id_number": "",
+    "name": "堀 清次",
+    "phone": "+81 78 304 5260",
+    "email": ["hori@vcct.jp"],
+    "specialties": ["再生醫學", "神經退化性疾病", "藥物開發", "視網膜再生醫學", "幹細胞應用"],
+    "achievements": [
+      "開發可抑制細胞內壓力的化合物，並已進入臨床試驗",
+      "在 iPS portal Inc. 推動幹細胞藥物發現與再生醫學研究",
+      "擔任日本再生醫療創新論壇（FIRM）教育委員會主席，致力於產業人才培育",
+      "發表論文：Pigmentation level of human iPSC-derived RPE does not indicate a specific gene expression profile. Elife. 2024 May 9:12:RP92510. doi:10.7554/eLife.92510.",
+      "發表論文：Automated adherent cell elimination by a high-speed laser mediated by a light-responsive polymer. Commun Biol. 2018 Dec 7:1:218. doi:10.1038/s42003-018-0222-4.",
+      "發表論文：Novel VCP modulators mitigate major pathologies of rd10, a mouse model of retinitis pigmentosa. Sci Rep. 2014 Aug 6;4:5970. doi:10.1038/srep05970."
+    ],
+    "academic_title": "博士 (Ph.D.)",
+    "certificate_number": "",
+    "highest_education": {
+      "school": "京都大學",
+      "department": "醫學科學",
+      "graduation_year": "1994",
+      "degree": "博士 (醫學科學)"
+    },
+    "experience": [
+      {
+        "period": "2021–至今",
+        "position": "董事 (技術長)",
+        "organization": "VC Cell Therapy Inc."
+      },
+      {
+        "period": "2014–2021, 2023–至今",
+        "position": "科學研究員",
+        "organization": "iPS portal Inc."
+      },
+      {
+        "period": "2001–2014",
+        "position": "講師",
+        "organization": "京都大學 生命科學研究科"
+      }
+    ],
+    "current_position": {
+      "organization": "VC Cell Therapy Inc.",
+      "title": "董事",
+      "start_year": 2021,
+      "teaching_years": 13,
+      "practice_years": null,
+      "research_years": null
+    },
+    "contact_person": {
+      "name": "",
+      "email": [],
+      "CC": []
+    }
+  },
+  {
+    "id_number": "",
+    "name": "坂東 博人",
+    "phone": "",
+    "email": ["mrj_contact@minaris.com"],
+    "specialties": ["再生醫學", "先進治療製造", "細胞治療策略", "藥學研究", "跨國營運管理"],
+    "achievements": [
+      "自2025年1月起擔任 Minaris Advanced Therapies 日本總裁，領導跨日、美、德的全球營運，並完成公司轉型至 Altaris。",
+      "曾任 FUJIFILM 高級經理，並在武田藥品工業擔任全球細胞治療製造策略負責人。",
+      "擁有京都大學藥學博士及商業突破大學研究所 MBA，兼具科學與管理專業背景。",
+      "發表論文：Detection of residual pluripotent stem cells in cell therapy products utilizing droplet digital PCR: an international multisite evaluation study. Stem Cells Transl. Med. 2024; 13(10):1001-1014. doi:10.1093/stcltm/szae058.",
+      "發表論文：Tumorigenicity assessment of cell therapy products: The need for global consensus and points to consider. Cytotherapy. 2019; 21(11):1095-1111. doi:10.1016/j.jcyt.2019.10.001."
+    ],
+    "academic_title": "博士 (Ph.D.), MBA",
+    "certificate_number": "",
+    "highest_education": {
+      "school": "京都大學",
+      "department": "藥學",
+      "graduation_year": "1997",
+      "degree": "博士 (藥學)"
+    },
+    "experience": [
+      {
+        "period": "2020–至今",
+        "position": "執行長",
+        "organization": "Minaris Advanced Therapies"
+      },
+      {
+        "period": "2018–2020",
+        "position": "高級經理",
+        "organization": "富士膠片株式會社 (FUJIFILM Corporation)"
+      },
+      {
+        "period": "2015–2018",
+        "position": "全球細胞治療製造策略負責人",
+        "organization": "武田藥品工業 (Takeda Pharmaceutical Company)"
+      }
+    ],
+    "current_position": {
+      "organization": "Minaris Advanced Therapies",
+      "title": "執行長",
+      "start_year": 2020,
+      "teaching_years": null,
+      "practice_years": null,
+      "research_years": null
+    },
+    "contact_person": {
+      "name": "",
+      "email": [],
+      "CC": []
+    }
+  },
+  {
+    "id_number": "",
+    "name": "Hiroto Bando",
+    "phone": "",
+    "email": ["mrj_contact@minaris.com"],
+    "specialties": ["Regenerative medicine", "Advanced therapy manufacturing", "Cell therapy strategy", "Pharmaceutical sciences", "Global operations management"],
+    "achievements": [
+      "Appointed President of Japan at Minaris Advanced Therapies in January 2025, leading global operations across Japan, USA, and Germany, and oversaw the company’s transition to Altaris.",
+      "Served as Senior Manager at FUJIFILM Corporation and as Head of Global Cell Therapy Manufacturing Strategy at Takeda Pharmaceutical Company.",
+      "Holds a Ph.D. in Pharmaceutical Sciences from Kyoto University and an MBA from Business Breakthrough University, combining scientific expertise with management skills.",
+      "Publication: Detection of residual pluripotent stem cells in cell therapy products utilizing droplet digital PCR: an international multisite evaluation study. Stem Cells Transl. Med. 2024; 13(10):1001-1014. doi:10.1093/stcltm/szae058.",
+      "Publication: Tumorigenicity assessment of cell therapy products: The need for global consensus and points to consider. Cytotherapy. 2019; 21(11):1095-1111. doi:10.1016/j.jcyt.2019.10.001."
+    ],
+    "academic_title": "Ph.D., MBA",
+    "certificate_number": "",
+    "highest_education": {
+      "school": "Kyoto University",
+      "department": "Pharmaceutical Sciences",
+      "graduation_year": "1997",
+      "degree": "Ph.D. in Pharmaceutical Sciences"
+    },
+    "experience": [
+      {
+        "period": "2020–present",
+        "position": "President of Japan",
+        "organization": "Minaris Advanced Therapies"
+      },
+      {
+        "period": "2018–2020",
+        "position": "Senior Manager",
+        "organization": "FUJIFILM Corporation"
+      },
+      {
+        "period": "2015–2018",
+        "position": "Head of Global Cell Therapy Manufacturing Strategy",
+        "organization": "Takeda Pharmaceutical Company"
+      }
+    ],
+    "current_position": {
+      "organization": "Minaris Advanced Therapies",
+      "title": "President of Japan",
+      "start_year": 2020,
+      "teaching_years": null,
+      "practice_years": null,
+      "research_years": null
+    },
+    "contact_person": {
+      "name": "",
+      "email": [],
+      "CC": []
+    }
+  },
+  {
+    "id_number": "",
+    "name": "Yu-Fan Chen",
+    "phone": "0989354123",
+    "email": [],
+    "specialties": ["Stem Cell Biology", "Regenerative Medicine"],
+    "achievements": [
+      "21st National Innovation Award – Academic Innovation Award",
+      "US Patent: Mature hepatocytes derived from induced pluripotent stem cells, methods for producing them, and their use in treating liver diseases (US9732323)",
+      "Taiwan Patent: Method for rapid generation of mature hepatocytes and its application in the treatment of liver diseases (I449789)",
+      "Taiwan Patent: Treatment of non-alcoholic steatohepatitis using exosomes derived from mesenchymal stem cells (I836656)",
+      "Yu-Fan Chen, Chien-Wei Lee, Yi-Shuan J Li, Wei-Ting Lin, Hsiao-Yun Chen, Yu-Chuan Chen, Chia-Hao Lin, Jennifer Hui-Chun Ho, Li-Fan Lu, Shu Chien, Oscar Kuang-Sheng Lee. Temporal single-cell sequencing analysis reveals that GPNMB-expressing macrophages potentiate muscle regeneration. Exp. Mol. Med. Jun. 2025.",
+      "Chien-Wei Lee, Belle Yu-Hsuan Wang, Shing Hei Wong, Yi-Fan Chen, Qin Cao, Allen Wei-Ting Hsiao, Sin-Hang Fung, Yu-Fan Chen, Hao-Hsiang Wu, Po-Yu Cheng, Zong-Han Chou, Wayne Yuk-Wai Lee, Stephen Kwok Wing Tsui, Oscar Kuang-Sheng Lee. Ginkgolide B increases healthspan and lifespan of female mice. Nature Aging. Jan. 2025.",
+      "WT Lin, HH Wu, CW Lee, YF Chen, L Huang, JHC Ho, OKS Lee. Modulation of experimental acute lung injury by exosomal miR-7704 from mesenchymal stromal cells acts through M2 macrophage polarization. Mol Ther Nucleic Acids. Mar. 2024.",
+      "Zihao Wan, Yu-Fan Chen, Qi Pan, Yiwei Wang, Shuai Yuan, Hui Yen Chin, Hao-Hsiang Wu, Wei-Ting Lin, Po-Yu Cheng, Yun-Jung Yang, Yu-Fan Wang, Shekhar Madhukar Kumta, Chien-Wei Lee, Oscar Kuang-Sheng Lee. Single-cell transcriptome analysis reveals the effectiveness of cytokine priming irrespective of heterogeneity in mesenchymal stromal cells. Cytotherapy. 25 (11):1155-1166. Nov. 2023.",
+      "Yu-Fan Chen, Chien-Wei Lee, Hao-Hsiang Wu, Wei-Ting Lin, Oscar K Lee. Immunometabolism of macrophages regulates skeletal muscle regeneration. Front. Cell Dev. Biol. 10:948819. Sept. 2022.",
+      "Yu-Fan Chen, Yi-Shuan J. Li, Chih-Hung Chou, Men Yee Chiew, Hsien-Da Huang, Jennifer Hui-Chun Ho, Shu Chien, Oscar K. Lee. Control of Matrix Stiffness Promotes Endodermal Lineage Specification by Regulating SMAD2/3 via lncRNA LINC00458. Science Advances 6: eaay0264 Feb. 2020.",
+      "Lee CW*, Chen YF*, Wu HH*, Lee OK. Historical Perspectives and Advances in Mesenchymal Stem Cell Research for the Treatment of Liver Diseases. Gastroenterology 154 (1):46-56. Jan. 2018. (*These authors contributed equally to the manuscript)",
+      "Yu-Fan Chen, Chien-Yu Tseng, Hsei-Wei Wang, Hung-Chih Kuo, Vincent W. Yang, Oscar K. Lee. Rapid Generation of Mature Hepatocyte-Like Cells from Human Induced Pluripotent Stem Cells by an Efficient Three-Step Protocol. Hepatology 55 (4):1193-1203. Apr. 2012.",
+      "Chang YK, Chen MH, Chiang YH, Chen YF, Ma WH, Tseng CY, Soong BW, Ho JH, Lee OK. Mesenchymal Stem Cell Transplantation Ameliorates Motor Function Deterioration of Spinocerebellar Ataxia by Rescuing Cerebellar Purkinje Cells. J Biomed Sci 18 (1):54. Aug. 2011.",
+      "Ho JH, Tseng TC, Ma WH, Ong WK, Chen YF, Chen MH, Lin MW, Hong CY, Lee OK. Multiple Intravenous Transplantations of Mesenchymal Stem Cells Effectively Restore Long-Term Blood Glucose Homeostasis by Hepatic Engraftment and β-Cell Differentiation in Streptozocin-Induced Diabetic Mice. Cell Transplantation 21 (5):997-1009. Aug. 2012.",
+      "Ho JH, Ma WH, Tseng TC, Chen YF, Chen MH, Lee OK. Isolation and Characterization of Multi-Potent Stem Cells from Human Orbital Fat Tissues. Tissue Eng Part A 17(1-2):255-66. Jan. 2011.",
+      "Ho JH, Chen YF, Ma WH, Tseng TC, Chen MH, Lee OK. Cell Contact Accelerates Replicative Senescence of Human Mesenchymal Stem Cells Independent of Telomere Shortening and p53 Activation: Roles of Ras and Oxidative Stress. Cell Transplantation 20 (8):1209-20. Aug. 2011."
+    ],
+    "academic_title": "Assistant Professor",
+    "certificate_number": "154764",
+    "highest_education": {
+      "school": "National Yang Ming Chiao Tung University",
+      "department": "Institute of Clinical Medicine",
+      "graduation_year": "2019",
+      "degree": "Ph.D."
+    },
+    "experience": [
+      {
+        "period": "2025–Present",
+        "position": "Deputy Director (Acting)",
+        "organization": "Industrial Technology Research Institute (ITRI)",
+        "teaching_years": 0.5,
+        "practice_years": 0.5,
+        "research_years": 0.5
+      },
+      {
+        "period": "2021–Present",
+        "position": "Assistant Professor / Assistant Researcher",
+        "organization": "China Medical University / China Medical University Hospital",
+        "teaching_years": 2,
+        "practice_years": 3,
+        "research_years": 3
+      },
+      {
+        "period": "2020",
+        "position": "Postdoctoral Research Fellow",
+        "organization": "University of California, San Diego",
+        "teaching_years": 0,
+        "practice_years": 1,
+        "research_years": 1
+      }
+    ],
+    "current_position": {
+      "organization": "Industrial Technology Research Institute (ITRI)",
+      "title": "Deputy Director (Acting)",
+      "start_year": 2025,
+      "teaching_years": 0.5,
+      "practice_years": 0.5,
+      "research_years": 0.5
+    },
+    "contact_person": {
+      "name": "",
+      "email": [],
+      "CC": []
+    }
+  },
+
+  {
+    "id_number": "",
+    "name": "陳瑜帆",
+    "phone": "0989354123",
+    "email": [],
+    "specialties": ["幹細胞生物學", "再生醫學"],
+    "achievements": [
+      "第21屆國家新創獎－學研新創獎",
+      "美國專利：由誘導性多能幹細胞產生之成熟肝細胞、其生成方法及用於肝臟疾病治療之用途 (US9732323)",
+      "台灣專利：快速生成成熟肝細胞的方法，及其在肝臟疾病治療之應用 (I449789)",
+      "台灣專利：利用間質幹細胞來源外泌體治療非酒精性脂肪肝炎 (I836656)",
+      "發表論文：Temporal single-cell sequencing analysis reveals that GPNMB-expressing macrophages potentiate muscle regeneration. Exp. Mol. Med. 2025年6月",
+      "發表論文：Ginkgolide B increases healthspan and lifespan of female mice. Nature Aging. 2025年1月",
+      "發表論文：Modulation of experimental acute lung injury by exosomal miR-7704 from mesenchymal stromal cells acts through M2 macrophage polarization. Mol Ther Nucleic Acids. 2024年3月",
+      "發表論文：Single-cell transcriptome analysis reveals the effectiveness of cytokine priming irrespective of heterogeneity in mesenchymal stromal cells. Cytotherapy. 2023年11月",
+      "發表論文：Immunometabolism of macrophages regulates skeletal muscle regeneration. Front. Cell Dev. Biol. 2022年9月",
+      "發表論文：Control of Matrix Stiffness Promotes Endodermal Lineage Specification by Regulating SMAD2/3 via lncRNA LINC00458. Science Advances. 2020年2月",
+      "發表論文：Historical Perspectives and Advances in Mesenchymal Stem Cell Research for the Treatment of Liver Diseases. Gastroenterology. 2018年1月",
+      "發表論文：Rapid Generation of Mature Hepatocyte-Like Cells from Human Induced Pluripotent Stem Cells by an Efficient Three-Step Protocol. Hepatology. 2012年4月",
+      "發表論文：Mesenchymal Stem Cell Transplantation Ameliorates Motor Function Deterioration of Spinocerebellar Ataxia by Rescuing Cerebellar Purkinje Cells. J Biomed Sci. 2011年8月",
+      "發表論文：Multiple Intravenous Transplantations of Mesenchymal Stem Cells Effectively Restore Long-Term Blood Glucose Homeostasis in Streptozocin-Induced Diabetic Mice. Cell Transplantation. 2012年8月",
+      "發表論文：Isolation and Characterization of Multi-Potent Stem Cells from Human Orbital Fat Tissues. Tissue Eng Part A. 2011年1月",
+      "發表論文：Cell Contact Accelerates Replicative Senescence of Human Mesenchymal Stem Cells Independent of Telomere Shortening and p53 Activation: Roles of Ras and Oxidative Stress. Cell Transplantation. 2011年8月"
+    ],
+    "academic_title": "助理教授",
+    "certificate_number": "154764",
+    "highest_education": {
+      "school": "陽明交通大學",
+      "department": "臨床醫學研究所",
+      "graduation_year": "2019",
+      "degree": "博士"
+    },
+    "experience": [
+      {
+        "period": "2025–至今",
+        "position": "副組長 (代)",
+        "organization": "工業技術研究院",
+        "teaching_years": 0.5,
+        "practice_years": 0.5,
+        "research_years": 0.5
+      },
+      {
+        "period": "2021–至今",
+        "position": "助理教授 / 助理研究員",
+        "organization": "中國醫藥大學 / 中國醫藥大學附設醫院",
+        "teaching_years": 2,
+        "practice_years": 3,
+        "research_years": 3
+      },
+      {
+        "period": "2020",
+        "position": "博士後研究員",
+        "organization": "加州大學聖地牙哥分校",
+        "teaching_years": 0,
+        "practice_years": 1,
+        "research_years": 1
+      }
+    ],
+    "current_position": {
+      "organization": "工業技術研究院",
+      "title": "副組長 (代)",
+      "start_year": 2025,
+      "teaching_years": 0.5,
+      "practice_years": 0.5,
+      "research_years": 0.5
+    },
+    "contact_person": {
+      "name": "",
+      "email": [],
+      "CC": []
+    }
+  },
+
   {
     "id_number": "L221887330",
     "name": "張杏焄",
