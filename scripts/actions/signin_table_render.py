@@ -1,4 +1,19 @@
-"""Utilities for rendering speaker sign-in tables to Word documents."""
+"""Utilities for rendering speaker sign-in tables to Word documents.
+
+The module exposes :func:`render_signin_table` for full control as well as the
+shortcut :func:`render_signin_table_paginated` that other Python modules can
+import when they simply need to supply a ``rows_per_page`` limit::
+
+    from scripts.actions.signin_table_render import (
+        SignInDocumentContext,
+        SignInRow,
+        render_signin_table_paginated,
+    )
+
+    context = SignInDocumentContext(plan_name="Plan", event_name="Event")
+    rows = [SignInRow(name="Alice"), SignInRow(name="Bob")]
+    render_signin_table_paginated(context, rows, "output.docx", rows_per_page=15)
+"""
 
 from __future__ import annotations
 
@@ -137,6 +152,14 @@ def _set_table_rows_height(table, height_cm: float):
         _set_row_height_exact(r, height_cm)
 
 
+def _set_row_height_auto(row):
+    if hasattr(WD_ROW_HEIGHT_RULE, "AUTO"):
+        try:
+            row.height_rule = WD_ROW_HEIGHT_RULE.AUTO
+        except Exception:
+            pass
+
+
 def _set_cell_vertical_center(cell):
     try:
         cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
@@ -223,6 +246,7 @@ def render_signin_table(
     col1_fixed_cm: float = COL1_FIXED_CM,
     data_row_height_cm: float = DATA_ROW_HEIGHT_CM,
     header_height_cm: float = HDR_HEIGHT_CM,
+    auto_adjust_dimensions: bool = True,
     rows_per_page: int | None = None,
 ) -> SignInRenderResult:
     """Render a sign-in table document and save it to ``output_path``.
@@ -235,6 +259,11 @@ def render_signin_table(
         recreate the table with the header so every page starts with the
         header row. When ``None`` (default) all rows are rendered into a
         single table, matching the legacy behaviour.
+    auto_adjust_dimensions:
+        When ``True`` (default) column widths and row heights are left to
+        Word's automatic layout engine so content determines the final size.
+        When ``False`` the legacy fixed widths and heights defined by the
+        module constants are applied.
     """
 
     normalized = _coerce_signin_rows(speakers)
@@ -308,23 +337,33 @@ def render_signin_table(
 
     def _create_table():
         table = doc.add_table(rows=1, cols=3, style="Table Grid")
-        table.autofit = False
+        table.autofit = bool(auto_adjust_dimensions)
+        if auto_adjust_dimensions:
+            try:
+                table.allow_autofit = True
+            except Exception:
+                pass
+        else:
+            table.autofit = False
+            table.columns[0].width = Cm(col0)
+            table.columns[1].width = Cm(col1)
+            table.columns[2].width = Cm(col2)
+            _set_table_total_width(table, col0 + col1 + col2)
+        _set_table_cell_margins(table, left_cm=0.12, right_cm=0.12)
         table.alignment = WD_TABLE_ALIGNMENT.CENTER
         try:
             table.left_indent = Cm(0)
         except Exception:
             pass
 
-        table.columns[0].width = Cm(col0)
-        table.columns[1].width = Cm(col1)
-        table.columns[2].width = Cm(col2)
-        _set_table_total_width(table, col0 + col1 + col2)
-        _set_table_cell_margins(table, left_cm=0.12, right_cm=0.12)
-
         hdr_row = table.rows[0]
-        _safe_set_row_height(hdr_row, header_height_cm)
-        _set_repeat_table_header(hdr_row)
-        _set_row_height_exact(table.rows[0], header_height_cm)
+        if auto_adjust_dimensions:
+            _set_row_height_auto(hdr_row)
+        else:
+            _safe_set_row_height(hdr_row, header_height_cm)
+             _set_repeat_table_header(hdr_row)
+            _set_row_height_exact(table.rows[0], header_height_cm)
+       
 
         hdr_cells = hdr_row.cells
         headers = ["主題 Topic", "姓名 Name", "簽到 Sign-in"]
@@ -340,10 +379,14 @@ def render_signin_table(
         return table
 
     def _populate_row(table_row, entry: SignInRow):
-        try:
-            _set_row_height_exact(table_row, data_row_height_cm)
-        except NameError:
-            _safe_set_row_height(table_row, data_row_height_cm)
+        if auto_adjust_dimensions:
+            _set_row_height_auto(table_row)
+        else:
+            try:
+                _set_row_height_exact(table_row, data_row_height_cm)
+            except Exception:
+                _safe_set_row_height(table_row, data_row_height_cm)
+
 
         row_cells = table_row.cells
         topic_val = _sanitize_text(entry.topic) or "\u00A0"
@@ -447,12 +490,43 @@ def render_signin_table(
     )
 
 
+def render_signin_table_paginated(
+    context: SignInDocumentContext,
+    speakers: Sequence[SignInRow | SupportsSignInRow],
+    output_path: Path | str,
+    *,
+    rows_per_page: int,
+    **kwargs,
+) -> SignInRenderResult:
+    """Convenience helper that forwards to :func:`render_signin_table`.
+
+    Other Python modules that only need to specify a ``rows_per_page`` limit
+    can import and call this helper instead of remembering the keyword name::
+
+        from scripts.actions.signin_table_render import render_signin_table_paginated
+
+        render_signin_table_paginated(context, rows, "output.docx", rows_per_page=15)
+
+    All other keyword arguments accepted by :func:`render_signin_table` may be
+    supplied through ``**kwargs``.
+    """
+
+    return render_signin_table(
+        context,
+        speakers,
+        output_path,
+        rows_per_page=rows_per_page,
+        **kwargs,
+    )
+
+
 __all__ = [
     "SignInRow",
     "SignInDocumentContext",
     "SignInRenderResult",
     "SupportsSignInRow",
     "render_signin_table",
+    "render_signin_table_paginated",
     "TITLE_PT",
     "FONT_PT",
     "LEFT_RIGHT_MARGIN_CM",
