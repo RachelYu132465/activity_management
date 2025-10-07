@@ -223,8 +223,19 @@ def render_signin_table(
     col1_fixed_cm: float = COL1_FIXED_CM,
     data_row_height_cm: float = DATA_ROW_HEIGHT_CM,
     header_height_cm: float = HDR_HEIGHT_CM,
+    rows_per_page: int | None = None,
 ) -> SignInRenderResult:
-    """Render a sign-in table document and save it to ``output_path``."""
+    """Render a sign-in table document and save it to ``output_path``.
+
+    Parameters
+    ----------
+    rows_per_page:
+        Optional limit of data rows for each page. When provided, the
+        renderer will insert a page break after the given number of rows and
+        recreate the table with the header so every page starts with the
+        header row. When ``None`` (default) all rows are rendered into a
+        single table, matching the legacy behaviour.
+    """
 
     normalized = _coerce_signin_rows(speakers)
     rows: list[SignInRow] = [
@@ -271,14 +282,6 @@ def render_signin_table(
         doc.sections[0].left_margin = Cm(left_right_margin_cm)
         doc.sections[0].right_margin = Cm(left_right_margin_cm)
 
-    signin_table = doc.add_table(rows=1, cols=3, style="Table Grid")
-    signin_table.autofit = False
-    signin_table.alignment = WD_TABLE_ALIGNMENT.CENTER
-    try:
-        signin_table.left_indent = Cm(0)
-    except Exception:
-        pass
-
     page_width_cm = float(doc.sections[0].page_width) / float(Cm(1)) if doc.sections else 0.0
     available_cm = page_width_cm - (left_right_margin_cm * 2)
 
@@ -301,36 +304,48 @@ def render_signin_table(
             col0 = remain * ratio
             col1 = remain - col0
 
-    signin_table.columns[0].width = Cm(col0)
-    signin_table.columns[1].width = Cm(col1)
-    signin_table.columns[2].width = Cm(col2)
-    _set_table_total_width(signin_table, col0 + col1 + col2)
-    _set_table_cell_margins(signin_table, left_cm=0.12, right_cm=0.12)
+    rows_per_page = rows_per_page if rows_per_page and rows_per_page > 0 else None
 
-    hdr = signin_table.rows[0]
-    _safe_set_row_height(hdr, header_height_cm)
-    _set_repeat_table_header(hdr)
-    _set_row_height_exact(signin_table.rows[0], header_height_cm)
-
-    hdr_cells = hdr.cells
-    headers = ["主題 Topic", "姓名 Name", "簽到 Sign-in"]
-    for idx, text in enumerate(headers):
-        cell = hdr_cells[idx]
-        paragraph = cell.paragraphs[0]
-        run = paragraph.add_run(text)
-        _set_run_font(run, font_pt, bold=True)
-        paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        _set_cell_vertical_center(cell)
-        _set_cell_background(cell, "#BFBFBF")
-
-    for entry in rows:
-        row = signin_table.add_row()
+    def _create_table():
+        table = doc.add_table(rows=1, cols=3, style="Table Grid")
+        table.autofit = False
+        table.alignment = WD_TABLE_ALIGNMENT.CENTER
         try:
-            _set_row_height_exact(row, data_row_height_cm)
-        except NameError:
-            _safe_set_row_height(row, data_row_height_cm)
+            table.left_indent = Cm(0)
+        except Exception:
+            pass
 
-        row_cells = row.cells
+        table.columns[0].width = Cm(col0)
+        table.columns[1].width = Cm(col1)
+        table.columns[2].width = Cm(col2)
+        _set_table_total_width(table, col0 + col1 + col2)
+        _set_table_cell_margins(table, left_cm=0.12, right_cm=0.12)
+
+        hdr_row = table.rows[0]
+        _safe_set_row_height(hdr_row, header_height_cm)
+        _set_repeat_table_header(hdr_row)
+        _set_row_height_exact(table.rows[0], header_height_cm)
+
+        hdr_cells = hdr_row.cells
+        headers = ["主題 Topic", "姓名 Name", "簽到 Sign-in"]
+        for idx, text in enumerate(headers):
+            cell = hdr_cells[idx]
+            paragraph = cell.paragraphs[0]
+            run = paragraph.add_run(text)
+            _set_run_font(run, font_pt, bold=True)
+            paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            _set_cell_vertical_center(cell)
+            _set_cell_background(cell, "#BFBFBF")
+
+        return table
+
+    def _populate_row(table_row, entry: SignInRow):
+        try:
+            _set_row_height_exact(table_row, data_row_height_cm)
+        except NameError:
+            _safe_set_row_height(table_row, data_row_height_cm)
+
+        row_cells = table_row.cells
         topic_val = _sanitize_text(entry.topic) or "\u00A0"
         c0 = row_cells[0]
         p0 = c0.paragraphs[0] if c0.paragraphs else c0.add_paragraph()
@@ -402,6 +417,20 @@ def render_signin_table(
         except Exception:
             pass
         _set_cell_vertical_center(c2)
+
+    chunks: list[list[SignInRow]]
+    if rows_per_page is None:
+        chunks = [rows]
+    else:
+        chunks = [rows[i : i + rows_per_page] for i in range(0, len(rows), rows_per_page)]
+
+    for index, chunk in enumerate(chunks):
+        if index > 0:
+            doc.add_page_break()
+        table = _create_table()
+        for entry in chunk:
+            table_row = table.add_row()
+            _populate_row(table_row, entry)
 
     if context.date_display:
         footer = doc.add_paragraph()
