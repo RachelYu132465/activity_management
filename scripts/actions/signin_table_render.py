@@ -361,8 +361,9 @@ def render_signin_table(
             _set_row_height_auto(hdr_row)
         else:
             _safe_set_row_height(hdr_row, header_height_cm)
+             _set_repeat_table_header(hdr_row)
             _set_row_height_exact(table.rows[0], header_height_cm)
-        _set_repeat_table_header(hdr_row)
+       
 
         hdr_cells = hdr_row.cells
         headers = ["主題 Topic", "姓名 Name", "簽到 Sign-in"]
@@ -383,8 +384,9 @@ def render_signin_table(
         else:
             try:
                 _set_row_height_exact(table_row, data_row_height_cm)
-            except NameError:
+            except Exception:
                 _safe_set_row_height(table_row, data_row_height_cm)
+
 
         row_cells = table_row.cells
         topic_val = _sanitize_text(entry.topic) or "\u00A0"
