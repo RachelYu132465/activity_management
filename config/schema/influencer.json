@@ -3,6 +3,7 @@
     "id_number": "",
     "name": "",
     "phone": "",
+    "address": "",
     "email": [],
     "specialties": [],
     "achievements": [],
@@ -18,11 +19,14 @@
     "current_position": {
       "organization": "",
       "title": "",
+      "short_title": "",
+      "long_title": "",
       "start_year": null,
       "teaching_years": null,
       "practice_years": null,
       "research_years": null
     },
+    "bio": "",
     "contact_person": {
       "name": "",
       "email": [],

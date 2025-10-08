@@ -70,8 +70,8 @@
         "type": "主持人",
         "topic": "主持",
         "name": "林世嘉",
-        "start_time": "",
-        "end_time": ""
+        "start_time": null,
+        "end_time": null
       },
       {
         "no": 2,
@@ -113,7 +113,9 @@
         "start_time": "11:35",
         "end_time": "12:00"
       }
-    ],
+    ]
+
+  ,
     "activities_contacts": []
   },
   {
@@ -348,9 +350,11 @@
     "id": 6,
     "planName": "再生醫療產品技術鏈結與市場拓展計畫",
     "eventNames": [
+
       "鏈結亞洲：拓展臺灣生醫產業國際合作與市場新藍圖",
       "生醫產業商機交流論壇（二）生醫產業發展新動能",
       "生醫產業商機交流論壇"
+
     ],
     "date": "2025-09-24",
     "locations": [
@@ -387,6 +391,7 @@
       ]
     },
     "speakers": [
+
       {
         "no": 0,
         "type": "主持人",
@@ -446,9 +451,7 @@
       "經濟部產業發展署"
     ],
     "organizers": [
-      "財團法人台灣醫界聯盟基金會",
-      "經濟部產業發展署",
-      "財團法人生物技術開發中心"
+      "財團法人台灣醫界聯盟基金會","經濟部產業發展署","財團法人生物技術開發中心"
     ],
     "coOrganizers": [],
     "jointOrganizers": [],
@@ -509,8 +512,7 @@
         "name": "林世嘉",
         "start_time": "10:45",
         "end_time": "11:25"
-      },
-      {
+      },{
         "no": "7",
         "type": "講者",
         "topic": "綜合討論主持人",
@@ -525,8 +527,7 @@
         "name": "陳瑜帆",
         "start_time": "12:00",
         "end_time": "12:00"
-      },
-      {
+      }, {
         "no": "9",
         "type": "講者",
         "topic": "與談者",
@@ -543,6 +544,7 @@
         "end_time": ""
       }
     ],
+
     "activities_contacts": []
   },
   {
@@ -561,9 +563,7 @@
       "Industrial Development Administration, Ministry of Economic Affairs"
     ],
     "organizers": [
-      "Foundation of Medical Professionals Alliance in Taiwan",
-      "Industrial Development Administration, Ministry of Economic Affairs",
-      "Development Center for Biotechnology"
+      "Room 301, NTUH International Convention Center","Industrial Development Administration, Ministry of Economic Affairs","Development Center for Biotechnology"
     ],
     "coOrganizers": [],
     "jointOrganizers": [],
@@ -581,7 +581,7 @@
         "no": "1",
         "type": "Opening Remark",
         "topic": "開幕致詞",
-        "name": "Pei-Li CHEN",
+        "name": "陳佩利 副署長 / Pei-Li CHEN, Deputy Director General, Industrial Development Administration, Ministry of Economic Affairs",
         "start_time": "09:00",
         "end_time": "09:05"
       },
@@ -589,7 +589,7 @@
         "no": "2",
         "type": "主持人",
         "topic": "大合照 Group Photo",
-        "name": "Shih-Chia LIN",
+        "name": "林世嘉",
         "start_time": "09:05",
         "end_time": "09:15"
       },
@@ -621,7 +621,7 @@
         "no": "6",
         "type": "講者",
         "topic": "2025再生醫療尖端趨勢與臺灣再生醫療雙法的下一步",
-        "name": "Shih-Chia LIN",
+        "name": "林世嘉",
         "start_time": "10:45",
         "end_time": "11:25"
       },
@@ -632,40 +632,16 @@
         "name": "Yu-Fan Chen",
         "start_time": "12:00",
         "end_time": "12:00"
-      },
-      {
+      }, {
         "no": "7",
         "type": "講者",
         "topic": "再生醫療產業鏈的國際接軌：台灣與國際合作的挑戰與機會",
         "name": "何弘能 總顧問 / Hong-Neng HO, General Consultant, Taipei Medical University",
         "start_time": "11:25",
         "end_time": "12:00"
-      },{
-        "no": "7",
-        "type": "講者",
-        "topic": "綜合討論主持人",
-        "name": "Hong- Neng HO",
-        "start_time": "11:25",
-        "end_time": "12:00"
-      },
-      {
-        "no": "8",
-        "type": "講者",
-        "topic": "與談者",
-        "name": "Yu-Fan CHEN",
-        "start_time": "12:00",
-        "end_time": "12:00"
       },
       {
         "no": "9",
-        "type": "講者",
-        "topic": "與談者",
-        "name": "Kuan-Hung LIN",
-        "start_time": "12:00",
-        "end_time": "12:00"
-      },
-      {
-        "no": "10",
         "type": "Closing",
         "topic": "閉幕 Closing",
         "name": "",
@@ -673,6 +649,7 @@
         "end_time": ""
       }
     ],
+
     "activities_contacts": []
   },
   {
@@ -780,6 +757,7 @@
         "end_time": "16:20"
       }
     ],
+
     "activities_contacts": []
   }
 ]

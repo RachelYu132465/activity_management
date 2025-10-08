@@ -128,7 +128,7 @@ def main() -> None:
         subtitle="講員簽到單",
     )
 
-    result = render_signin_table(context, rows, out_path)
+    result = render_signin_table(context, rows, out_path, auto_adjust_dimensions=False)
     print(
         f"Saved sign-in sheet to {result.output_path} "
         f"(page_width_cm={result.page_width_cm:.2f}, available_cm={result.available_width_cm:.2f}, "

@@ -361,7 +361,7 @@ def render_signin_table(
             _set_row_height_auto(hdr_row)
         else:
             _safe_set_row_height(hdr_row, header_height_cm)
-             _set_repeat_table_header(hdr_row)
+            _set_repeat_table_header(hdr_row)
             _set_row_height_exact(table.rows[0], header_height_cm)
        
 

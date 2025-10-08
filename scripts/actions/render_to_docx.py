@@ -283,6 +283,16 @@ def main() -> None:
     # Activity info section (label on its own line, value on next line, blank line between blocks)
     doc.add_heading("活動資訊", level=1)
 
+    # LOCATION
+    eventNames = program.get("eventNames") or []
+    e_label = doc.add_paragraph()
+    run_label = e_label.add_run("名稱：")
+    set_run_font(run_label, PROFILE_PT, bold=True)
+    p_val = doc.add_paragraph()
+    run_val = p_val.add_run(eventNames)
+    set_run_font(run_val, PROFILE_PT)
+    doc.add_paragraph()
+
     # compute locations/strings locally for reuse
     locations = program.get("locations") or []
     loc_text = ""

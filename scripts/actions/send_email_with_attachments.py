@@ -81,6 +81,7 @@ from scripts.core.data_util import (
 )
 from scripts.core.bootstrap import BASE_DIR, TEMPLATE_DIR, DATA_DIR
 # --- end import ---
+# --- end import ---
 
 # -------------------- DEFAULT PATHS (adjust if needed) --------------------
 DEFAULT_TEMPLATE = TEMPLATE_DIR / "letter_sample" / "活動參與通知.docx"

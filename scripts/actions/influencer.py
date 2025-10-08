@@ -195,11 +195,18 @@ def build_people(program: dict, influencers: Iterable) -> Tuple[List[dict], List
         name = entry.get("name")
         info = infl_by_name.get(name, {}) or {}
         enriched = {
+
             "name": name,
+
+
             "title": info.get("current_position", {}).get("title", "")
             if isinstance(info.get("current_position"), dict)
             else "",
+            "short_title": info.get("short_title", {}).get("title", "")
+            if isinstance(info.get("short_title"), dict)
+            else "",
             "organization": info.get("current_position", {}).get("organization", "")
+
             if isinstance(info.get("current_position"), dict)
             else "",
             "profile": build_profile(info),
