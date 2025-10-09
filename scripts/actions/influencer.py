@@ -202,9 +202,11 @@ def build_people(program: dict, influencers: Iterable) -> Tuple[List[dict], List
             "title": info.get("current_position", {}).get("title", "")
             if isinstance(info.get("current_position"), dict)
             else "",
-            "short_title": info.get("short_title", {}).get("title", "")
-            if isinstance(info.get("short_title"), dict)
+            "short_title": info.get("current_position", {}).get("short_title", "")
+            if isinstance(info.get("current_position"), dict)
             else "",
+
+
             "organization": info.get("current_position", {}).get("organization", "")
 
             if isinstance(info.get("current_position"), dict)
@@ -213,6 +215,8 @@ def build_people(program: dict, influencers: Iterable) -> Tuple[List[dict], List
             "photo_url": info.get("photo_url", ""),
             # "profile_sections": build_profile_sections(info),
             "profile_sections": EN_build_profile_sections(info),
+
+            print(f"short_title是" {})
         }
         if entry.get("type") == "主持人":
             chairs.append(enriched)

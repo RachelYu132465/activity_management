@@ -15,6 +15,7 @@ generate_nameplates_foldable_landscape.py
 """
 from __future__ import annotations
 import json
+import create_publisher_file
 import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
@@ -309,8 +310,8 @@ def draw_name_proportional(draw: ImageDraw.ImageDraw, name: str, font: ImageFont
 
 # Draw a single half content onto an image (half canvas)
 # place_near_inner: if True => place content near the inner edge (靠向中線 / fold)
-def draw_half_content(img: Image.Image, name: str, title: str, org: str,
-                      name_font: ImageFont.ImageFont, title_font: ImageFont.ImageFont, org_font: ImageFont.ImageFont,
+def draw_half_content(img: Image.Image, name: str, org: str,
+                      name_font: ImageFont.ImageFont,  org_font: ImageFont.ImageFont,
                       place_near_inner: bool = True):
     draw = ImageDraw.Draw(img)
     w, h = img.size
@@ -363,26 +364,20 @@ def draw_half_content(img: Image.Image, name: str, title: str, org: str,
 
     # draw title into right box: wrap first to fit title_box_w, then draw lines right-aligned,
     # with last line's bottom aligned to baseline_y (so bottom of last title line shares baseline)
-    title_text = (title or "").strip()
-    if title_text:
-        # wrap title into lines that each fit title_box_w
-        title_lines = wrap_text_to_width(draw, title_text, title_font, title_box_w)
-        if not title_lines:
-            title_lines = [title_text]
-
-        # measure each line height and total height (including small line spacing)
-        line_heights = [text_size(draw, ln, title_font)[1] for ln in title_lines]
-        line_spacing = 6
-        total_title_h = sum(line_heights) + (len(line_heights) - 1) * line_spacing
-
-        # y_start so that the bottom of last line aligns to baseline_y
-        y_start = baseline_y - total_title_h
-        # draw each line right-aligned inside content_w (x_right is right edge)
-        for ln_idx, ln in enumerate(title_lines):
-            tw, th = text_size(draw, ln, title_font)
-            x = x_right - tw  # right-aligned within content area
-            draw.text((x, y_start), ln, font=title_font, fill="black")
-            y_start += th + line_spacing
+    #
+    #     # measure each line height and total height (including small line spacing)
+    #     line_heights = [text_size(draw, ln, title_font)[1] for ln in title_lines]
+    #     line_spacing = 6
+    #     total_title_h = sum(line_heights) + (len(line_heights) - 1) * line_spacing
+    #
+    #     # y_start so that the bottom of last line aligns to baseline_y
+    #     y_start = baseline_y - total_title_h
+    #     # draw each line right-aligned inside content_w (x_right is right edge)
+    #     for ln_idx, ln in enumerate(title_lines):
+    #         tw, th = text_size(draw, ln, title_font)
+    #         x = x_right - tw  # right-aligned within content area
+    #         draw.text((x, y_start), ln, font=title_font, fill="black")
+    #         y_start += th + line_spacing
 
 # ---------- load program ----------
 def load_program(program_id: Optional[int]) -> Dict[str,Any]:
@@ -457,9 +452,9 @@ def main(program_id_raw: str):
         name = person.get("name", "N/A")
 
         cur_pos = person.get("short_title")
+        org =cur_pos
 
-
-        # canvas A4 landscape
+# canvas A4 landscape
         canvas = Image.new("RGB", (A4_W, A4_H), "white")
 
         # create two half images (same size)
@@ -484,12 +479,12 @@ def main(program_id_raw: str):
                 return ImageFont.load_default()
 
         name_font = load_font_from_src(name_src, name_size)
-        title_font = load_font_from_src(title_src, title_size)
+        # title_font = load_font_from_src(title_src, title_size)
         org_font = load_font_from_src(org_src, org_size)
 
         # draw content on both halves
-        draw_half_content(half_top, name,  cur_pos, name_font, title_font, org_font, place_near_inner=True)
-        draw_half_content(half_bottom, name,  cur_pos, name_font, title_font, org_font, place_near_inner=True)
+        draw_half_content(half_top, name,  org, name_font,  org_font, place_near_inner=True)
+        draw_half_content(half_bottom, name,  org, name_font, org_font, place_near_inner=True)
 
         # rotate top half 180 degrees so text's head faces the middle fold
         half_top_rot = half_top.rotate(180)
