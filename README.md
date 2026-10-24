@@ -1,11 +1,11 @@
 # Activity Management Toolkit
 **For user who is required to produce strict format of document, many are in Microsoft word format.**
 
-NOTE: All files other than python extension is an example file for user to check firstly if the result is what you need. If you are administrative assitants searching for office-automation tool, this library is intended to keep raw data into json format, and then export them into Microsoft, pdf, png, etc. So check `program_data.json` first to see if the data structure etc suit you.
-
 The project brings together structured JSON data, Excel workbooks, Word/PDF document generation, speaker and influencer profiles, and a small Flask preview app. It is designed to reduce repetitive preparation work across event planning and administration.
 
+> NOTE: All files other than python extension is an example file for user to check firstly if the result is what you need. If you are administrative assitants searching for office-automation tool, this library is intended to keep raw data into json format, and then export them into Microsoft, pdf, png, etc. So check `program_data.json` first to see if the data structure etc suit you.
 > **Project status:** Personal workflow-automation project. The repository contains multiple scripts developed for specific tasks; it is not yet packaged as a single installable application. Some scripts depend on local templates, office documents, browser installations, or environment-specific settings.
+
 
 ## What it does
 
