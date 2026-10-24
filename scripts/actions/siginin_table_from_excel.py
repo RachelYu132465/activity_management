@@ -7,6 +7,9 @@ from typing import Iterable, Optional
 
 import pandas as pd
 
+from typing import Iterable, Optional
+import re
+import difflib
 
 ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
@@ -27,16 +30,66 @@ def _safe_filename_component(value: str) -> str:
     return cleaned.strip() or "Program"
 
 
-def _detect_column(columns: Iterable[str], keywords: Iterable[str]) -> Optional[str]:
-    keyword_list = [k.strip().lower() for k in keywords]
-    for col in columns:
-        label = str(col or "").strip()
-        lower = label.lower()
-        for key in keyword_list:
-            if key and key in lower:
-                return label
-            if key and key in label:
-                return label
+
+def _detect_column(columns: Iterable[str],
+                  keywords: Iterable[str],
+                  mode: str = "contains",
+                  fuzzy_threshold: float = 0.8) -> Optional[str]:
+    """
+    mode: "contains" | "equals" | "startswith" | "regex" | "fuzzy"
+    fuzzy_threshold: 0-1 similarity threshold for 'fuzzy' mode (uses difflib.SequenceMatcher)
+    Returns the original column label if matched, else None.
+    """
+    kw_list = [k.strip() for k in keywords if k and k.strip()]
+    if not kw_list:
+        return None
+
+    # normal lower-cased helper
+    def norm(s: str) -> str:
+        return (s or "").strip().lower()
+
+    # precompute normalized columns
+    cols = [(col, norm(col)) for col in columns]
+
+    if mode == "contains":
+        for col, ncol in cols:
+            for kw in kw_list:
+                if kw.lower() in ncol:
+                    return col
+
+    elif mode == "equals":
+        for col, ncol in cols:
+            for kw in kw_list:
+                if kw.lower() == ncol:
+                    return col
+
+    elif mode == "startswith":
+        for col, ncol in cols:
+            for kw in kw_list:
+                if ncol.startswith(kw.lower()):
+                    return col
+
+    elif mode == "regex":
+        # kw interpreted as regex pattern (case-insensitive)
+        for col, ncol in cols:
+            for kw in kw_list:
+                try:
+                    if re.search(kw, ncol, re.I):
+                        return col
+                except re.error:
+                    continue
+
+    elif mode == "fuzzy":
+        # use difflib ratio on normalized strings
+        for col, ncol in cols:
+            for kw in kw_list:
+                ratio = difflib.SequenceMatcher(None, kw.lower(), ncol).ratio()
+                if ratio >= fuzzy_threshold:
+                    return col
+
+    else:
+        raise ValueError("unknown mode")
+
     return None
 
 
@@ -104,14 +157,14 @@ def main() -> None:
         )
 
     if not rows:
-        raise SystemExit("Excel 檔案中找不到任何有效的講者資料。")
+        raise SystemExit("Excel 檔案中找不到任何有效的資料。")
 
     plan_name = args.plan_name or args.event_name or args.excel.stem
     event_name = args.event_name or plan_name
     date_display = format_date(args.date, sep="/") if args.date else None
 
     safe_event_name = _safe_filename_component(event_name)
-    out_path = args.out or (OUTPUT_DIR / f"講師簽到表_{safe_event_name}.docx")
+    out_path = args.out or (OUTPUT_DIR / f"簽到表_{safe_event_name}.docx")
 
     context = SignInDocumentContext(
         plan_name=plan_name,

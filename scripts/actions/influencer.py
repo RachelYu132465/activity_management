@@ -184,7 +184,7 @@ def EN_build_profile_sections(info: dict) -> Dict[str, List[str]]:
 
     return sections
 
-
+#paramater need to send in both information from program & influencer to map each other
 def build_people(program: dict, influencers: Iterable) -> Tuple[List[dict], List[dict]]:
     """Return (chairs, speakers) lists enriched with bio information."""
     infl_by_name: Dict[str, dict] = {p.get("name"): p for p in iter_dicts(influencers)}

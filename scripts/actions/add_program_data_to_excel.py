@@ -1,12 +1,13 @@
-"""將 program_data.json 中的資料填入 Excel。
+"""It adds the activity data (which is in program_data.json) at the every row of an Excel file.
 
-使用方式：
+Usage：
 
 ```
 python -m scripts.actions.add_program_data_to_excel --input 原始檔案.xlsx --program-id 2 --output 輸出檔案.xlsx
 ```
+1. It adds the data at last column.
 
-會在指定的試算表中新增下列欄位（如不存在）：
+2. So far it is hard-coded the following columns：
 
 * ``program_data.eventNames[0]``
 * ``program_data.eventNames[1]``
@@ -14,7 +15,8 @@ python -m scripts.actions.add_program_data_to_excel --input 原始檔案.xlsx --
 * ``program_data.locations[0]``
 * ``program_data.locations[1]``
 
-並將對應的 program_data 資料填入每一列（只對已有資料的列進行填寫）。
+3.Only add data to the non empty-rows.
+4. Export files is at \output\路徑.
 """
 
 from __future__ import annotations
