@@ -1,4 +1,5 @@
 # Activity Management Toolkit
+**For user who is required to produce strict format of document, many are in Microsoft word format. **
 
 A Python-based toolkit for managing event-program data and automating recurring event-operations documents.
 
@@ -30,13 +31,18 @@ The project brings together structured JSON data, Excel workbooks, Word/PDF docu
 | `tests/` | Automated tests for selected data and profile functions |
 | `static/` | Static assets used by the preview app, if present |
 
-
-
+## Key Function file
 | Python File name | Function |
 |---|---|
-|add_program_data_to_excel|Add program_data at the every row of an Excel file.|
-|app|HTML format of program_data. host=127.0.0.1:5000 (default)and seperate data into subpage: Cover, notes, chairs, speechers|
-|siginin_table_from_excel|Read excel file and export them into Word file with specific format (table size, font size, row rules,etc)|
+|add_program_data_to_excel|Add program_data to every row of an Excel file.|
+|app|HTML format of program_data host=127.0.0.1:5000 (default) and separate data into subpages: Cover, notes, chairs, speakers|
+|siginin_table_from_excel|Read Excel file and export them into Word file with specific format (table size, font size, row rules, etc).|
+|mergeExcelByKey| Merge multiple Excels into one Excel using one column value.|
+|test_printer|Test your selected printer first, and then print.|
+|print_file|Batch print files in specified folder.|
+|send_email_with_attachments|Input template Word file and program_data to form email. SMTP_test.py is at the root folder to test your connection first, and then set your SMTP host (Gmail or Outlook, etc), sender email address and password.|
+
+Below are of the same function, export program_data.json into other format:|generate_agenda, parse_agenda_docx, render_to_docx_2.py, render_to_pdf.py, render_with_chrome.py, schedule_table.py, siginin_table_from_excel.py, siginin_table_from_json.py |format written in the code||make_speaker_letters| You have template Word file. ||create_PNG_deskcard|png file|
 
 
 ## Requirements
