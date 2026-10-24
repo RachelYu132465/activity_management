@@ -30,6 +30,15 @@ The project brings together structured JSON data, Excel workbooks, Word/PDF docu
 | `tests/` | Automated tests for selected data and profile functions |
 | `static/` | Static assets used by the preview app, if present |
 
+
+
+| Python File name | Function |
+|---|---|
+|add_program_data_to_excel|Add program_data at the every row of an Excel file.|
+|app|HTML format of program_data. host=127.0.0.1:5000 (default)and seperate data into subpage: Cover, notes, chairs, speechers|
+|siginin_table_from_excel|Read excel file and export them into Word file with specific format (table size, font size, row rules,etc)|
+
+
 ## Requirements
 
 - Python 3.10 or newer is recommended.
