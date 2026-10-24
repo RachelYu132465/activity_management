@@ -1,5 +1,6 @@
 # Activity Management Toolkit
 **For user who is required to produce strict format of document, many are in Microsoft word format. **
+All files other than python is a example file for user to check firstly if the result is what you need.
 
 A Python-based toolkit for managing event-program data and automating recurring event-operations documents.
 
