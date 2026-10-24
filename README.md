@@ -1,10 +1,7 @@
 # Activity Management Toolkit
-**NOTE: For user who is required to produce strict format of document, many are in Microsoft word format.**
-All files other than python extension is an example file for user to check firstly if the result is what you need.
+**For user who is required to produce strict format of document, many are in Microsoft word format.**
 
-If you are administrative assitants searching for office-automation tool, this library is intended to keep raw data into json format, and then export them into Microsoft, pdf, png, etc. So check `program_data.json` first to see if the data structure etc suit you.
-
-A Python-based toolkit for managing event-program data and automating recurring event-operations documents.
+NOTE: All files other than python extension is an example file for user to check firstly if the result is what you need. If you are administrative assitants searching for office-automation tool, this library is intended to keep raw data into json format, and then export them into Microsoft, pdf, png, etc. So check `program_data.json` first to see if the data structure etc suit you.
 
 The project brings together structured JSON data, Excel workbooks, Word/PDF document generation, speaker and influencer profiles, and a small Flask preview app. It is designed to reduce repetitive preparation work across event planning and administration.
 
